@@ -88,6 +88,7 @@ async function getProductById(id) {
     categorySlug: p.category ? p.category.slug : null,
     categoryId: p.category ? p.category.id : null,
     brand: p.brand ? p.brand.name : null,
+    brandLogo: p.brand && p.brand.logoKey ? `${CDN_URL}/${p.brand.logoKey}` : null,
     image: p.imageKeys && p.imageKeys[0] ? `${CDN_URL}/${p.imageKeys[0]}` : null,
     images: (p.imageKeys || []).map((k) => `${CDN_URL}/${k}`),
     sheetUrl: p.sheetKey ? `${CDN_URL}/${p.sheetKey}` : null,
