@@ -13,9 +13,9 @@ model AdminUser {
   passwordHash String
   role         String   @default("admin")
   active       Boolean  @default(true)
-  photoKey     String?
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
+  photoKey     String?
 
   @@map("admin_users")
 }
@@ -41,67 +41,60 @@ model Category {
   description String?
   imageKey    String?
   parentId    String?
-  parent      Category?  @relation("SubCategories", fields: [parentId], references: [id])
-  children    Category[] @relation("SubCategories")
-  products    Product[]
   active      Boolean    @default(true)
   sortOrder   Int        @default(0)
   createdAt   DateTime   @default(now())
   updatedAt   DateTime   @updatedAt
+  parent      Category?  @relation("SubCategories", fields: [parentId], references: [id])
+  children    Category[] @relation("SubCategories")
+  products    Product[]
 
   @@map("categories")
 }
 
 model Product {
-  id          String   @id @default(cuid())
-  reference   String   @unique
-  name        String
-  slug        String   @unique
-  description String?
-
-  imageKeys   String[]
-  sheetKey    String?
-
-  costPrice   Float?
-  basePrice   Float    @default(0)
-  hasIva      Boolean  @default(true)
-  ivaRate     Float    @default(14)
-  hasIec      Boolean  @default(false)
-  iecRate     Float    @default(0)
-  salePrice   Float?
-
-  trackStock  Boolean  @default(true)
-  stock       Int      @default(0)
-  stockAlert  Int      @default(5)
-
-  categoryId  String?
-  category    Category? @relation(fields: [categoryId], references: [id])
-  brandId     String?
-  brand       Brand?    @relation(fields: [brandId], references: [id])
-
-  active      Boolean  @default(true)
-  featured    Boolean  @default(false)
-
-  bundleItems    BundleItem[] @relation("BundleParent")
+  id             String       @id @default(cuid())
+  reference      String       @unique
+  name           String
+  slug           String       @unique
+  description    String?
+  imageKeys      String[]
+  sheetKey       String?
+  costPrice      Float?
+  basePrice      Float        @default(0)
+  hasIva         Boolean      @default(true)
+  ivaRate        Float        @default(14)
+  hasIec         Boolean      @default(false)
+  iecRate        Float        @default(0)
+  salePrice      Float?
+  trackStock     Boolean      @default(true)
+  stock          Int          @default(0)
+  stockAlert     Int          @default(5)
+  categoryId     String?
+  brandId        String?
+  active         Boolean      @default(true)
+  featured       Boolean      @default(false)
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
   linkedInBundle BundleItem[] @relation("BundleLinked")
+  bundleItems    BundleItem[] @relation("BundleParent")
+  brand          Brand?       @relation(fields: [brandId], references: [id])
+  category       Category?    @relation(fields: [categoryId], references: [id])
   storeStocks    StoreStock[]
-
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
 
   @@map("products")
 }
 
 model BundleItem {
-  id          String  @id @default(cuid())
+  id          String   @id @default(cuid())
   parentId    String
-  parent      Product @relation("BundleParent", fields: [parentId], references: [id], onDelete: Cascade)
   linkedId    String?
-  linked      Product? @relation("BundleLinked", fields: [linkedId], references: [id], onDelete: SetNull)
   name        String
   price       Float
-  discountPct Float   @default(0)
-  sortOrder   Int     @default(0)
+  discountPct Float    @default(0)
+  sortOrder   Int      @default(0)
+  linked      Product? @relation("BundleLinked", fields: [linkedId], references: [id])
+  parent      Product  @relation("BundleParent", fields: [parentId], references: [id], onDelete: Cascade)
 
   @@map("bundle_items")
 }
@@ -124,11 +117,11 @@ model Store {
 model StoreStock {
   id        String   @id @default(cuid())
   productId String
-  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
   storeId   String
-  store     Store    @relation(fields: [storeId], references: [id], onDelete: Cascade)
   quantity  Int      @default(0)
   updatedAt DateTime @updatedAt
+  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  store     Store    @relation(fields: [storeId], references: [id], onDelete: Cascade)
 
   @@unique([productId, storeId])
   @@map("store_stocks")
@@ -139,9 +132,32 @@ model SiteContent {
   key       String   @unique
   data      Json
   createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  updatedAt DateTime @default(now()) @updatedAt
 
   @@map("site_content")
 }
 
+model Customer {
+  id           String     @id @default(cuid())
+  name         String
+  phone        String?
+  email        String     @unique
+  passwordHash String
+  active       Boolean    @default(true)
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+  favorites    Favorite[]
 
+  @@map("customers")
+}
+
+model Favorite {
+  id         String   @id @default(cuid())
+  customerId String
+  customer   Customer @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  productId  String
+  createdAt  DateTime @default(now())
+
+  @@unique([customerId, productId])
+  @@map("favorites")
+}
