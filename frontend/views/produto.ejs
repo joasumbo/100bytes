@@ -258,14 +258,17 @@
                 border: 1px solid #e7e9ef;
                 border-radius: 10px;
                 padding: 24px;
+                padding-right: 150px;
                 box-shadow: 0 6px 20px rgba(20, 34, 66, 0.04);
+                position: relative;
             }
 
-            .product-page-ncr .ncr-brand-row {
-                display: flex;
-                align-items: center;
-                gap: 10px;
-                margin-bottom: 10px;
+            .product-page-ncr .ncr-brand-corner {
+                position: absolute;
+                top: 16px;
+                right: 20px;
+                text-align: right;
+                max-width: 120px;
             }
 
             .product-page-ncr .ncr-brand-logo {
@@ -278,6 +281,21 @@
                 font-size: 12px;
                 color: #5f636b;
                 font-weight: 600;
+                display: block;
+                margin-top: 4px;
+            }
+
+            @media (max-width: 575.98px) {
+                .product-page-ncr .ncr-product-box {
+                    padding-right: 24px;
+                }
+
+                .product-page-ncr .ncr-brand-corner {
+                    position: static;
+                    text-align: left;
+                    margin-bottom: 8px;
+                    max-width: 100%;
+                }
             }
 
             .product-page-ncr .ncr-qty {
@@ -841,7 +859,7 @@
                             <div class="ncr-product-box flex-grow-1">
                                 <% if (product.reference) { %><p class="text-gray-6 mb-1 font-size-13">Referência: <%= product.reference %></p><% } %>
                                 <% if (product.brand || product.brandLogo) { %>
-                                <div class="ncr-brand-row">
+                                <div class="ncr-brand-corner">
                                     <% if (product.brandLogo) { %>
                                     <img class="ncr-brand-logo" src="<%= product.brandLogo %>" alt="<%= product.brand || 'Marca' %>">
                                     <% } %>
