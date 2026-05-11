@@ -1,0 +1,16 @@
+<tipo>(<escopo>): <resumo curto no imperativo>
+
+Contexto:
+- 
+
+Mudancas:
+- 
+- 
+
+Validacao:
+- [ ] Build local
+- [ ] Testes relevantes
+- [ ] Revisao manual
+
+Observacoes:
+- 
