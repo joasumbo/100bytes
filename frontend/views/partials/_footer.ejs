@@ -1,0 +1,101 @@
+﻿<!-- ========== FOOTER ========== -->
+        <footer>
+
+            <!-- Footer-bottom-widgets -->
+            <div class="pt-8 pb-4 bg-gray-13">
+                <div class="container mt-1">
+                    <div class="row">
+                        <div class="col-lg-5">
+                            <div class="mb-6">
+                                <a href="#" class="d-inline-block">
+                                    <img src="https://cdn100ka.sysvenus.com/logo/logo-1752749442.jpg" alt="100bytes" style="max-height:52px;width:auto;" />
+                                </a>
+                            </div>
+                            <div class="mb-4">
+                                <div class="row no-gutters">
+                                    <div class="col-auto">
+                                        <i class="ec ec-support text-primary font-size-56"></i>
+                                    </div>
+                                    <div class="col pl-3">
+                                        <div class="font-size-13 font-weight-light">DÃºvidas? Ligue-nos 24/7!</div>
+                                        <a href="tel:+244946920849" class="font-size-20 text-gray-90">+244 946 920 849</a>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="mb-4">
+                                <h6 class="mb-1 font-weight-bold">Contato</h6>
+                                <address class="font-size-13">
+                                    <strong>100bytes</strong><br>
+                                    Rua AntÃ³nio AmÃ©rico Lencastre, 11<br>
+                                    Maianga, Luanda<br>
+                                    Angola<br><br>
+                                    <a href="mailto:comercial@100bytes.co.ao" class="text-gray-90">comercial@100bytes.co.ao</a><br>
+                                    <a href="tel:+244946920849" class="text-gray-90">+244 946 920 849</a>
+                                </address>
+                            </div>
+                            <div class="my-4 my-md-4">
+                                <h6 class="mb-3 font-weight-bold">Siga-nos</h6>
+                                <ul class="list-inline mb-0 opacity-7">
+                                    <li class="list-inline-item mr-0">
+                                        <a class="btn font-size-20 btn-icon btn-soft-dark btn-bg-transparent rounded-circle" href="https://www.facebook.com/p/100bytes-100063935954143/" target="_blank" rel="noopener noreferrer">
+                                            <span class="fab fa-facebook-f btn-icon__inner"></span>
+                                        </a>
+                                    </li>
+                                    <li class="list-inline-item mr-0">
+                                        <a class="btn font-size-20 btn-icon btn-soft-dark btn-bg-transparent rounded-circle" href="https://www.instagram.com/100.bytes/" target="_blank" rel="noopener noreferrer">
+                                            <span class="fab fa-instagram btn-icon__inner"></span>
+                                        </a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="col-lg-7">
+                            <div class="row">
+                                <div class="col-12 col-md mb-4 mb-md-0">
+                                    <h6 class="mb-3 font-weight-bold">Encontre rapidamente</h6>
+                                    <% (categories || []).slice(0, 6).forEach(function(cat) { %>
+                                    <div class="mb-3">
+                                        <a class="list-group-item list-group-item-action" href="/categoria/<%= cat.slug %>"><%= cat.name %></a>
+                                        <% if (cat.children && cat.children.length > 0) { %>
+                                        <ul class="list-group list-group-flush list-group-borderless mb-0 list-group-transparent">
+                                            <% cat.children.forEach(function(sub) { %>
+                                            <li><a class="list-group-item list-group-item-action py-1 font-size-13" href="/categoria/<%= sub.slug %>"><%= sub.name %></a></li>
+                                            <% }); %>
+                                        </ul>
+                                        <% } %>
+                                    </div>
+                                    <% }); %>
+                                </div>
+
+                                <div class="col-12 col-md mb-4 mb-md-0">
+                                    <% (categories || []).slice(6, 12).forEach(function(cat) { %>
+                                    <div class="mb-3">
+                                        <a class="list-group-item list-group-item-action" href="/categoria/<%= cat.slug %>"><%= cat.name %></a>
+                                        <% if (cat.children && cat.children.length > 0) { %>
+                                        <ul class="list-group list-group-flush list-group-borderless mb-0 list-group-transparent">
+                                            <% cat.children.forEach(function(sub) { %>
+                                            <li><a class="list-group-item list-group-item-action py-1 font-size-13" href="/categoria/<%= sub.slug %>"><%= sub.name %></a></li>
+                                            <% }); %>
+                                        </ul>
+                                        <% } %>
+                                    </div>
+                                    <% }); %>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- End Footer-bottom-widgets -->
+            <!-- Footer-copy-right -->
+            <div class="bg-gray-14 py-2">
+                <div class="container">
+                    <div class="flex-center-between d-block d-md-flex">
+                        <div class="mb-3 mb-md-0">Â© 100bytes - <span id="copyrightYear">2026</span></div>
+                        <div class="text-md-right font-size-13 text-gray-70">Desenvolvido por <strong>OUTAFRO</strong></div>
+                    </div>
+                </div>
+            </div>
+            <!-- End Footer-copy-right -->
+        </footer>
+        <!-- ========== END FOOTER ========== -->

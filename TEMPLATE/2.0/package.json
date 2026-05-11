@@ -1,0 +1,46 @@
+{
+  "name": "electro",
+  "version": "2.0.0",
+  "description": "Electro - Responsive Website Template",
+  "main": "gulpfile.js",
+  "author": "madrasthemes",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "devDependencies": {
+    "browser-sync": "^2.26.7",
+    "del": "^5.0.0",
+    "gulp": "github:gulpjs/gulp",
+    "gulp-autoprefixer": "^6.1.0",
+    "gulp-cache": "^1.1.2",
+    "gulp-changed": "^4.0.0",
+    "gulp-concat": "^2.6.1",
+    "gulp-cssnano": "^2.1.3",
+    "gulp-htmlmin": "^5.0.1",
+    "gulp-imagemin": "^6.0.0",
+    "gulp-rename": "^1.4.0",
+    "gulp-sass": "^4.0.2",
+    "gulp-sourcemaps": "^2.6.5",
+    "gulp-uglifyjs": "^0.6.2",
+    "imagemin-jpeg-recompress": "^6.0.0",
+    "imagemin-pngquant": "^8.0.0"
+  },
+  "dependencies": {
+    "animate.css": "^3.7.2",
+    "bootstrap-select": "^1.13.10",
+    "chartist": "^0.11.3",
+    "clipboard": "^2.0.4",
+    "custombox": "^4.0.3",
+    "datatables": "^1.10.18",
+    "flag-icon-css": "^3.3.0",
+    "flatpickr": "^4.6.2",
+    "gmaps": "^0.4.24",
+    "instafeed.js": "^1.4.1",
+    "ion-rangeslider": "^2.3.0",
+    "jquery": "^3.4.1",
+    "jquery-migrate": "^3.1.0",
+    "jquery-validation": "^1.19.1",
+    "malihu-custom-scrollbar-plugin": "^3.1.5",
+    "popper.js": "^1.15.0"
+  }
+}
