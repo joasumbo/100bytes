@@ -277,14 +277,6 @@
                 object-fit: contain;
             }
 
-            .product-page-ncr .ncr-brand-name {
-                font-size: 12px;
-                color: #5f636b;
-                font-weight: 600;
-                display: block;
-                margin-top: 4px;
-            }
-
             @media (max-width: 575.98px) {
                 .product-page-ncr .ncr-product-box {
                     padding-right: 24px;
@@ -862,9 +854,6 @@
                                 <div class="ncr-brand-corner">
                                     <% if (product.brandLogo) { %>
                                     <img class="ncr-brand-logo" src="<%= product.brandLogo %>" alt="<%= product.brand || 'Marca' %>">
-                                    <% } %>
-                                    <% if (product.brand) { %>
-                                    <span class="ncr-brand-name"><%= product.brand %></span>
                                     <% } %>
                                 </div>
                                 <% } %>
