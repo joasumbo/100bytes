@@ -215,10 +215,81 @@ app.get("/:slug([a-z0-9][a-z0-9-]*)", async (req, res, next) => {
     const brandId = req.query.brandId || null;
     const { sortBy, sortOrder } = mapSort(sort);
 
-    const [paged, topProducts] = await Promise.all([
-      getProductsPaged({ page, perPage: 24, categoryId: category.id, sortBy, sortOrder, minPrice, maxPrice, brandId }),
-      getProductsPaged({ page: 1, perPage: 5, categoryId: category.id, sortBy: "createdAt", sortOrder: "desc" }),
-    ]);
+    const categoryIds = [category.id, ...((category.children || []).map((child) => child.id))];
+    let paged;
+    let topProducts;
+
+    if (categoryIds.length === 1) {
+      const result = await Promise.all([
+        getProductsPaged({ page, perPage: 24, categoryId: category.id, sortBy, sortOrder, minPrice, maxPrice, brandId }),
+        getProductsPaged({ page: 1, perPage: 5, categoryId: category.id, sortBy: "createdAt", sortOrder: "desc" }),
+      ]);
+      paged = result[0];
+      topProducts = result[1];
+    } else {
+      const perCategoryFetch = await Promise.all(
+        categoryIds.map((categoryId) =>
+          getProductsPaged({
+            page: 1,
+            perPage: 120,
+            categoryId,
+            sortBy,
+            sortOrder,
+            minPrice,
+            maxPrice,
+            brandId,
+          })
+        )
+      );
+
+      const byId = new Map();
+      perCategoryFetch.forEach((group) => {
+        (group.products || []).forEach((product) => {
+          if (!byId.has(product.id)) byId.set(product.id, product);
+        });
+      });
+
+      let mergedProducts = Array.from(byId.values());
+      if (sortBy === "salePrice") {
+        mergedProducts = mergedProducts.sort((a, b) => {
+          const av = (a.salePriceValue || a.basePriceValue || 0);
+          const bv = (b.salePriceValue || b.basePriceValue || 0);
+          return sortOrder === "desc" ? (bv - av) : (av - bv);
+        });
+      } else if (sortBy === "createdAt") {
+        mergedProducts = mergedProducts.sort((a, b) => {
+          const av = a.createdAt ? new Date(a.createdAt).getTime() : 0;
+          const bv = b.createdAt ? new Date(b.createdAt).getTime() : 0;
+          return sortOrder === "desc" ? (bv - av) : (av - bv);
+        });
+      }
+
+      const total = mergedProducts.length;
+      const perPage = 24;
+      const pages = Math.max(1, Math.ceil(total / perPage));
+      const safePage = Math.min(page, pages);
+      const start = (safePage - 1) * perPage;
+      const pageProducts = mergedProducts.slice(start, start + perPage);
+      const newestProducts = [...mergedProducts]
+        .sort((a, b) => {
+          const av = a.createdAt ? new Date(a.createdAt).getTime() : 0;
+          const bv = b.createdAt ? new Date(b.createdAt).getTime() : 0;
+          return bv - av;
+        })
+        .slice(0, 5);
+
+      paged = {
+        products: pageProducts,
+        total,
+        page: safePage,
+        pages,
+        perPage,
+      };
+
+      topProducts = {
+        products: newestProducts,
+      };
+    }
 
     res.render("categoria", {
       category,
@@ -230,7 +301,23 @@ app.get("/:slug([a-z0-9][a-z0-9-]*)", async (req, res, next) => {
       currentFilters: { sort, minPrice, maxPrice, brandId },
     });
   } catch (e) {
-    next(e);
+    console.error(`[categoria] Erro ao carregar ${req.params.slug}:`, e.message);
+    const fallbackCategory = (cache.allCategories || []).find((c) => c.slug === req.params.slug) || null;
+    const sort = req.query.sort || "";
+    const minPrice = req.query.minPrice || null;
+    const maxPrice = req.query.maxPrice || null;
+    const brandId = req.query.brandId || null;
+
+    return res.status(502).render("categoria", {
+      category: fallbackCategory,
+      pageTitle: fallbackCategory ? fallbackCategory.name : "Categoria",
+      categories: cache.categories,
+      products: [],
+      topProducts: [],
+      brands: cache.brands,
+      pagination: { page: 1, pages: 1, total: 0, perPage: 24 },
+      currentFilters: { sort, minPrice, maxPrice, brandId },
+    });
   }
 });
 
@@ -254,6 +341,12 @@ app.use(
     index: false,
   })
 );
+
+app.use((err, req, res, next) => {
+  console.error("[frontend] Erro nao tratado:", err.message);
+  if (res.headersSent) return next(err);
+  return res.status(502).send("Servico temporariamente indisponivel. Tenta novamente em instantes.");
+});
 
 // Fallback 404
 app.use((req, res) => {

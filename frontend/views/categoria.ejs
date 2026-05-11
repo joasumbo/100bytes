@@ -19,7 +19,7 @@ const __heading = __pageTitle || (__category ? __category.name : 'Produtos');
     <link rel="shortcut icon" href="https://cdn100ka.sysvenus.com/logo/100byte_fav.png">
     <link rel="icon" type="image/png" href="https://cdn100ka.sysvenus.com/logo/100byte_fav.png">
 
-    <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700,800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,300i,400,400i,600,600i,700,700i,800,800i&display=swap" rel="stylesheet">
 
     <link rel="stylesheet" href="/assets/vendor/font-awesome/css/fontawesome-all.min.css">
     <link rel="stylesheet" href="/assets/css/font-electro.css">
@@ -30,6 +30,136 @@ const __heading = __pageTitle || (__category ? __category.name : 'Produtos');
     <link rel="stylesheet" href="/assets/vendor/slick-carousel/slick/slick.css">
     <link rel="stylesheet" href="/assets/vendor/bootstrap-select/dist/css/bootstrap-select.min.css">
     <link rel="stylesheet" href="/assets/css/theme.css">
+
+    <style>
+        :root {
+            --brand-primary: #F57C00;
+            --brand-secondary: #D96A00;
+        }
+
+        .bg-primary,
+        .badge-primary,
+        .u-header .btn-primary,
+        .u-header .btn-primary:not(:disabled):not(.disabled):active,
+        .u-header .btn-primary:not(:disabled):not(.disabled).active {
+            background-color: var(--brand-primary) !important;
+            border-color: var(--brand-primary) !important;
+        }
+
+        .u-header-topbar {
+            background-color: #ffffff !important;
+            border-bottom: 1px solid #e6e6e6;
+        }
+
+        .btn-primary,
+        .btn-primary:hover,
+        .btn-primary:focus,
+        .btn-primary:active,
+        .btn-primary:not(:disabled):not(.disabled):active,
+        .btn-primary:not(:disabled):not(.disabled).active {
+            background-color: var(--brand-primary) !important;
+            border-color: var(--brand-primary) !important;
+        }
+
+        .btn-primary:hover,
+        .btn-primary:focus,
+        .btn-add-cart:hover,
+        a.text-primary:hover,
+        a:hover .text-primary {
+            background-color: var(--brand-secondary) !important;
+            border-color: var(--brand-secondary) !important;
+            color: #fff !important;
+        }
+
+        .text-primary,
+        .link-hover__brand:hover,
+        .u-header__nav-link:hover,
+        .u-header-topbar__nav-link:hover,
+        .ec.ec-add-to-cart,
+        .ec.ec-favorites {
+            color: var(--brand-primary) !important;
+        }
+
+        .border-primary,
+        .border-color-1,
+        .nav-tab .nav-link.active::before,
+        .nav-tab .nav-link:hover::before {
+            border-color: var(--brand-primary) !important;
+        }
+
+        .u-header-topbar .topbar-left a,
+        .u-header-topbar .u-header-topbar__nav-link,
+        .u-header-topbar .dropdown-nav-link,
+        .u-header-topbar .text-gray-50 {
+            color: #2f2f33 !important;
+        }
+
+        .u-header-topbar .u-header-topbar__nav-item-border::after {
+            border-color: rgba(47, 47, 51, 0.28) !important;
+        }
+
+        .u-header .form-control,
+        .u-header .form-control::placeholder {
+            color: #5f636b !important;
+            font-weight: 600;
+        }
+
+        .bg-primary-down-lg {
+            background-color: #ffffff !important;
+        }
+
+        .product-img-wrap {
+            position: relative;
+            display: block;
+            overflow: hidden;
+            height: 200px;
+        }
+
+        .product-img-wrap img {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            transition: opacity 0.35s ease;
+        }
+
+        .product-img-primary {
+            opacity: 1;
+            z-index: 1;
+        }
+
+        .product-img-hover {
+            opacity: 0;
+            z-index: 2;
+        }
+
+        .product-img-wrap:hover .product-img-primary {
+            opacity: 0;
+        }
+
+        .product-img-wrap:hover .product-img-hover {
+            opacity: 1;
+        }
+
+        .products-group .product-item__body {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .product-item__title {
+            min-height: 42px;
+        }
+
+        .prodcut-add-cart {
+            display: block !important;
+        }
+
+        .btn-add-cart .ec {
+            color: #fff !important;
+        }
+    </style>
 </head>
 <body>
 
@@ -125,42 +255,63 @@ const __heading = __pageTitle || (__category ? __category.name : 'Produtos');
                     </div>
                 </div>
 
-                <div class="row">
+                <ul class="row list-unstyled products-group no-gutters">
                     <% if (__products.length) { %>
                     <% __products.forEach(function(product) { %>
-                    <div class="col-6 col-md-4 col-xl-3 mb-5">
-                        <div class="product-item bg-white">
-                            <div class="product-item__outer h-100">
-                                <div class="product-item__inner px-xl-4 p-3">
-                                    <div class="product-item__body pb-xl-2">
-                                        <div class="mb-2">
-                                            <a href="/<%= product.categorySlug || 'produto' %>/<%= product.urlKey %>" class="d-block text-center">
-                                                <img class="img-fluid" src="<%= product.image || 'https://cdn100ka.sysvenus.com/logo/logo-1752749442.jpg' %>" alt="<%= product.name %>" style="height:160px;object-fit:contain;">
-                                            </a>
-                                        </div>
+                    <li class="col-6 col-md-4 col-xl-3 product-item">
+                        <div class="product-item__outer h-100">
+                            <div class="product-item__inner px-xl-4 p-3">
+                                <div class="product-item__body pb-xl-2">
+                                        <% if (product.category) { %>
+                                        <div class="mb-2"><a href="/<%= product.categorySlug || 'produto' %>" class="font-size-12 text-gray-5"><%= product.category %></a></div>
+                                        <% } %>
                                         <h5 class="mb-1 product-item__title">
                                             <a href="/<%= product.categorySlug || 'produto' %>/<%= product.urlKey %>" class="text-blue font-weight-bold"><%= product.name %></a>
                                         </h5>
+                                        <div class="mb-2 position-relative">
+                                            <a href="/<%= product.categorySlug || 'produto' %>/<%= product.urlKey %>" class="product-img-wrap">
+                                                <% if (product.image) { %>
+                                                <img class="product-img-primary" src="<%= product.image %>" alt="<%= product.name %>">
+                                                <img class="product-img-hover" src="<%= product.image2 || product.image %>" alt="<%= product.name %>">
+                                                <% } else { %>
+                                                <img class="product-img-primary" src="https://cdn100ka.sysvenus.com/logo/logo-1752749442.jpg" alt="<%= product.name %>">
+                                                <% } %>
+                                            </a>
+                                            <% if (product.discountPct) { %><span style="position:absolute;top:8px;left:8px;background:#ffc107;color:#212529;font-size:11px;font-weight:700;padding:3px 8px;border-radius:20px;z-index:2;line-height:1.5;pointer-events:none">-<%= product.discountPct %>%</span><% } %>
+                                            <% if (product.isNew) { %><span style="position:absolute;top:8px;right:8px;background:#28a745;color:#fff;font-size:10px;font-weight:700;padding:3px 7px;border-radius:20px;z-index:2;line-height:1.5;pointer-events:none">NOVO</span><% } else if (product.lowStock) { %><span style="position:absolute;top:8px;right:8px;background:#fd7e14;color:#fff;font-size:10px;font-weight:600;padding:3px 7px;border-radius:20px;z-index:2;line-height:1.5;pointer-events:none">Aproveite agora</span><% } %>
+                                        </div>
                                         <div class="flex-center-between mb-1">
                                             <div class="prodcut-price">
-                                                <div class="text-gray-100"><%= product.salePrice || product.basePrice %></div>
                                                 <% if (product.salePrice) { %>
-                                                <del class="font-size-12 text-gray-6"><%= product.basePrice %></del>
+                                                <div class="d-flex align-items-center flex-wrap position-relative">
+                                                    <ins class="font-size-20 text-red text-decoration-none mr-2"><%= product.salePrice %></ins>
+                                                    <del class="font-size-12 tex-gray-6 position-absolute bottom-100"><%= product.basePrice %></del>
+                                                </div>
+                                                <% } else { %>
+                                                <div class="text-gray-100"><%= product.basePrice %></div>
                                                 <% } %>
+                                            </div>
+                                            <div class="prodcut-add-cart">
+                                                <a href="/<%= product.categorySlug || 'produto' %>/<%= product.urlKey %>" class="btn-add-cart btn-primary transition-3d-hover"><i class="ec ec-add-to-cart"></i></a>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
+                                <div class="product-item__footer">
+                                    <div class="border-top pt-2 flex-center-between flex-wrap">
+                                        <a href="/<%= product.categorySlug || 'produto' %>/<%= product.urlKey %>" class="text-gray-6 font-size-13"><i class="ec ec-favorites mr-1 font-size-15"></i> Ver produto</a>
+                                    </div>
+                                </div>
                             </div>
                         </div>
-                    </div>
+                    </li>
                     <% }) %>
                     <% } else { %>
-                    <div class="col-12">
+                    <li class="col-12">
                         <div class="alert alert-light border">Nenhum produto encontrado com os filtros selecionados.</div>
-                    </div>
+                    </li>
                     <% } %>
-                </div>
+                </ul>
 
                 <% if (__pagination && __pagination.pages > 1) { %>
                 <nav aria-label="Paginacao" class="d-flex justify-content-center mt-2">

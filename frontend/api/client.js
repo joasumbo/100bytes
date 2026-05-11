@@ -6,10 +6,15 @@ const BACKEND_URL = process.env.BACKEND_URL || "http://localhost:3001";
 
 async function apiFetch(endpoint, options = {}) {
   const url = `${BACKEND_URL}/api${endpoint}`;
-  const res = await fetch(url, {
-    headers: { "Content-Type": "application/json" },
-    ...options,
-  });
+  let res;
+  try {
+    res = await fetch(url, {
+      headers: { "Content-Type": "application/json" },
+      ...options,
+    });
+  } catch (error) {
+    throw new Error(`[API] Falha de conexao em ${endpoint} (${url}): ${error.message}`);
+  }
 
   if (!res.ok) {
     const text = await res.text().catch(() => "");
