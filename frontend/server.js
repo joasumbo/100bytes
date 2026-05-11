@@ -1,6 +1,8 @@
 ﻿require("dotenv").config();
 const express = require("express");
 const path = require("path");
+const cookieParser = require("cookie-parser");
+const jwt = require("jsonwebtoken");
 const { createProxyMiddleware } = require("http-proxy-middleware");
 const { getRootCategories, getAllCategories, findCategoryBySlug, getCategoryBySlug, getTopCategories } = require("./api/categories");
 const { getFeatured, getOnSale, getNewest, getProductById, getRelated, getByCategory, getProductsPaged } = require("./api/products");
@@ -11,10 +13,35 @@ const PORT = process.env.PORT || 3030;
 const PUBLIC_DIR = path.join(__dirname, "public");
 
 const BACKEND_URL = process.env.BACKEND_URL || "http://localhost:3001";
+const JWT_SECRET = process.env.JWT_SECRET || "your-secret-key";
 
 // EJS como view engine
 app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "views"));
+
+// Middleware
+app.use(express.static(PUBLIC_DIR));
+app.use(cookieParser());
+
+// Middleware que verifica JWT do cliente e passa para EJS
+app.use((req, res, next) => {
+  const token = req.cookies.customer_token;
+  let currentCustomer = null;
+
+  if (token) {
+    try {
+      const decoded = jwt.verify(token, JWT_SECRET);
+      if (decoded.type === "customer") {
+        currentCustomer = { id: decoded.sub, name: decoded.name, email: decoded.email };
+      }
+    } catch (e) {
+      // Token inválido ou expirado — continua sem customer
+    }
+  }
+
+  res.locals.currentCustomer = currentCustomer;
+  next();
+});
 
 // Cache de dados — refresca a cada 5 minutos
 let cache = { categories: [], allCategories: [], featured: [], onSale: [], newest: [], tabsData: { topCats: [], byCategory: {} }, brands: [], fetchedAt: 0 };
@@ -80,6 +107,16 @@ app.get("/api/top100", async (req, res, next) => {
     next(e);
   }
 });
+
+// Proxy /api/customers/* → Backend NestJS (com credentials/cookies)
+app.use(
+  "/api/customers",
+  createProxyMiddleware({
+    target: BACKEND_URL,
+    changeOrigin: true,
+    pathFilter: "/api/customers/**",
+  })
+);
 
 // Proxy /api/* → Backend NestJS
 app.use(

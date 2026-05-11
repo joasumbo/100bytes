@@ -1,0 +1,100 @@
+        <!-- Customer Auth Modals -->
+        
+        <!-- Login Modal -->
+        <div id="customerLoginModal" class="customer-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 9999; align-items: center; justify-content: center;">
+            <div style="background: white; border-radius: 20px; padding: 40px; max-width: 420px; width: 90%; position: relative; box-shadow: 0 4px 20px rgba(0,0,0,0.1);">
+                <button type="button" data-modal-close style="position: absolute; top: 15px; right: 20px; background: none; border: none; font-size: 28px; cursor: pointer; color: #999;">×</button>
+                
+                <h2 style="text-align: center; margin-bottom: 10px; font-size: 24px; font-weight: bold;">Bem-vindo!</h2>
+                <p style="text-align: center; color: #888; margin-bottom: 30px; font-size: 14px;">Aceda à sua conta.</p>
+                
+                <form id="customerLoginForm" style="display: flex; flex-direction: column; gap: 15px;">
+                    <div style="position: relative;">
+                        <i class="ec ec-user" style="position: absolute; left: 15px; top: 12px; color: #888; font-size: 18px;"></i>
+                        <input type="email" id="loginEmail" placeholder="Email" required style="width: 100%; padding: 12px 12px 12px 45px; border: 2px solid #ddd; border-radius: 8px; font-size: 14px; box-sizing: border-box;">
+                    </div>
+                    
+                    <div style="position: relative;">
+                        <i class="ec ec-lock" style="position: absolute; left: 15px; top: 12px; color: #888; font-size: 18px;"></i>
+                        <input type="password" id="loginPassword" placeholder="Senha" required style="width: 100%; padding: 12px 12px 12px 45px; border: 2px solid #ddd; border-radius: 8px; font-size: 14px; box-sizing: border-box;">
+                    </div>
+                    
+                    <a href="#" style="text-align: right; font-size: 13px; color: #F57C00; text-decoration: none; margin-top: -8px;">Recuperar password?</a>
+                    
+                    <button type="submit" style="background: #F57C00; color: white; padding: 12px; border: none; border-radius: 25px; font-size: 16px; font-weight: bold; cursor: pointer; margin-top: 10px;">Entrar</button>
+                    
+                    <p style="text-align: center; font-size: 13px; color: #666; margin: 15px 0 10px;">Não tem conta? <a href="javascript:customerAuth.closeModals(); customerAuth.showRegisterModal();" style="color: #F57C00; text-decoration: none; font-weight: bold;">Registe-se</a></p>
+                    
+                    <div style="display: flex; align-items: center; margin: 15px 0;">
+                        <hr style="flex: 1; border: none; border-top: 1px solid #ddd;">
+                        <span style="margin: 0 10px; color: #999; font-size: 12px;">OU</span>
+                        <hr style="flex: 1; border: none; border-top: 1px solid #ddd;">
+                    </div>
+                    
+                    <button type="button" style="display: flex; align-items: center; justify-content: center; gap: 10px; background: #f0f0f0; padding: 10px; border: none; border-radius: 8px; cursor: pointer; font-size: 14px; color: #333;">
+                        <i class="fab fa-facebook-f" style="color: #3b5998;"></i> Facebook
+                    </button>
+                    
+                    <button type="button" style="display: flex; align-items: center; justify-content: center; gap: 10px; background: #ffe8d6; padding: 10px; border: none; border-radius: 8px; cursor: pointer; font-size: 14px; color: #333;">
+                        <i class="fab fa-google" style="color: #ea4335;"></i> Google
+                    </button>
+                </form>
+            </div>
+        </div>
+        
+        <!-- Register Modal -->
+        <div id="customerRegisterModal" class="customer-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 9999; align-items: center; justify-content: center;">
+            <div style="background: white; border-radius: 20px; padding: 40px; max-width: 420px; width: 90%; position: relative; box-shadow: 0 4px 20px rgba(0,0,0,0.1);">
+                <button type="button" data-modal-close style="position: absolute; top: 15px; right: 20px; background: none; border: none; font-size: 28px; cursor: pointer; color: #999;">×</button>
+                
+                <h2 style="text-align: center; margin-bottom: 10px; font-size: 24px; font-weight: bold;">Bem-vindo à 100bytes.</h2>
+                <p style="text-align: center; color: #888; margin-bottom: 30px; font-size: 14px;">Preencha o formulário para começar.</p>
+                
+                <form id="customerRegisterForm" style="display: flex; flex-direction: column; gap: 15px;">
+                    <div style="position: relative;">
+                        <i class="ec ec-user" style="position: absolute; left: 15px; top: 12px; color: #888; font-size: 18px;"></i>
+                        <input type="text" id="registerName" placeholder="Nome" required style="width: 100%; padding: 12px 12px 12px 45px; border: 2px solid #ddd; border-radius: 8px; font-size: 14px; box-sizing: border-box;">
+                    </div>
+                    
+                    <div style="position: relative;">
+                        <i class="ec ec-phone" style="position: absolute; left: 15px; top: 12px; color: #888; font-size: 18px;"></i>
+                        <input type="tel" id="registerPhone" placeholder="Número de telefone" style="width: 100%; padding: 12px 12px 12px 45px; border: 2px solid #ddd; border-radius: 8px; font-size: 14px; box-sizing: border-box;">
+                    </div>
+                    
+                    <div style="position: relative;">
+                        <i class="ec ec-user" style="position: absolute; left: 15px; top: 12px; color: #888; font-size: 18px;"></i>
+                        <input type="email" id="registerEmail" placeholder="Email" required style="width: 100%; padding: 12px 12px 12px 45px; border: 2px solid #ddd; border-radius: 8px; font-size: 14px; box-sizing: border-box;">
+                    </div>
+                    
+                    <div style="position: relative;">
+                        <i class="ec ec-lock" style="position: absolute; left: 15px; top: 12px; color: #888; font-size: 18px;"></i>
+                        <input type="password" id="registerPassword" placeholder="Criar senha" required style="width: 100%; padding: 12px 12px 12px 45px; border: 2px solid #ddd; border-radius: 8px; font-size: 14px; box-sizing: border-box;">
+                    </div>
+                    
+                    <div style="position: relative;">
+                        <i class="ec ec-lock" style="position: absolute; left: 15px; top: 12px; color: #888; font-size: 18px;"></i>
+                        <input type="password" id="registerConfirmPassword" placeholder="Confirmar senha" required style="width: 100%; padding: 12px 12px 12px 45px; border: 2px solid #ddd; border-radius: 8px; font-size: 14px; box-sizing: border-box;">
+                    </div>
+                    
+                    <button type="submit" style="background: #F57C00; color: white; padding: 12px; border: none; border-radius: 25px; font-size: 16px; font-weight: bold; cursor: pointer; margin-top: 10px;">Criar Conta</button>
+                    
+                    <p style="text-align: center; font-size: 13px; color: #666; margin: 15px 0 10px;">Já tem conta? <a href="javascript:customerAuth.closeModals(); customerAuth.showLoginModal();" style="color: #F57C00; text-decoration: none; font-weight: bold;">Entrar</a></p>
+                    
+                    <div style="display: flex; align-items: center; margin: 15px 0;">
+                        <hr style="flex: 1; border: none; border-top: 1px solid #ddd;">
+                        <span style="margin: 0 10px; color: #999; font-size: 12px;">OU</span>
+                        <hr style="flex: 1; border: none; border-top: 1px solid #ddd;">
+                    </div>
+                    
+                    <button type="button" style="display: flex; align-items: center; justify-content: center; gap: 10px; background: #f0f0f0; padding: 10px; border: none; border-radius: 8px; cursor: pointer; font-size: 14px; color: #333;">
+                        <i class="fab fa-facebook-f" style="color: #3b5998;"></i> Facebook
+                    </button>
+                    
+                    <button type="button" style="display: flex; align-items: center; justify-content: center; gap: 10px; background: #ffe8d6; padding: 10px; border: none; border-radius: 8px; cursor: pointer; font-size: 14px; color: #333;">
+                        <i class="fab fa-google" style="color: #ea4335;"></i> Google
+                    </button>
+                </form>
+            </div>
+        </div>
+        
+        <!-- End Customer Auth Modals -->

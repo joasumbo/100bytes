@@ -17,21 +17,23 @@
                                         <a href="../shop/track-your-order.html" class="u-header-topbar__nav-link"><i class="ec ec-transport mr-1"></i> Acompanhar encomenda</a>
                                     </li>
                                     <li class="list-inline-item mr-0 u-header-topbar__nav-item u-header-topbar__nav-item-border">
-                                        <!-- Account Sidebar Toggle Button -->
-                                        <a id="sidebarNavToggler" href="javascript:;" role="button" class="u-header-topbar__nav-link"
-                                            aria-controls="sidebarContent"
-                                            aria-haspopup="true"
-                                            aria-expanded="false"
-                                            data-unfold-event="click"
-                                            data-unfold-hide-on-scroll="false"
-                                            data-unfold-target="#sidebarContent"
-                                            data-unfold-type="css-animation"
-                                            data-unfold-animation-in="fadeInRight"
-                                            data-unfold-animation-out="fadeOutRight"
-                                            data-unfold-duration="500">
-                                            <i class="ec ec-user mr-1"></i> Registo <span class="text-gray-50">ou</span> Iniciar sessão
-                                        </a>
-                                        <!-- End Account Sidebar Toggle Button -->
+                                        <!-- Account Menu -->
+                                        <% if (typeof currentCustomer !== 'undefined' && currentCustomer) { %>
+                                            <a href="javascript:;" role="button" class="u-header-topbar__nav-link">
+                                                <i class="ec ec-user mr-1"></i> <%= currentCustomer.name %>
+                                            </a>
+                                            <a href="javascript:customerAuth.logout();" class="u-header-topbar__nav-link ml-2 text-gray-50">
+                                                <i class="ec ec-power-switch mr-1"></i> Sair
+                                            </a>
+                                        <% } else { %>
+                                            <a href="javascript:customerAuth.showLoginModal();" role="button" class="u-header-topbar__nav-link">
+                                                <i class="ec ec-user mr-1"></i> Iniciar sessão
+                                            </a>
+                                            <a href="javascript:customerAuth.showRegisterModal();" class="u-header-topbar__nav-link ml-2">
+                                                <span class="text-gray-50">ou</span> Registo
+                                            </a>
+                                        <% } %>
+                                        <!-- End Account Menu -->
                                     </li>
                                 </ul>
                             </div>
