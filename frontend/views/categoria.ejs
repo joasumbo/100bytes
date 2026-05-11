@@ -1,7 +1,18 @@
 <!DOCTYPE html>
 <html lang="pt-PT">
+<%
+const __pageTitle = (typeof pageTitle !== 'undefined') ? pageTitle : '';
+const __category = (typeof category !== 'undefined') ? category : null;
+const __pagination = (typeof pagination !== 'undefined') ? pagination : null;
+const __currentFilters = (typeof currentFilters !== 'undefined' && currentFilters) ? currentFilters : {};
+const __products = (typeof products !== 'undefined' && products) ? products : [];
+const __categories = (typeof categories !== 'undefined' && categories) ? categories : [];
+const __brands = (typeof brands !== 'undefined' && brands) ? brands : [];
+const __topProducts = (typeof topProducts !== 'undefined' && topProducts) ? topProducts : [];
+const __heading = __pageTitle || (__category ? __category.name : 'Produtos');
+%>
 <head>
-    <title><%= (pageTitle || (category ? category.name : 'Produtos')) %> | 100bytes</title>
+    <title><%= __heading %> | 100bytes</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
@@ -29,13 +40,13 @@
         <nav aria-label="breadcrumb" class="mb-3">
             <ol class="breadcrumb breadcrumb-no-gutter font-size-12">
                 <li class="breadcrumb-item"><a href="/">Inicio</a></li>
-                <li class="breadcrumb-item active" aria-current="page"><%= pageTitle || (category ? category.name : 'Produtos') %></li>
+                <li class="breadcrumb-item active" aria-current="page"><%= __heading %></li>
             </ol>
         </nav>
 
         <div class="mb-4">
-            <h1 class="font-size-25 mb-1"><%= pageTitle || (category ? category.name : 'Produtos') %></h1>
-            <p class="text-gray-6 font-size-13 mb-0"><%= pagination && pagination.total ? pagination.total : 0 %> produto(s) encontrado(s)</p>
+            <h1 class="font-size-25 mb-1"><%= __heading %></h1>
+            <p class="text-gray-6 font-size-13 mb-0"><%= __pagination && __pagination.total ? __pagination.total : 0 %> produto(s) encontrado(s)</p>
         </div>
 
         <div class="row mb-8">
@@ -43,7 +54,7 @@
                 <div class="border border-color-1 rounded mb-4">
                     <div class="p-3 bg-gray-1 border-bottom"><strong class="font-size-15">Categorias</strong></div>
                     <ul class="list-unstyled mb-0 p-3">
-                        <% (categories || []).forEach(function(cat) { %>
+                        <% __categories.forEach(function(cat) { %>
                         <li class="mb-2">
                             <a href="/<%= cat.slug %>" class="text-gray-90"><%= cat.name %></a>
                         </li>
@@ -55,10 +66,10 @@
                     <div class="mb-4">
                         <label class="font-size-14 font-weight-bold mb-2 d-block">Ordenar</label>
                         <select name="sort" class="form-control form-control-sm">
-                            <option value="" <%= !currentFilters || !currentFilters.sort ? 'selected' : '' %>>Relevancia</option>
-                            <option value="newest" <%= currentFilters && currentFilters.sort === 'newest' ? 'selected' : '' %>>Mais recentes</option>
-                            <option value="price_asc" <%= currentFilters && currentFilters.sort === 'price_asc' ? 'selected' : '' %>>Preco: menor para maior</option>
-                            <option value="price_desc" <%= currentFilters && currentFilters.sort === 'price_desc' ? 'selected' : '' %>>Preco: maior para menor</option>
+                            <option value="" <%= !__currentFilters.sort ? 'selected' : '' %>>Relevancia</option>
+                            <option value="newest" <%= __currentFilters.sort === 'newest' ? 'selected' : '' %>>Mais recentes</option>
+                            <option value="price_asc" <%= __currentFilters.sort === 'price_asc' ? 'selected' : '' %>>Preco: menor para maior</option>
+                            <option value="price_desc" <%= __currentFilters.sort === 'price_desc' ? 'selected' : '' %>>Preco: maior para menor</option>
                         </select>
                     </div>
 
@@ -66,10 +77,10 @@
                         <label class="font-size-14 font-weight-bold mb-2 d-block">Preco</label>
                         <div class="row">
                             <div class="col-6 pr-1">
-                                <input type="number" min="0" name="minPrice" class="form-control form-control-sm" placeholder="Min" value="<%= (currentFilters && currentFilters.minPrice) ? currentFilters.minPrice : '' %>">
+                                <input type="number" min="0" name="minPrice" class="form-control form-control-sm" placeholder="Min" value="<%= __currentFilters.minPrice || '' %>">
                             </div>
                             <div class="col-6 pl-1">
-                                <input type="number" min="0" name="maxPrice" class="form-control form-control-sm" placeholder="Max" value="<%= (currentFilters && currentFilters.maxPrice) ? currentFilters.maxPrice : '' %>">
+                                <input type="number" min="0" name="maxPrice" class="form-control form-control-sm" placeholder="Max" value="<%= __currentFilters.maxPrice || '' %>">
                             </div>
                         </div>
                     </div>
@@ -78,8 +89,8 @@
                         <label class="font-size-14 font-weight-bold mb-2 d-block">Marca</label>
                         <select name="brandId" class="form-control form-control-sm">
                             <option value="">Todas as marcas</option>
-                            <% (brands || []).forEach(function(brand) { %>
-                            <option value="<%= brand.id %>" <%= currentFilters && currentFilters.brandId === brand.id ? 'selected' : '' %>><%= brand.name %></option>
+                            <% __brands.forEach(function(brand) { %>
+                            <option value="<%= brand.id %>" <%= __currentFilters.brandId === brand.id ? 'selected' : '' %>><%= brand.name %></option>
                             <% }) %>
                         </select>
                     </div>
@@ -87,11 +98,11 @@
                     <button type="submit" class="btn btn-primary btn-sm btn-block">Aplicar filtros</button>
                 </form>
 
-                <% if (topProducts && topProducts.length) { %>
+                <% if (__topProducts.length) { %>
                 <div class="border border-color-1 rounded mt-4">
                     <div class="p-3 bg-gray-1 border-bottom"><strong class="font-size-15">Mais vistos</strong></div>
                     <div class="p-3">
-                        <% topProducts.forEach(function(p) { %>
+                        <% __topProducts.forEach(function(p) { %>
                         <div class="media mb-3">
                             <a href="/<%= p.categorySlug %>/<%= p.urlKey %>" class="d-block mr-3">
                                 <img src="<%= p.image || 'https://cdn100ka.sysvenus.com/logo/logo-1752749442.jpg' %>" alt="<%= p.name %>" style="width:58px;height:58px;object-fit:cover;border:1px solid #eee;border-radius:4px;">
@@ -110,13 +121,13 @@
             <section class="col-lg-9">
                 <div class="row mb-3 d-flex align-items-center">
                     <div class="col-md-6 mb-2 mb-md-0 text-gray-6 font-size-13">
-                        Pagina <%= (pagination && pagination.page) ? pagination.page : 1 %> de <%= (pagination && pagination.pages) ? pagination.pages : 1 %>
+                        Pagina <%= (__pagination && __pagination.page) ? __pagination.page : 1 %> de <%= (__pagination && __pagination.pages) ? __pagination.pages : 1 %>
                     </div>
                 </div>
 
                 <div class="row">
-                    <% if (products && products.length) { %>
-                    <% products.forEach(function(product) { %>
+                    <% if (__products.length) { %>
+                    <% __products.forEach(function(product) { %>
                     <div class="col-6 col-md-4 col-xl-3 mb-5">
                         <div class="product-item bg-white">
                             <div class="product-item__outer h-100">
@@ -151,12 +162,12 @@
                     <% } %>
                 </div>
 
-                <% if (pagination && pagination.pages > 1) { %>
+                <% if (__pagination && __pagination.pages > 1) { %>
                 <nav aria-label="Paginacao" class="d-flex justify-content-center mt-2">
                     <ul class="pagination">
-                        <% for (let i = 1; i <= pagination.pages; i++) { %>
-                        <li class="page-item <%= pagination.page === i ? 'active' : '' %>">
-                            <a class="page-link" href="?page=<%= i %><%= currentFilters && currentFilters.sort ? '&sort=' + encodeURIComponent(currentFilters.sort) : '' %><%= currentFilters && currentFilters.minPrice ? '&minPrice=' + encodeURIComponent(currentFilters.minPrice) : '' %><%= currentFilters && currentFilters.maxPrice ? '&maxPrice=' + encodeURIComponent(currentFilters.maxPrice) : '' %><%= currentFilters && currentFilters.brandId ? '&brandId=' + encodeURIComponent(currentFilters.brandId) : '' %>"><%= i %></a>
+                        <% for (let i = 1; i <= __pagination.pages; i++) { %>
+                        <li class="page-item <%= __pagination.page === i ? 'active' : '' %>">
+                            <a class="page-link" href="?page=<%= i %><%= __currentFilters.sort ? '&sort=' + encodeURIComponent(__currentFilters.sort) : '' %><%= __currentFilters.minPrice ? '&minPrice=' + encodeURIComponent(__currentFilters.minPrice) : '' %><%= __currentFilters.maxPrice ? '&maxPrice=' + encodeURIComponent(__currentFilters.maxPrice) : '' %><%= __currentFilters.brandId ? '&brandId=' + encodeURIComponent(__currentFilters.brandId) : '' %>"><%= i %></a>
                         </li>
                         <% } %>
                     </ul>
