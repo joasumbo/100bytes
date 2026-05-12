@@ -1,6 +1,8 @@
 // Customer auth management for 100bytes storefront
 (function() {
   const API_BASE = '/api/customers';
+  let currentUser = null;
+  let favoriteIds = new Set();
   
   // ──────────────────────────────────────
   // Modal Management
@@ -8,16 +10,84 @@
   
   function showLoginModal() {
     const modal = document.getElementById('customerLoginModal');
-    if (modal) modal.style.display = 'block';
+    if (modal) modal.style.display = 'flex';
   }
   
   function showRegisterModal() {
     const modal = document.getElementById('customerRegisterModal');
-    if (modal) modal.style.display = 'block';
+    if (modal) modal.style.display = 'flex';
   }
   
   function closeModals() {
     document.querySelectorAll('.customer-modal').forEach(m => m.style.display = 'none');
+  }
+
+  function setFavoriteButtonState(button, isFavorite) {
+    const icon = button.querySelector('i');
+    const label = button.querySelector('[data-fav-label]');
+    if (icon) {
+      icon.classList.toggle('far', !isFavorite);
+      icon.classList.toggle('fas', isFavorite);
+      icon.style.color = isFavorite ? '#F57C00' : '';
+    }
+    if (label) {
+      label.textContent = isFavorite ? 'Remover dos favoritos' : 'Adicionar à lista de desejos';
+    }
+    button.setAttribute('data-favorited', isFavorite ? '1' : '0');
+  }
+
+  function bindRequireLoginLinks() {
+    document.querySelectorAll('[data-require-login]').forEach((link) => {
+      link.addEventListener('click', (e) => {
+        if (!currentUser) {
+          e.preventDefault();
+          showLoginModal();
+        }
+      });
+    });
+  }
+
+  async function bindFavoriteButtons() {
+    if (currentUser) {
+      const ids = await getFavorites();
+      favoriteIds = new Set(ids);
+    } else {
+      favoriteIds = new Set();
+    }
+
+    document.querySelectorAll('.js-favorite-toggle').forEach((btn) => {
+      const productId = btn.getAttribute('data-product-id');
+      if (!productId) return;
+
+      setFavoriteButtonState(btn, favoriteIds.has(productId));
+
+      btn.addEventListener('click', async (e) => {
+        e.preventDefault();
+
+        if (!currentUser) {
+          showLoginModal();
+          return;
+        }
+
+        const isFav = favoriteIds.has(productId);
+        try {
+          btn.style.pointerEvents = 'none';
+          if (isFav) {
+            await removeFavorite(productId);
+            favoriteIds.delete(productId);
+            setFavoriteButtonState(btn, false);
+          } else {
+            await addFavorite(productId);
+            favoriteIds.add(productId);
+            setFavoriteButtonState(btn, true);
+          }
+        } catch (err) {
+          alert('Erro ao guardar favorito.');
+        } finally {
+          btn.style.pointerEvents = '';
+        }
+      });
+    });
   }
   
   // ──────────────────────────────────────
@@ -192,6 +262,18 @@
         await logout();
       });
     });
+
+    getCurrentUser()
+      .then((user) => {
+        currentUser = user;
+        bindRequireLoginLinks();
+        return bindFavoriteButtons();
+      })
+      .catch(() => {
+        currentUser = null;
+        bindRequireLoginLinks();
+        return bindFavoriteButtons();
+      });
   });
   
   // ──────────────────────────────────────

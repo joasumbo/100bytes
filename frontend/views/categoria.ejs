@@ -299,7 +299,7 @@ const __heading = __pageTitle || (__category ? __category.name : 'Produtos');
                                 </div>
                                 <div class="product-item__footer">
                                     <div class="border-top pt-2 flex-center-between flex-wrap">
-                                        <a href="/<%= product.categorySlug || 'produto' %>/<%= product.urlKey %>" class="text-gray-6 font-size-13"><i class="ec ec-favorites mr-1 font-size-15"></i> Ver produto</a>
+                                        <a href="#" class="text-gray-6 font-size-13 js-favorite-toggle" data-product-id="<%= product.id %>"><i class="far fa-heart mr-1 font-size-15"></i> <span data-fav-label>Adicionar à lista de desejos</span></a>
                                     </div>
                                 </div>
                             </div>
