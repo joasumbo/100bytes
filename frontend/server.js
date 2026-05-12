@@ -20,7 +20,7 @@ app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "views"));
 
 // Middleware
-app.use(express.static(PUBLIC_DIR));
+app.use(express.static(PUBLIC_DIR, { index: false }));
 app.use(cookieParser());
 
 // Middleware que verifica JWT do cliente e passa para EJS
