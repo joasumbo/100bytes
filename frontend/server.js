@@ -7,7 +7,7 @@ const { createProxyMiddleware } = require("http-proxy-middleware");
 const { getRootCategories, getAllCategories, findCategoryBySlug, getCategoryBySlug, getTopCategories } = require("./api/categories");
 const { getFeatured, getOnSale, getNewest, getProductById, getRelated, getByCategory, getProductsPaged } = require("./api/products");
 const { getBrands } = require("./api/brands");
-const { createOrder, getOrderByCode, getOrdersByEmail, updateOrderStatus } = require("./api/ordersStore");
+const { createOrder, getOrderByCode, getOrdersByEmail, updateOrderStatus, deleteOrder } = require("./api/ordersStore");
 
 const app = express();
 const PORT = process.env.PORT || 3030;
@@ -193,6 +193,12 @@ app.patch("/api/admin/orders/:code/status", (req, res) => {
   const order = updateOrderStatus(req.params.code, status);
   if (!order) return res.status(404).json({ message: "Encomenda não encontrada." });
   return res.json({ ok: true, order });
+});
+
+app.delete("/api/admin/orders/:code", (req, res) => {
+  const ok = deleteOrder(req.params.code);
+  if (!ok) return res.status(404).json({ message: "Encomenda não encontrada." });
+  return res.json({ ok: true });
 });
 
 app.get("/api/customers/orders", (req, res) => {

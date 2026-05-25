@@ -72,4 +72,12 @@ function updateOrderStatus(code, status) {
   return orders[idx];
 }
 
-module.exports = { createOrder, getOrderByCode, getOrdersByEmail, readOrders, updateOrderStatus };
+function deleteOrder(code) {
+  const orders = readOrders();
+  const next = orders.filter(o => o.code !== (code || '').toUpperCase());
+  if (next.length === orders.length) return false;
+  writeOrders(next);
+  return true;
+}
+
+module.exports = { createOrder, getOrderByCode, getOrdersByEmail, readOrders, updateOrderStatus, deleteOrder };
