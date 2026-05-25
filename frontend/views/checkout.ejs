@@ -558,7 +558,7 @@ $(document).on('ready', function () {
                 notes:    document.getElementById('co_notes').value.trim(),
             },
             items: cart.map(function (i) {
-                return { productId: i.id, name: i.name, qty: i.qty, price: i.price, priceFormatted: i.priceFormatted || '' };
+                return { productId: i.id, name: i.name, qty: i.qty, price: i.price, priceFormatted: i.priceFormatted || '', image: i.image || '' };
             }),
         };
 

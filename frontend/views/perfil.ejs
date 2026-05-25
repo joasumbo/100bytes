@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="pt-PT">
+<head>
+    <title>Minha Conta | 100bytes</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="shortcut icon" href="https://cdn100ka.sysvenus.com/logo/100byte_fav.png">
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/assets/vendor/font-awesome/css/fontawesome-all.min.css">
+    <link rel="stylesheet" href="/assets/css/font-electro.css">
+    <link rel="stylesheet" href="/assets/vendor/animate.css/animate.min.css">
+    <link rel="stylesheet" href="/assets/vendor/hs-megamenu/src/hs.megamenu.css">
+    <link rel="stylesheet" href="/assets/vendor/malihu-custom-scrollbar-plugin/jquery.mCustomScrollbar.css">
+    <link rel="stylesheet" href="/assets/vendor/bootstrap-select/dist/css/bootstrap-select.min.css">
+    <link rel="stylesheet" href="/assets/css/theme.css">
+    <style>
+        :root { --brand-primary: #F57C00; --brand-secondary: #D96A00; }
+
+        .btn-primary,
+        .btn-primary:hover,
+        .btn-primary:focus,
+        .btn-primary:active,
+        .btn-primary:not(:disabled):not(.disabled):active,
+        .btn-primary:not(:disabled):not(.disabled).active {
+            background-color: var(--brand-primary) !important;
+            border-color: var(--brand-primary) !important;
+        }
+        .btn-primary:hover, .btn-primary:focus {
+            background-color: var(--brand-secondary) !important;
+            border-color: var(--brand-secondary) !important;
+        }
+        .text-primary { color: var(--brand-primary) !important; }
+        .badge-primary, .bg-primary { background-color: var(--brand-primary) !important; border-color: var(--brand-primary) !important; }
+        .spinner-border.text-primary { color: var(--brand-primary) !important; }
+
+        .profile-tab-content { display: none; }
+        .profile-tab-content.is-active { display: block; }
+        .profile-nav .list-group-item { border-left: 3px solid transparent; padding: 12px 20px; font-size: 14px; color: #555; }
+        .profile-nav .list-group-item.is-active { color: #F57C00; background: #fff8f2; border-left-color: #F57C00; font-weight: 600; }
+        .profile-nav .list-group-item:hover { background: #fafafa; }
+        .p-avatar { width: 68px; height: 68px; border-radius: 50%; background: #F57C00; color: #fff; font-size: 28px; font-weight: 700; display: flex; align-items: center; justify-content: center; margin: 0 auto 10px; }
+        .fav-card { border-radius: 10px; overflow: hidden; transition: box-shadow .2s; }
+        .fav-card:hover { box-shadow: 0 4px 16px rgba(0,0,0,.1); }
+        .order-pill { display: inline-block; padding: 2px 10px; border-radius: 20px; font-size: 11px; font-weight: 600; }
+    </style>
+</head>
+<body>
+    <%- include('partials/_header') %>
+
+    <main id="content" role="main" class="bg-gray-7 py-5">
+        <div class="container">
+            <div class="row">
+
+                <!-- ── Sidebar ── -->
+                <div class="col-lg-3 mb-4">
+                    <div class="card border-0 shadow-sm" style="border-radius:12px;overflow:hidden;">
+                        <div class="card-body text-center pt-4 pb-3">
+                            <div class="p-avatar" id="profileAvatar">?</div>
+                            <h6 class="mb-0 font-weight-bold" id="sidebarName">---</h6>
+                            <p class="text-gray-5 font-size-12 mb-0" id="sidebarEmail">---</p>
+                        </div>
+                        <div class="list-group list-group-flush profile-nav border-top">
+                            <a href="#dados" class="list-group-item list-group-item-action profile-tab-link is-active" data-tab="dados">
+                                <i class="ec ec-user mr-2"></i> Dados Pessoais
+                            </a>
+                            <a href="#encomendas" class="list-group-item list-group-item-action profile-tab-link" data-tab="encomendas">
+                                <i class="ec ec-transport mr-2"></i> Encomendas
+                            </a>
+                            <a href="#favoritos" class="list-group-item list-group-item-action profile-tab-link" data-tab="favoritos">
+                                <i class="ec ec-favorites mr-2"></i> Favoritos
+                            </a>
+                        </div>
+                        <div class="card-footer border-0 bg-white text-center py-3">
+                            <a href="#" data-customer-logout class="text-danger font-size-13">
+                                <i class="ec ec-power-switch mr-1"></i> Terminar sessão
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ── Content ── -->
+                <div class="col-lg-9">
+
+                    <!-- Tab: Dados Pessoais -->
+                    <div id="tab-dados" class="profile-tab-content is-active">
+                        <div class="card border-0 shadow-sm" style="border-radius:12px;">
+                            <div class="card-header bg-white border-0 py-3 px-4">
+                                <h5 class="mb-0 font-weight-bold">Dados Pessoais</h5>
+                            </div>
+                            <div class="card-body px-4 pb-4">
+                                <div id="profileMsg" class="alert d-none mb-3" role="alert"></div>
+                                <form id="profileForm">
+                                    <div class="row">
+                                        <div class="col-md-6 form-group">
+                                            <label class="font-weight-medium font-size-13">Nome completo</label>
+                                            <input type="text" id="pfName" class="form-control" placeholder="O seu nome">
+                                        </div>
+                                        <div class="col-md-6 form-group">
+                                            <label class="font-weight-medium font-size-13">Telefone</label>
+                                            <input type="tel" id="pfPhone" class="form-control" placeholder="+244 9xx xxx xxx">
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="font-weight-medium font-size-13">Email</label>
+                                        <input type="email" id="pfEmail" class="form-control">
+                                    </div>
+                                    <hr class="my-3">
+                                    <h6 class="font-weight-bold mb-3 font-size-14">Alterar password</h6>
+                                    <div class="row">
+                                        <div class="col-md-6 form-group">
+                                            <label class="font-weight-medium font-size-13">Nova password</label>
+                                            <input type="password" id="pfPassword" class="form-control" placeholder="Deixar em branco para não alterar">
+                                        </div>
+                                        <div class="col-md-6 form-group">
+                                            <label class="font-weight-medium font-size-13">Confirmar password</label>
+                                            <input type="password" id="pfPasswordConfirm" class="form-control">
+                                        </div>
+                                    </div>
+                                    <button type="submit" class="btn btn-primary px-5" id="pfSaveBtn">Guardar alterações</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Tab: Encomendas -->
+                    <div id="tab-encomendas" class="profile-tab-content">
+                        <div class="card border-0 shadow-sm" style="border-radius:12px;overflow:hidden;">
+                            <div class="card-header bg-white border-0 py-3 px-4">
+                                <h5 class="mb-0 font-weight-bold">Encomendas</h5>
+                            </div>
+                            <div class="card-body p-0">
+                                <div id="ordersList" class="text-center py-5 text-muted">
+                                    <div class="spinner-border spinner-border-sm text-primary" role="status"></div>
+                                    <p class="mt-2 mb-0 font-size-13">A carregar...</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Tab: Favoritos -->
+                    <div id="tab-favoritos" class="profile-tab-content">
+                        <div class="card border-0 shadow-sm" style="border-radius:12px;">
+                            <div class="card-header bg-white border-0 py-3 px-4 d-flex align-items-center justify-content-between">
+                                <h5 class="mb-0 font-weight-bold">Favoritos</h5>
+                                <span id="favCount" class="badge badge-light font-size-12 border">0 produtos</span>
+                            </div>
+                            <div class="card-body">
+                                <div id="favGrid" class="row">
+                                    <div class="col-12 text-center py-5 text-muted">
+                                        <div class="spinner-border spinner-border-sm text-primary" role="status"></div>
+                                        <p class="mt-2 mb-0 font-size-13">A carregar...</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <%- include('partials/_footer') %>
+    <%- include('partials/_customer-auth-modals') %>
+
+    <script src="/assets/vendor/jquery/dist/jquery.min.js"></script>
+    <script src="/assets/vendor/jquery-migrate/dist/jquery-migrate.min.js"></script>
+    <script src="/assets/vendor/popper.js/dist/umd/popper.min.js"></script>
+    <script src="/assets/vendor/bootstrap/bootstrap.min.js"></script>
+    <script src="/assets/vendor/hs-megamenu/src/hs.megamenu.js"></script>
+    <script src="/assets/vendor/svg-injector/dist/svg-injector.min.js"></script>
+    <script src="/assets/vendor/malihu-custom-scrollbar-plugin/jquery.mCustomScrollbar.concat.min.js"></script>
+    <script src="/assets/vendor/bootstrap-select/dist/js/bootstrap-select.min.js"></script>
+    <script src="/assets/js/hs.core.js"></script>
+    <script src="/assets/js/components/hs.header.js"></script>
+    <script src="/assets/js/components/hs.hamburgers.js"></script>
+    <script src="/assets/js/components/hs.unfold.js"></script>
+    <script src="/assets/js/components/hs.focus-state.js"></script>
+    <script src="/assets/js/components/hs.malihu-scrollbar.js"></script>
+    <script src="/assets/js/components/hs.svg-injector.js"></script>
+    <script src="/assets/js/components/hs.go-to.js"></script>
+    <script src="/assets/js/components/hs.selectpicker.js"></script>
+    <script src="/assets/js/customer-auth.js"></script>
+
+    <script>
+    $(window).on('load', function () {
+        $('.js-mega-menu').HSMegaMenu({ event: 'hover', direction: 'horizontal', pageContainer: $('.container'), breakpoint: 767.98, hideTimeOut: 0 });
+        $.HSCore.components.HSSVGIngector && $.HSCore.components.HSSVGIngector.init('.js-svg-injector');
+        $.HSCore.components.HSHeader.init($('#header'));
+        $.HSCore.components.HSUnfold.init($('[data-unfold-target]'), { beforeOpen: function () { this.css('visibility', 'visible'); } });
+        $.HSCore.components.HSMalihuScrollBar.init($('.js-scrollbar'));
+        $.HSCore.components.HSFocusState.init();
+        $.HSCore.components.HSGoTo.init('.js-go-to');
+        $.HSCore.components.HSHamburgers.init('#hamburgerTrigger');
+        $.HSCore.components.HSSelectPicker.init('.js-select');
+    });
+
+    // ── Tab switching ──
+    function switchTab(name) {
+        document.querySelectorAll('.profile-tab-content').forEach(el => el.classList.remove('is-active'));
+        document.querySelectorAll('.profile-tab-link').forEach(el => el.classList.remove('is-active'));
+        const content = document.getElementById('tab-' + name);
+        const link = document.querySelector('.profile-tab-link[data-tab="' + name + '"]');
+        if (content) content.classList.add('is-active');
+        if (link) link.classList.add('is-active');
+        if (name === 'encomendas') loadOrders();
+        if (name === 'favoritos') loadFavorites();
+    }
+
+    document.querySelectorAll('.profile-tab-link').forEach(link => {
+        link.addEventListener('click', (e) => {
+            e.preventDefault();
+            const tab = link.getAttribute('data-tab');
+            history.replaceState(null, '', '#' + tab);
+            switchTab(tab);
+        });
+    });
+
+    const initialHash = location.hash.slice(1);
+    if (['dados', 'encomendas', 'favoritos'].includes(initialHash)) switchTab(initialHash);
+
+    // ── Load profile ──
+    async function initProfile() {
+        try {
+            const res = await fetch('/api/customers/me', { credentials: 'include' });
+            if (!res.ok) { window.location.href = '/?openLogin=1'; return; }
+            const { customer } = await res.json();
+            document.getElementById('profileAvatar').textContent = (customer.name || '?')[0].toUpperCase();
+            document.getElementById('sidebarName').textContent = customer.name || '';
+            document.getElementById('sidebarEmail').textContent = customer.email || '';
+            document.getElementById('pfName').value = customer.name || '';
+            document.getElementById('pfEmail').value = customer.email || '';
+            document.getElementById('pfPhone').value = customer.phone || '';
+        } catch { window.location.href = '/?openLogin=1'; }
+    }
+
+    // ── Save profile ──
+    document.getElementById('profileForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const btn = document.getElementById('pfSaveBtn');
+        const msgEl = document.getElementById('profileMsg');
+        const name = document.getElementById('pfName').value.trim();
+        const email = document.getElementById('pfEmail').value.trim();
+        const phone = document.getElementById('pfPhone').value.trim();
+        const password = document.getElementById('pfPassword').value;
+        const passwordConfirm = document.getElementById('pfPasswordConfirm').value;
+
+        msgEl.className = 'alert d-none';
+        if (password && password !== passwordConfirm) {
+            msgEl.textContent = 'As passwords não coincidem.';
+            msgEl.className = 'alert alert-danger';
+            return;
+        }
+        btn.disabled = true; btn.textContent = 'A guardar...';
+        try {
+            const body = { name, email, phone };
+            if (password) body.password = password;
+            const res = await fetch('/api/customers/me', {
+                method: 'PATCH',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(body),
+                credentials: 'include',
+            });
+            if (!res.ok) { const err = await res.json(); throw new Error(err.message || 'Erro ao guardar'); }
+            document.getElementById('sidebarName').textContent = name;
+            document.getElementById('profileAvatar').textContent = (name[0] || '?').toUpperCase();
+            document.getElementById('pfPassword').value = '';
+            document.getElementById('pfPasswordConfirm').value = '';
+            msgEl.textContent = 'Dados guardados com sucesso!';
+            msgEl.className = 'alert alert-success';
+        } catch (err) {
+            msgEl.textContent = err.message || 'Não foi possível guardar os dados.';
+            msgEl.className = 'alert alert-danger';
+        } finally { btn.disabled = false; btn.textContent = 'Guardar alterações'; }
+    });
+
+    // ── Orders ──
+    let ordersLoaded = false;
+    async function loadOrders() {
+        if (ordersLoaded) return; ordersLoaded = true;
+        const container = document.getElementById('ordersList');
+        try {
+            const res = await fetch('/api/customers/orders', { credentials: 'include' });
+            if (!res.ok) {
+                container.innerHTML = '<div class="p-4 text-center text-muted"><i class="ec ec-transport font-size-40 d-block mb-2 text-gray-5"></i><p class="mb-0">Nenhuma encomenda encontrada.</p></div>';
+                return;
+            }
+            const data = await res.json();
+            const orders = data.orders || [];
+            if (!orders.length) {
+                container.innerHTML = '<div class="p-4 text-center text-muted"><i class="ec ec-transport font-size-40 d-block mb-2 text-gray-5"></i><p class="mb-0">Ainda não fez nenhuma encomenda.</p></div>';
+                return;
+            }
+            container.innerHTML = '<div class="p-3">' + orders.map(o => `
+                <div style="background:#fff;border:1px solid #eee;border-radius:10px;padding:16px 20px;margin-bottom:10px;display:flex;align-items:center;gap:16px;flex-wrap:wrap;">
+                    <div style="flex:1;min-width:0;">
+                        <div style="display:flex;align-items:center;gap:10px;margin-bottom:6px;flex-wrap:wrap;">
+                            <span style="font-family:'Courier New',monospace;font-weight:700;font-size:14px;color:#1a1a2e;">${o.reference || o.code || '---'}</span>
+                            <span class="order-pill ${pillClass(o.status)}" style="border-radius:20px;padding:3px 10px;">${pillLabel(o.status)}</span>
+                        </div>
+                        <div style="font-size:12px;color:#aaa;">
+                            <i class="fas fa-calendar-alt mr-1"></i>${o.createdAt ? new Date(o.createdAt).toLocaleDateString('pt-PT') : ''}
+                            &nbsp;&middot;&nbsp;
+                            <i class="ec ec-shopping-bag mr-1"></i>${o.items?.length || 0} produto(s)
+                        </div>
+                    </div>
+                    <div style="text-align:right;flex-shrink:0;">
+                        <div style="font-size:16px;font-weight:800;color:#F57C00;white-space:nowrap;">${fmtKz(o.total)}</div>
+                        <a href="/encomenda/${o.reference || o.code}" style="font-size:12px;color:#F57C00;text-decoration:none;font-weight:600;display:inline-flex;align-items:center;gap:4px;margin-top:6px;">
+                            Ver detalhe <i class="fas fa-arrow-right" style="font-size:10px;"></i>
+                        </a>
+                    </div>
+                </div>
+            `).join('') + '</div>';
+        } catch {
+            container.innerHTML = '<div class="p-4 text-center text-muted">Erro ao carregar encomendas.</div>';
+        }
+    }
+    function pillLabel(s) { return ({ pending:'Pendente', processing:'Em processamento', shipped:'Enviado', delivered:'Entregue', cancelled:'Cancelado' })[s] || s || '---'; }
+    function pillClass(s) { return ({ pending:'bg-warning text-dark', processing:'bg-info text-white', shipped:'bg-primary text-white', delivered:'bg-success text-white', cancelled:'bg-danger text-white' })[s] || 'bg-secondary text-white'; }
+    function fmtKz(v) { return v != null ? Number(v).toLocaleString('pt-PT', { minimumFractionDigits: 2 }) + ' Kz' : '---'; }
+
+    // ── Favorites ──
+    let favsLoaded = false;
+    async function loadFavorites() {
+        if (favsLoaded) return; favsLoaded = true;
+        const grid = document.getElementById('favGrid');
+        const badge = document.getElementById('favCount');
+        try {
+            const res = await fetch('/api/customers/favorites', { credentials: 'include' });
+            if (!res.ok) throw new Error();
+            const { favorites: ids } = await res.json();
+            badge.textContent = (ids.length) + ' produto' + (ids.length !== 1 ? 's' : '');
+
+            if (!ids.length) {
+                grid.innerHTML = '<div class="col-12 text-center py-5 text-muted"><i class="ec ec-favorites font-size-40 d-block mb-2 text-gray-5"></i><p class="mb-0">Nenhum produto nos favoritos.</p></div>';
+                return;
+            }
+
+            // Build product map from localStorage first
+            const localMap = new Map((window.customerAuth?.getLocalFavs() || []).map(f => [f.id, f]));
+
+            // Fetch missing products
+            const missing = ids.filter(id => !localMap.has(id));
+            await Promise.all(missing.map(id =>
+                fetch('/api/products/' + id)
+                    .then(r => r.ok ? r.json() : null)
+                    .then(d => {
+                        if (!d?.product) return;
+                        const p = d.product;
+                        const img = p.imageKeys?.[0] ? 'https://cdn100ka.sysvenus.com/' + p.imageKeys[0] : '';
+                        const priceVal = p.salePrice || p.basePrice;
+                        const price = priceVal ? Number(priceVal).toLocaleString('pt-PT', { minimumFractionDigits: 2 }) + ' Kz' : '';
+                        const slug = p.category?.slug || 'produto';
+                        localMap.set(id, { id, name: p.name, image: img, price, url: '/' + slug + '/' + p.slug + '--' + p.id });
+                    })
+                    .catch(() => null)
+            ));
+
+            grid.innerHTML = ids.map(id => {
+                const p = localMap.get(id);
+                if (!p) return '';
+                return `<div class="col-6 col-md-4 col-lg-3 mb-3">
+                    <div class="fav-card card border shadow-none h-100">
+                        <a href="${p.url}">
+                            <img src="${p.image}" alt="${p.name}" style="width:100%;height:120px;object-fit:contain;padding:8px;" onerror="this.style.display='none'">
+                        </a>
+                        <div class="card-body p-2 pt-0">
+                            <a href="${p.url}" class="d-block font-size-12 font-weight-500 text-dark" style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${p.name}</a>
+                            <div class="font-size-13 font-weight-bold mt-1" style="color:#F57C00;">${p.price}</div>
+                        </div>
+                        <div class="card-footer p-2 bg-white border-top-0">
+                            <button class="btn btn-sm btn-outline-danger w-100 font-size-12 js-unfav" data-id="${id}">
+                                <i class="fas fa-heart mr-1"></i> Remover
+                            </button>
+                        </div>
+                    </div>
+                </div>`;
+            }).filter(Boolean).join('') || '<div class="col-12 text-center py-4 text-muted">Nenhum produto nos favoritos.</div>';
+
+            grid.querySelectorAll('.js-unfav').forEach(btn => {
+                btn.addEventListener('click', async () => {
+                    const id = btn.getAttribute('data-id');
+                    btn.disabled = true;
+                    await fetch('/api/customers/favorites/' + id, { method: 'DELETE', credentials: 'include' }).catch(() => null);
+                    window.customerAuth?.removeLocalFav(id);
+                    favsLoaded = false;
+                    loadFavorites();
+                });
+            });
+        } catch {
+            grid.innerHTML = '<div class="col-12 text-center py-4 text-muted">Erro ao carregar favoritos.</div>';
+        }
+    }
+
+    initProfile();
+    </script>
+</body>
+</html>

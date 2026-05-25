@@ -63,4 +63,13 @@ function getOrdersByEmail(email) {
   return readOrders().filter(o => o.customer && (o.customer.email || '').toLowerCase() === lc);
 }
 
-module.exports = { createOrder, getOrderByCode, getOrdersByEmail, readOrders };
+function updateOrderStatus(code, status) {
+  const orders = readOrders();
+  const idx = orders.findIndex(o => o.code === (code || '').toUpperCase());
+  if (idx === -1) return null;
+  orders[idx] = { ...orders[idx], status };
+  writeOrders(orders);
+  return orders[idx];
+}
+
+module.exports = { createOrder, getOrderByCode, getOrdersByEmail, readOrders, updateOrderStatus };

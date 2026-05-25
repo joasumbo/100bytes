@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="pt-PT">
+<head>
+    <title>Rastrear Encomenda | 100bytes</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="shortcut icon" href="https://cdn100ka.sysvenus.com/logo/100byte_fav.png">
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700,800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/assets/vendor/font-awesome/css/fontawesome-all.min.css">
+    <link rel="stylesheet" href="/assets/css/font-electro.css">
+    <link rel="stylesheet" href="/assets/vendor/animate.css/animate.min.css">
+    <link rel="stylesheet" href="/assets/vendor/hs-megamenu/src/hs.megamenu.css">
+    <link rel="stylesheet" href="/assets/vendor/malihu-custom-scrollbar-plugin/jquery.mCustomScrollbar.css">
+    <link rel="stylesheet" href="/assets/css/theme.css">
+    <style>
+        :root { --brand: #F57C00; --brand-dark: #D96A00; }
+        .btn-primary, .btn-primary:hover, .btn-primary:focus, .btn-primary:active,
+        .btn-primary:not(:disabled):not(.disabled):active {
+            background-color: var(--brand) !important; border-color: var(--brand) !important;
+        }
+        .btn-primary:hover, .btn-primary:focus { background-color: var(--brand-dark) !important; }
+        .text-primary { color: var(--brand) !important; }
+        .u-header-topbar { background-color: #ffffff !important; border-bottom: 1px solid #e6e6e6; }
+        .u-header-topbar .topbar-left a, .u-header-topbar .u-header-topbar__nav-link,
+        .u-header-topbar .dropdown-nav-link { color: #2f2f33 !important; }
+        .u-header-topbar .u-header-topbar__nav-item-border::after { border-color: rgba(47,47,51,.28) !important; }
+        .u-header .form-control, .u-header .form-control::placeholder { color: #5f636b !important; font-weight: 600; }
+        .bg-primary-down-lg { background-color: #ffffff !important; }
+        body { background: #f5f5f5; }
+
+        /* ── Search box ── */
+        .track-hero {
+            background: linear-gradient(135deg, #1a1a2e 0%, #2d2d44 100%);
+            padding: 56px 0 48px;
+            text-align: center;
+            color: #fff;
+        }
+        .track-hero h1 { font-size: 28px; font-weight: 800; margin-bottom: 8px; }
+        .track-hero p { font-size: 14px; color: rgba(255,255,255,.65); margin-bottom: 28px; }
+        .track-input-wrap {
+            display: flex; gap: 0; max-width: 480px; margin: 0 auto;
+            border-radius: 10px; overflow: hidden;
+            box-shadow: 0 4px 24px rgba(0,0,0,.3);
+        }
+        .track-input {
+            flex: 1; border: 0; padding: 14px 20px;
+            font-size: 15px; font-weight: 600; letter-spacing: 1px;
+            text-transform: uppercase; outline: none;
+            color: #1a1a2e;
+        }
+        .track-input::placeholder { text-transform: none; font-weight: 400; letter-spacing: 0; color: #aaa; }
+        .track-btn {
+            background: var(--brand); color: #fff; border: 0;
+            padding: 14px 24px; font-size: 14px; font-weight: 700;
+            cursor: pointer; transition: background .2s; white-space: nowrap;
+        }
+        .track-btn:hover { background: var(--brand-dark); }
+
+        /* ── Result card ── */
+        .ec-card {
+            background: #fff; border: 1px solid #e8e8e8;
+            border-radius: 10px; padding: 20px; margin-bottom: 16px;
+            box-shadow: 0 2px 8px rgba(0,0,0,.04);
+        }
+        .ec-card-title {
+            font-size: 13px; font-weight: 700; color: #1a1a2e;
+            margin-bottom: 14px; padding-bottom: 10px;
+            border-bottom: 1px solid #f0f0f0;
+            display: flex; align-items: center; gap: 8px;
+        }
+        .ec-card-title i { color: var(--brand); }
+
+        /* ── Timeline ── */
+        .status-timeline { display: flex; align-items: flex-start; justify-content: center; margin: 28px 0; }
+        .status-step { display: flex; flex-direction: column; align-items: center; flex: 1; min-width: 72px; position: relative; }
+        .status-step:not(:last-child)::after {
+            content: ''; position: absolute; top: 16px; left: 50%; right: -50%;
+            height: 2px; background: #e0e0e0; z-index: 0;
+        }
+        .status-step.done:not(:last-child)::after { background: #43a047; }
+        .status-dot {
+            width: 32px; height: 32px; border-radius: 50%;
+            background: #e8e8e8; color: #aaa;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 13px; font-weight: 700; position: relative; z-index: 1;
+        }
+        .status-step.done .status-dot { background: #43a047; color: #fff; }
+        .status-step.active .status-dot { background: var(--brand); color: #fff; box-shadow: 0 0 0 4px rgba(245,124,0,.2); }
+        .status-label { font-size: 10px; color: #999; margin-top: 6px; text-align: center; font-weight: 600; text-transform: uppercase; letter-spacing: .3px; }
+        .status-step.done .status-label, .status-step.active .status-label { color: #1a1a2e; }
+
+        /* ── Item row ── */
+        .ec-item { display: flex; align-items: center; gap: 12px; padding: 10px 0; border-bottom: 1px solid #f5f5f5; }
+        .ec-item:last-child { border-bottom: 0; }
+        .ec-item-img { width: 52px; height: 52px; object-fit: contain; border: 1px solid #eee; border-radius: 8px; background: #fafafa; flex-shrink: 0; }
+        .ec-item-name { flex: 1; font-size: 13px; font-weight: 500; color: #333; }
+        .ec-item-qty { font-size: 11px; color: #999; }
+        .ec-item-price { font-size: 13px; font-weight: 700; color: var(--brand); white-space: nowrap; }
+
+        /* ── Info ── */
+        .ec-info-row { display: flex; gap: 8px; font-size: 13px; margin-bottom: 8px; }
+        .ec-info-label { color: #999; font-weight: 600; min-width: 80px; flex-shrink: 0; }
+        .ec-info-val { color: #1a1a2e; }
+
+        /* ── Status badge ── */
+        .status-badge {
+            display: inline-flex; align-items: center; gap: 6px;
+            padding: 5px 14px; border-radius: 20px; font-size: 13px; font-weight: 700;
+        }
+        .status-badge.pending   { background: #fff3e0; color: #e65100; }
+        .status-badge.confirmed { background: #e8f5e9; color: #2e7d32; }
+        .status-badge.preparing { background: #e3f2fd; color: #1565c0; }
+        .status-badge.shipped   { background: #f3e5f5; color: #6a1b9a; }
+        .status-badge.delivered { background: #e8f5e9; color: #1b5e20; }
+        .status-badge.cancelled { background: #ffebee; color: #b71c1c; }
+    </style>
+</head>
+<body>
+<%- include('partials/_header') %>
+
+<!-- Hero search -->
+<div class="track-hero">
+    <div class="container">
+        <div style="font-size:40px;margin-bottom:16px;opacity:.9;"><i class="ec ec-transport"></i></div>
+        <h1>Rastrear encomenda</h1>
+        <p>Introduza o código da sua encomenda para ver o estado actual</p>
+        <form action="/rastreio" method="GET" onsubmit="doTrack(event)">
+            <div class="track-input-wrap">
+                <input id="trackInput" class="track-input" type="text" name="c"
+                    placeholder="Ex: 100B-ABC123"
+                    value="<%= typeof code !== 'undefined' ? code : '' %>"
+                    autocomplete="off" spellcheck="false">
+                <button type="submit" class="track-btn"><i class="fas fa-search mr-1"></i> Rastrear</button>
+            </div>
+        </form>
+        <p style="font-size:11px;color:rgba(255,255,255,.4);margin-top:14px;">O código foi enviado por email após a confirmação da encomenda</p>
+    </div>
+</div>
+
+<main id="content" role="main" class="py-5">
+<div class="container" style="max-width:860px;">
+
+    <% if (searched && !order) { %>
+    <!-- Not found -->
+    <div class="text-center py-5">
+        <div style="font-size:56px;color:#ddd;margin-bottom:16px;"><i class="fas fa-search"></i></div>
+        <h3 style="color:#1a1a2e;font-weight:700;margin-bottom:8px;">Encomenda não encontrada</h3>
+        <p style="color:#999;font-size:14px;">Verifique se o código está correcto e tente novamente.</p>
+    </div>
+
+    <% } else if (order) { %>
+    <%
+    function fmtKz(v) {
+        return Number(v).toLocaleString('pt-PT', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' Kz';
+    }
+    function statusLabel(s) {
+        return ({ pending:'Aguardando confirmação', confirmed:'Confirmada', preparing:'Em preparação', shipped:'A caminho', delivered:'Entregue', cancelled:'Cancelada' })[s] || s;
+    }
+    var statusSteps = [
+        { key:'pending',   label:'Recebida' },
+        { key:'confirmed', label:'Confirmada' },
+        { key:'preparing', label:'Preparação' },
+        { key:'shipped',   label:'A caminho' },
+        { key:'delivered', label:'Entregue' },
+    ];
+    var stepOrder = ['pending','confirmed','preparing','shipped','delivered'];
+    var currentIdx = stepOrder.indexOf(order.status);
+    %>
+
+    <!-- Order header -->
+    <div class="ec-card mb-4">
+        <div class="d-flex align-items-center justify-content-between flex-wrap" style="gap:12px;">
+            <div>
+                <div style="font-size:11px;color:#aaa;font-weight:600;text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px;">Código de encomenda</div>
+                <div style="font-size:22px;font-weight:800;color:var(--brand);letter-spacing:2px;font-family:'Courier New',monospace;"><%= order.code %></div>
+                <div style="font-size:12px;color:#aaa;margin-top:4px;"><%= new Date(order.createdAt).toLocaleString('pt-PT') %></div>
+            </div>
+            <span class="status-badge <%= order.status %>">
+                <i class="fas fa-circle" style="font-size:7px;"></i> <%= statusLabel(order.status) %>
+            </span>
+        </div>
+    </div>
+
+    <!-- Timeline -->
+    <div class="ec-card">
+        <div class="ec-card-title"><i class="fas fa-route"></i> Progresso da encomenda</div>
+        <div class="status-timeline">
+            <% statusSteps.forEach(function(step, i) {
+                var isDone   = i < currentIdx;
+                var isActive = i === currentIdx;
+                var cls = order.status === 'cancelled' ? '' : (isDone ? 'done' : isActive ? 'active' : '');
+            %>
+            <div class="status-step <%= cls %>">
+                <div class="status-dot">
+                    <% if (isDone && order.status !== 'cancelled') { %>
+                        <i class="fas fa-check" style="font-size:11px;"></i>
+                    <% } else { %><%= i + 1 %><% } %>
+                </div>
+                <div class="status-label"><%= step.label %></div>
+            </div>
+            <% }); %>
+        </div>
+        <% if (order.status === 'cancelled') { %>
+        <p style="text-align:center;color:#b71c1c;font-size:13px;margin-top:8px;"><i class="fas fa-times-circle mr-1"></i> Esta encomenda foi cancelada.</p>
+        <% } %>
+    </div>
+
+    <div class="row">
+        <!-- Items -->
+        <div class="col-lg-7 mb-4">
+            <div class="ec-card">
+                <div class="ec-card-title"><i class="ec ec-shopping-bag"></i> Produtos</div>
+                <% (order.items || []).forEach(function(item) { %>
+                <div class="ec-item">
+                    <% if (item.image) { %>
+                    <img class="ec-item-img" src="<%= item.image %>" alt="<%= item.name %>" onerror="this.style.display='none'">
+                    <% } else { %>
+                    <div class="ec-item-img d-flex align-items-center justify-content-center" style="background:#f5f5f5;border-radius:8px;"><i class="ec ec-camera" style="color:#ddd;font-size:18px;"></i></div>
+                    <% } %>
+                    <div style="flex:1;min-width:0;">
+                        <div class="ec-item-name"><%= item.name %></div>
+                        <div class="ec-item-qty">Qtd: <%= item.qty %></div>
+                    </div>
+                    <div class="ec-item-price"><%= item.priceFormatted || fmtKz(item.price * item.qty) %></div>
+                </div>
+                <% }); %>
+                <div class="d-flex justify-content-between align-items-center mt-3 pt-3" style="border-top:2px solid #f0f0f0;">
+                    <span style="font-size:14px;font-weight:700;color:#1a1a2e;">Total</span>
+                    <span style="font-size:18px;font-weight:800;color:var(--brand);"><%= fmtKz(order.total) %></span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Delivery -->
+        <div class="col-lg-5 mb-4">
+            <div class="ec-card">
+                <div class="ec-card-title"><i class="fas fa-map-marker-alt"></i> Dados de entrega</div>
+                <div class="ec-info-row"><span class="ec-info-label">Nome</span><span class="ec-info-val"><%= order.customer.name %></span></div>
+                <div class="ec-info-row"><span class="ec-info-label">Telefone</span><span class="ec-info-val"><%= order.customer.phone %></span></div>
+                <div class="ec-info-row"><span class="ec-info-label">Província</span><span class="ec-info-val"><%= order.delivery.province %></span></div>
+                <div class="ec-info-row"><span class="ec-info-label">Cidade</span><span class="ec-info-val"><%= order.delivery.city %></span></div>
+                <div class="ec-info-row"><span class="ec-info-label">Morada</span><span class="ec-info-val"><%= order.delivery.address %></span></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="text-center mt-2 mb-4">
+        <a href="/" style="display:inline-flex;align-items:center;gap:8px;border:2px solid var(--brand);color:var(--brand);background:#fff;border-radius:8px;padding:10px 22px;font-size:14px;font-weight:700;text-decoration:none;">
+            <i class="fas fa-arrow-left"></i> Continuar a comprar
+        </a>
+    </div>
+
+    <% } %>
+
+</div>
+</main>
+
+<%- include('partials/_footer') %>
+
+<script src="/assets/vendor/jquery/dist/jquery.min.js"></script>
+<script src="/assets/vendor/jquery-migrate/dist/jquery-migrate.min.js"></script>
+<script src="/assets/vendor/popper.js/dist/umd/popper.min.js"></script>
+<script src="/assets/vendor/bootstrap/bootstrap.min.js"></script>
+<script src="/assets/vendor/hs-megamenu/src/hs.megamenu.js"></script>
+<script src="/assets/vendor/svg-injector/dist/svg-injector.min.js"></script>
+<script src="/assets/vendor/malihu-custom-scrollbar-plugin/jquery.mCustomScrollbar.concat.min.js"></script>
+<script src="/assets/js/hs.core.js"></script>
+<script src="/assets/js/components/hs.header.js"></script>
+<script src="/assets/js/components/hs.hamburgers.js"></script>
+<script src="/assets/js/components/hs.unfold.js"></script>
+<script src="/assets/js/components/hs.malihu-scrollbar.js"></script>
+<script src="/assets/js/components/hs.svg-injector.js"></script>
+<script src="/assets/js/customer-auth.js"></script>
+<script>
+$(window).on('load', function () {
+    $('.js-mega-menu').HSMegaMenu({ event:'hover', direction:'horizontal', pageContainer:$('.container'), breakpoint:767.98, hideTimeOut:0 });
+    $.HSCore.components.HSSVGIngector && $.HSCore.components.HSSVGIngector.init('.js-svg-injector');
+});
+$(document).on('ready', function () {
+    $.HSCore.components.HSHeader.init($('#header'));
+    $.HSCore.components.HSHamburgers.init('.hamburger');
+    $.HSCore.components.HSUnfold.init($('[data-unfold-target]'), {
+        afterOpen: function () { $(this).find('input[type="search"]').focus(); }
+    });
+    $.HSCore.components.HSMalihuScrollBar.init($('.js-scrollbar'));
+});
+
+function doTrack(e) {
+    e.preventDefault();
+    var val = document.getElementById('trackInput').value.trim().toUpperCase();
+    if (!val) return;
+    window.location.href = '/rastreio/' + encodeURIComponent(val);
+}
+</script>
+</body>
+</html>

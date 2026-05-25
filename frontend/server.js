@@ -7,7 +7,7 @@ const { createProxyMiddleware } = require("http-proxy-middleware");
 const { getRootCategories, getAllCategories, findCategoryBySlug, getCategoryBySlug, getTopCategories } = require("./api/categories");
 const { getFeatured, getOnSale, getNewest, getProductById, getRelated, getByCategory, getProductsPaged } = require("./api/products");
 const { getBrands } = require("./api/brands");
-const { createOrder, getOrderByCode, getOrdersByEmail } = require("./api/ordersStore");
+const { createOrder, getOrderByCode, getOrdersByEmail, updateOrderStatus } = require("./api/ordersStore");
 
 const app = express();
 const PORT = process.env.PORT || 3030;
@@ -183,8 +183,16 @@ app.post("/api/orders", (req, res) => {
 
 app.get("/api/admin/orders", (req, res) => {
   const { readOrders } = require("./api/ordersStore");
-  const orders = readOrders();
-  return res.json({ orders });
+  return res.json({ orders: readOrders() });
+});
+
+app.patch("/api/admin/orders/:code/status", (req, res) => {
+  const { status } = req.body || {};
+  const valid = ['pending','confirmed','preparing','shipped','delivered','cancelled'];
+  if (!valid.includes(status)) return res.status(400).json({ message: "Estado inválido." });
+  const order = updateOrderStatus(req.params.code, status);
+  if (!order) return res.status(404).json({ message: "Encomenda não encontrada." });
+  return res.json({ ok: true, order });
 });
 
 app.get("/api/customers/orders", (req, res) => {
@@ -299,6 +307,15 @@ app.get("/encomenda/:code", (req, res) => {
   const order = getOrderByCode(req.params.code);
   if (!order) return res.status(404).render("encomenda", { order: null, categories: cache.categories });
   res.render("encomenda", { order, categories: cache.categories });
+});
+
+// Rastreio de encomenda
+app.get("/rastreio", (req, res) => {
+  res.render("rastreio", { order: null, searched: false, categories: cache.categories });
+});
+app.get("/rastreio/:code", (req, res) => {
+  const order = getOrderByCode(req.params.code);
+  res.render("rastreio", { order: order || null, searched: true, code: req.params.code.toUpperCase(), categories: cache.categories });
 });
 
 // Pesquisa
