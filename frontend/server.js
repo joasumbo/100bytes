@@ -181,6 +181,12 @@ app.post("/api/orders", (req, res) => {
   }
 });
 
+app.get("/api/admin/orders", (req, res) => {
+  const { readOrders } = require("./api/ordersStore");
+  const orders = readOrders();
+  return res.json({ orders });
+});
+
 app.get("/api/customers/orders", (req, res) => {
   const customer = res.locals.currentCustomer;
   if (!customer) return res.status(401).json({ message: "Não autenticado." });

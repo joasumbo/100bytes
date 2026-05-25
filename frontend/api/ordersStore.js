@@ -63,4 +63,4 @@ function getOrdersByEmail(email) {
   return readOrders().filter(o => o.customer && (o.customer.email || '').toLowerCase() === lc);
 }
 
-module.exports = { createOrder, getOrderByCode, getOrdersByEmail };
+module.exports = { createOrder, getOrderByCode, getOrdersByEmail, readOrders };
