@@ -20,6 +20,7 @@ app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "views"));
 
 // Middleware
+app.use(express.json());
 app.use(express.static(PUBLIC_DIR, { index: false }));
 app.use(cookieParser());
 
@@ -44,12 +45,12 @@ app.use((req, res, next) => {
 });
 
 // Cache de dados — refresca a cada 5 minutos
-let cache = { categories: [], allCategories: [], featured: [], onSale: [], newest: [], tabsData: { topCats: [], byCategory: {} }, brands: [], fetchedAt: 0 };
+let cache = { categories: [], allCategories: [], featured: [], onSale: [], newest: [], tabsData: { topCats: [], byCategory: {} }, brands: [], sliders: [], fetchedAt: 0 };
 const CACHE_TTL = 5 * 60 * 1000; // 5 minutos
 
 async function refreshCache() {
   try {
-    const [categories, allCategories, featured, onSale, newest, topCats, brands] = await Promise.all([
+    const [categories, allCategories, featured, onSale, newest, topCats, brands, slidersRes] = await Promise.all([
       getRootCategories(12),
       getAllCategories(),
       getFeatured(),
@@ -57,6 +58,7 @@ async function refreshCache() {
       getNewest(),
       getTopCategories(5),
       getBrands(),
+      fetch(`${BACKEND_URL}/api/content/home-sliders`).then((r) => r.json()).catch(() => null),
     ]);
 
     // Buscar produtos para cada tab de categoria em paralelo
@@ -64,8 +66,12 @@ async function refreshCache() {
     const byCategory = { all: newest };
     topCats.forEach((cat, i) => { byCategory[cat.id] = catProducts[i]; });
 
-    cache = { categories, allCategories, featured, onSale, newest, tabsData: { topCats, byCategory }, brands, fetchedAt: Date.now() };
-    console.log(`[cache] ${categories.length} cat-raiz, ${allCategories.length} cat-total, ${featured.length} destaque, ${onSale.length} oferta`);
+    const sliders = (slidersRes?.entry?.data ?? [])
+      .filter((s) => s.active)
+      .sort((a, b) => a.order - b.order);
+
+    cache = { categories, allCategories, featured, onSale, newest, tabsData: { topCats, byCategory }, brands, sliders, fetchedAt: Date.now() };
+    console.log(`[cache] ${categories.length} cat-raiz, ${allCategories.length} cat-total, ${featured.length} destaque, ${onSale.length} oferta, ${sliders.length} slides`);
   } catch (e) {
     console.error("[cache] Erro ao carregar:", e.message);
   }
@@ -76,8 +82,9 @@ setInterval(refreshCache, CACHE_TTL);
 
 // ── ROTAS DE API LOCAL (antes do proxy, para não serem interceptadas) ──
 
-// Força refresh imediato do cache (chamar após publicar produto)
+// Força refresh imediato do cache (chamar após publicar conteúdo)
 app.get("/api/cache-refresh", async (req, res) => {
+  res.setHeader("Access-Control-Allow-Origin", "http://localhost:3000");
   try {
     await refreshCache();
     res.json({ ok: true, fetchedAt: new Date(cache.fetchedAt).toISOString() });
@@ -108,6 +115,77 @@ app.get("/api/top100", async (req, res, next) => {
   }
 });
 
+function rewriteAuthCookieForLocal(proxyRes) {
+  const setCookie = proxyRes.headers["set-cookie"];
+  if (!Array.isArray(setCookie)) return;
+  proxyRes.headers["set-cookie"] = setCookie.map((cookie) =>
+    cookie.replace(/;\s*Secure/gi, "")
+  );
+}
+
+function extractTokenFromSetCookie(setCookieHeader) {
+  const headers = Array.isArray(setCookieHeader) ? setCookieHeader : [setCookieHeader];
+  const authCookie = headers.find((cookie) => cookie && cookie.startsWith("customer_token="));
+  if (!authCookie) return null;
+  const match = authCookie.match(/^customer_token=([^;]+)/);
+  return match ? match[1] : null;
+}
+
+function setLocalCustomerCookie(res, token) {
+  res.cookie("customer_token", token, {
+    httpOnly: true,
+    sameSite: "lax",
+    path: "/",
+    maxAge: 1000 * 60 * 60 * 24 * 30,
+    secure: false,
+  });
+}
+
+async function forwardCustomerAuth(req, res, endpoint) {
+  const response = await fetch(`${BACKEND_URL}/api/customers/${endpoint}`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      ...(req.headers.cookie ? { cookie: req.headers.cookie } : {}),
+    },
+    body: JSON.stringify(req.body || {}),
+  });
+
+  const data = await response.json().catch(() => ({ message: "Erro inesperado." }));
+
+  if (!response.ok) {
+    return res.status(response.status).json(data);
+  }
+
+  const token = extractTokenFromSetCookie(response.headers.get("set-cookie"));
+  if (token) {
+    setLocalCustomerCookie(res, token);
+  }
+
+  return res.status(response.status).json(data);
+}
+
+app.post("/api/customers/register", async (req, res, next) => {
+  try {
+    return await forwardCustomerAuth(req, res, "register");
+  } catch (e) {
+    return next(e);
+  }
+});
+
+app.post("/api/customers/login", async (req, res, next) => {
+  try {
+    return await forwardCustomerAuth(req, res, "login");
+  } catch (e) {
+    return next(e);
+  }
+});
+
+app.post("/api/customers/logout", async (req, res) => {
+  res.clearCookie("customer_token", { path: "/" });
+  return res.json({ ok: true });
+});
+
 // Proxy /api/customers/* → Backend NestJS (com credentials/cookies)
 app.use(
   "/api/customers",
@@ -115,6 +193,18 @@ app.use(
     target: BACKEND_URL,
     changeOrigin: true,
     pathFilter: "/api/customers/**",
+    on: {
+      proxyReq: (proxyReq, req) => {
+        // Passa cookies do cliente para o backend
+        if (req.headers.cookie) {
+          proxyReq.setHeader("cookie", req.headers.cookie);
+        }
+      },
+      proxyRes: (proxyRes) => {
+        // Em localhost (HTTP), remove Secure para o browser aceitar customer_token.
+        rewriteAuthCookieForLocal(proxyRes);
+      },
+    },
   })
 );
 
@@ -124,6 +214,13 @@ app.use(
     target: BACKEND_URL,
     changeOrigin: true,
     pathFilter: "/api/**",
+    on: {
+      proxyReq: (proxyReq, req) => {
+        if (req.headers.cookie) {
+          proxyReq.setHeader("cookie", req.headers.cookie);
+        }
+      },
+    },
   })
 );
 
@@ -141,6 +238,7 @@ app.get(["/", "/index.html"], async (req, res, next) => {
       newest: cache.newest,
       tabsData: cache.tabsData,
       brands: cache.brands,
+      sliders: cache.sliders,
     });
   } catch (e) {
     next(e);
@@ -148,6 +246,48 @@ app.get(["/", "/index.html"], async (req, res, next) => {
 });
 
 // ── PÁGINAS DE LISTAGEM ──
+
+// Perfil do cliente
+app.get("/perfil", (req, res) => {
+  if (!res.locals.currentCustomer) return res.redirect("/?openLogin=1");
+  res.render("perfil", { categories: cache.categories });
+});
+
+// Checkout
+app.get("/checkout", (req, res) => {
+  res.render("checkout", { categories: cache.categories });
+});
+
+// Pesquisa
+app.get("/pesquisa", async (req, res, next) => {
+  const q = (req.query.q || "").trim();
+  const categoria = req.query.categoria || "";
+  const page = Math.max(1, parseInt(req.query.page) || 1);
+  const sort = req.query.sort || "";
+  const { sortBy, sortOrder } = mapSort(sort);
+  try {
+    const paged = await getProductsPaged({
+      page,
+      perPage: 24,
+      search: q || undefined,
+      categorySlug: categoria || undefined,
+      sortBy,
+      sortOrder,
+    });
+    res.render("categoria", {
+      category: null,
+      pageTitle: q ? `Resultados para "${q}"` : "Pesquisa",
+      categories: cache.categories,
+      products: paged.products,
+      topProducts: [],
+      brands: cache.brands,
+      pagination: { page: paged.page, pages: paged.pages, total: paged.total, perPage: paged.perPage },
+      currentFilters: { sort, minPrice: null, maxPrice: null, brandId: null },
+    });
+  } catch (e) {
+    next(e);
+  }
+});
 
 // Tendências (/tendencias)
 app.get("/tendencias", async (req, res, next) => {
