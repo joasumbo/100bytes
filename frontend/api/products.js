@@ -95,6 +95,8 @@ async function getProductById(id) {
     image: p.imageKeys && p.imageKeys[0] ? `${CDN_URL}/${p.imageKeys[0]}` : null,
     images: (p.imageKeys || []).map((k) => `${CDN_URL}/${k}`),
     sheetUrl: p.sheetKey ? `${CDN_URL}/${p.sheetKey}` : null,
+    basePriceValue: Number(p.basePrice) || 0,
+    salePriceValue: p.salePrice ? Number(p.salePrice) : null,
     basePrice: formatPrice(p.basePrice),
     salePrice: p.salePrice ? formatPrice(p.salePrice) : null,
     stock: p.stock ?? null,
@@ -107,9 +109,11 @@ async function getByCategory(categoryId, limit = 8) {
   return (data.products || []).map(mapProduct);
 }
 
-async function getProductsPaged({ page = 1, perPage = 24, categoryId, brandId, sortBy, sortOrder = 'asc', minPrice, maxPrice } = {}) {
+async function getProductsPaged({ page = 1, perPage = 24, categoryId, categorySlug, brandId, sortBy, sortOrder = 'asc', minPrice, maxPrice, search } = {}) {
   let url = `/products?active=true&page=${page}&perPage=${perPage}`;
+  if (search) url += `&search=${encodeURIComponent(search)}`;
   if (categoryId) url += `&categoryId=${encodeURIComponent(categoryId)}`;
+  if (categorySlug) url += `&categorySlug=${encodeURIComponent(categorySlug)}`;
   if (brandId) url += `&brandId=${encodeURIComponent(brandId)}`;
   if (sortBy) url += `&sortBy=${encodeURIComponent(sortBy)}&sortOrder=${encodeURIComponent(sortOrder)}`;
   if (minPrice != null && minPrice !== '') url += `&minPrice=${Number(minPrice)}`;

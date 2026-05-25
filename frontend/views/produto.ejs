@@ -619,169 +619,6 @@
                 color: #ffffff !important;
             }
 
-            .floating-cart {
-                position: fixed;
-                right: 18px;
-                bottom: 78px;
-                z-index: 1032;
-                display: none;
-            }
-
-            .floating-cart.is-visible {
-                display: block;
-            }
-
-            .floating-cart__toggle {
-                width: 56px;
-                height: 56px;
-                border: 0;
-                border-radius: 50%;
-                background: var(--brand-primary);
-                color: #1f1f22;
-                box-shadow: 0 10px 24px rgba(0, 0, 0, 0.22);
-                font-size: 22px;
-                position: relative;
-            }
-
-            .floating-cart__count {
-                position: absolute;
-                top: -6px;
-                right: -6px;
-                width: 22px;
-                height: 22px;
-                border-radius: 50%;
-                background: #1f1f22;
-                color: #fff;
-                font-size: 12px;
-                font-weight: 700;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-            }
-
-            .cart-drawer-overlay {
-                position: fixed;
-                inset: 0;
-                background: rgba(0, 0, 0, 0.45);
-                z-index: 1040;
-                opacity: 0;
-                visibility: hidden;
-                transition: opacity .25s ease, visibility .25s ease;
-            }
-
-            .cart-drawer-overlay.is-open {
-                opacity: 1;
-                visibility: visible;
-            }
-
-            .cart-drawer {
-                position: fixed;
-                top: 0;
-                right: 0;
-                width: min(92vw, 420px);
-                height: 100vh;
-                background: #fff;
-                z-index: 1050;
-                transform: translateX(100%);
-                transition: transform .28s ease;
-                box-shadow: -12px 0 28px rgba(0, 0, 0, 0.2);
-                display: flex;
-                flex-direction: column;
-            }
-
-            .cart-drawer.is-open {
-                transform: translateX(0);
-            }
-
-            .cart-drawer__header {
-                display: flex;
-                align-items: center;
-                justify-content: space-between;
-                padding: 16px 18px;
-                border-bottom: 1px solid #ececec;
-            }
-
-            .cart-drawer__title {
-                margin: 0;
-                font-size: 26px;
-                line-height: 1;
-                color: #222;
-            }
-
-            .cart-drawer__close {
-                border: 0;
-                background: transparent;
-                color: #222;
-                font-size: 30px;
-                line-height: 1;
-                padding: 0;
-                cursor: pointer;
-            }
-
-            .cart-drawer__body {
-                flex: 1;
-                overflow-y: auto;
-                padding: 18px;
-            }
-
-            .cart-drawer__meta {
-                font-size: 17px;
-                color: #23262f;
-                margin-top: -4px;
-            }
-
-            .cart-drawer__empty {
-                min-height: calc(100vh - 140px);
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                flex-direction: column;
-                text-align: center;
-                color: #3a3f4b;
-            }
-
-            .cart-drawer__empty-icon {
-                width: 170px;
-                height: 170px;
-                border-radius: 50%;
-                background: #0f83cf;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                color: #fff;
-                font-size: 86px;
-                margin-bottom: 28px;
-            }
-
-            .cart-drawer__empty-text {
-                font-size: 46px;
-                line-height: 1.08;
-                color: #3e4555;
-                margin: 0;
-            }
-
-            @media (max-width: 575.98px) {
-                .cart-drawer__empty-text {
-                    font-size: 42px;
-                }
-
-                .cart-drawer__empty-icon {
-                    width: 160px;
-                    height: 160px;
-                    font-size: 80px;
-                }
-            }
-
-            .cart-drawer-open {
-                overflow: hidden;
-            }
-
-            @media (max-width: 1199.98px) {
-                .floating-cart,
-                .floating-cart.is-visible {
-                    display: none !important;
-                }
-            }
         </style>
     </head>
 
@@ -804,7 +641,13 @@
                     <%= product.basePrice %>
                     <% } %>
                 </div>
-                <a href="#" class="ncr-sticky-cart"><i class="ec ec-add-to-cart"></i> ADICIONAR AO CARRINHO</a>
+                <button type="button" class="ncr-sticky-cart js-add-to-cart"
+                    data-id="<%= product.id %>"
+                    data-name="<%= product.name %>"
+                    data-price="<%= product.salePriceValue != null ? product.salePriceValue : product.basePriceValue %>"
+                    data-price-formatted="<%= product.salePrice || product.basePrice %>"
+                    data-image="<%= product.image || '' %>"
+                    data-url="/<%= product.categorySlug %>/<%= product.urlKey %>"><i class="ec ec-add-to-cart"></i> ADICIONAR AO CARRINHO</button>
             </div>
         </div>
 
@@ -895,10 +738,23 @@
                                         <input type="text" value="1" readonly class="ncr-qty-input" id="qtyInput">
                                         <button type="button" class="ncr-qty-btn" id="qtyPlus">+</button>
                                     </div>
-                                    <a href="#" class="btn ncr-btn-add-cart px-3 py-2 flex-grow-1">Adicionar ao carrinho</a>
+                                    <button type="button" class="btn ncr-btn-add-cart px-3 py-2 flex-grow-1 js-add-to-cart"
+                                        id="btnAddToCart"
+                                        data-id="<%= product.id %>"
+                                        data-name="<%= product.name %>"
+                                        data-price="<%= product.salePriceValue != null ? product.salePriceValue : product.basePriceValue %>"
+                                        data-price-formatted="<%= product.salePrice || product.basePrice %>"
+                                        data-image="<%= product.image || '' %>"
+                                        data-url="/<%= product.categorySlug %>/<%= product.urlKey %>">Adicionar ao carrinho</button>
                                 </div>
 
-                                <a href="#" class="btn ncr-btn-buy btn-block py-3 mb-3 font-weight-bold">Finalizar compra</a>
+                                <button type="button" class="btn ncr-btn-buy btn-block py-3 mb-3 font-weight-bold js-buy-now"
+                                    data-id="<%= product.id %>"
+                                    data-name="<%= product.name %>"
+                                    data-price="<%= product.salePriceValue != null ? product.salePriceValue : product.basePriceValue %>"
+                                    data-price-formatted="<%= product.salePrice || product.basePrice %>"
+                                    data-image="<%= product.image || '' %>"
+                                    data-url="/<%= product.categorySlug %>/<%= product.urlKey %>">Finalizar compra</button>
 
                                 <div class="ncr-delivery-box">
                                     <div class="ncr-delivery-head"><i class="far fa-building"></i> Levanta na loja</div>
@@ -1522,6 +1378,11 @@
                         } else {
                             totalWrap.classList.add('d-none');
                         }
+                        // sync qty to cart buttons
+                        var addBtn = document.getElementById('btnAddToCart');
+                        var buyBtn = document.querySelector('.js-buy-now');
+                        if (addBtn) addBtn.dataset.qty = qty;
+                        if (buyBtn) buyBtn.dataset.qty = qty;
                     }
 
                     minus.addEventListener('click', function() { if (qty > 1) { qty--; update(); } });

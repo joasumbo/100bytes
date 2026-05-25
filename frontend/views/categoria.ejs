@@ -292,18 +292,29 @@ const __heading = __pageTitle || (__category ? __category.name : 'Produtos');
                                                 <% } %>
                                             </div>
                                             <div class="prodcut-add-cart">
-                                                <a href="/<%= product.categorySlug || 'produto' %>/<%= product.urlKey %>" class="btn-add-cart btn-primary transition-3d-hover"><i class="ec ec-add-to-cart"></i></a>
+                                                <button type="button" class="btn-add-cart btn-primary transition-3d-hover js-add-to-cart"
+                                                    data-id="<%= product.id %>"
+                                                    data-name="<%= product.name %>"
+                                                    data-price="<%= product.salePriceValue != null ? product.salePriceValue : product.basePriceValue %>"
+                                                    data-price-formatted="<%= product.salePrice || product.basePrice %>"
+                                                    data-image="<%= product.image || '' %>"
+                                                    data-url="/<%= product.categorySlug || 'produto' %>/<%= product.urlKey %>"><i class="ec ec-add-to-cart"></i></button>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
                                 <div class="product-item__footer">
                                     <div class="border-top pt-2 flex-center-between flex-wrap">
-                                        <a href="#" class="text-gray-6 font-size-13 js-favorite-toggle" data-product-id="<%= product.id %>"><i class="far fa-heart mr-1 font-size-15"></i> <span data-fav-label>Adicionar à lista de desejos</span></a>
+                                        <a href="#" class="text-gray-6 font-size-13 js-favorite-toggle"
+                                            data-product-id="<%= product.id %>"
+                                            data-product-name="<%= product.name %>"
+                                            data-product-image="<%= product.image || '' %>"
+                                            data-product-price="<%= product.salePrice || product.basePrice || '' %>"
+                                            data-product-url="/<%= product.categorySlug || 'produto' %>/<%= product.urlKey %>">
+                                            <i class="far fa-heart mr-1 font-size-15"></i> <span data-fav-label>Adicionar à lista de desejos</span></a>
                                     </div>
                                 </div>
                             </div>
-                        </div>
                     </li>
                     <% }) %>
                     <% } else { %>

@@ -354,7 +354,13 @@
                                                         <% } %>
                                                     </div>
                                                     <div class="prodcut-add-cart">
-                                                        <a href="/<%= p.categorySlug %>/<%= p.urlKey %>" class="btn-add-cart btn-primary transition-3d-hover"><i class="ec ec-add-to-cart"></i></a>
+                                                        <button type="button" class="btn-add-cart btn-primary transition-3d-hover js-add-to-cart"
+                                                            data-id="<%= p.id %>"
+                                                            data-name="<%= p.name %>"
+                                                            data-price="<%= p.salePriceValue != null ? p.salePriceValue : p.basePriceValue %>"
+                                                            data-price-formatted="<%= p.salePrice || p.basePrice %>"
+                                                            data-image="<%= p.image || '' %>"
+                                                            data-url="/<%= p.categorySlug %>/<%= p.urlKey %>"><i class="ec ec-add-to-cart"></i></button>
                                                     </div>
                                                 </div>
                                             </div>
@@ -442,7 +448,13 @@
                                                         <% } %>
                                                     </div>
                                                     <div class="prodcut-add-cart">
-                                                        <a href="/<%= p.categorySlug %>/<%= p.urlKey %>" class="btn-add-cart btn-primary transition-3d-hover"><i class="ec ec-add-to-cart"></i></a>
+                                                        <button type="button" class="btn-add-cart btn-primary transition-3d-hover js-add-to-cart"
+                                                            data-id="<%= p.id %>"
+                                                            data-name="<%= p.name %>"
+                                                            data-price="<%= p.salePriceValue != null ? p.salePriceValue : p.basePriceValue %>"
+                                                            data-price-formatted="<%= p.salePrice || p.basePrice %>"
+                                                            data-image="<%= p.image || '' %>"
+                                                            data-url="/<%= p.categorySlug %>/<%= p.urlKey %>"><i class="ec ec-add-to-cart"></i></button>
                                                     </div>
                                                 </div>
                                             </div>
@@ -492,7 +504,13 @@
                                                         <% } %>
                                                     </div>
                                                     <div class="prodcut-add-cart">
-                                                        <a href="/<%= p.categorySlug %>/<%= p.urlKey %>" class="btn-add-cart btn-primary transition-3d-hover"><i class="ec ec-add-to-cart"></i></a>
+                                                        <button type="button" class="btn-add-cart btn-primary transition-3d-hover js-add-to-cart"
+                                                            data-id="<%= p.id %>"
+                                                            data-name="<%= p.name %>"
+                                                            data-price="<%= p.salePriceValue != null ? p.salePriceValue : p.basePriceValue %>"
+                                                            data-price-formatted="<%= p.salePrice || p.basePrice %>"
+                                                            data-image="<%= p.image || '' %>"
+                                                            data-url="/<%= p.categorySlug %>/<%= p.urlKey %>"><i class="ec ec-add-to-cart"></i></button>
                                                     </div>
                                                 </div>
                                             </div>
