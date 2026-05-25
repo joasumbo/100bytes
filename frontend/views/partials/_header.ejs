@@ -19,7 +19,7 @@
                                     <li class="list-inline-item mr-0 u-header-topbar__nav-item u-header-topbar__nav-item-border">
                                         <!-- Account Menu -->
                                         <% if (typeof currentCustomer !== 'undefined' && currentCustomer) { %>
-                                            <a href="javascript:;" role="button" class="u-header-topbar__nav-link">
+                                            <a href="/perfil" class="u-header-topbar__nav-link">
                                                 <i class="ec ec-user mr-1"></i> <%= currentCustomer.name %>
                                             </a>
                                             <a href="#" data-customer-logout class="u-header-topbar__nav-link ml-2 text-gray-50">
@@ -173,21 +173,22 @@
                             <!-- End Logo-offcanvas-menu -->
                             <!-- Search Bar -->
                             <div class="col d-none d-xl-block">
-                                <form class="js-focus-state">
-                                    <label class="sr-only" for="searchproduct">Search</label>
+                                <form class="js-focus-state" action="/pesquisa" method="GET">
+                                    <label class="sr-only" for="searchproduct-item">Pesquisar</label>
                                     <div class="input-group">
-                                        <input type="email" class="form-control py-2 pl-5 font-size-15 border-right-0 height-40 border-width-2 rounded-left-pill border-primary" name="email" id="searchproduct-item" placeholder="Pesquisar produtos" aria-label="Pesquisar produtos" aria-describedby="searchProduct1" required>
+                                        <input type="text" class="form-control py-2 pl-5 font-size-15 border-right-0 height-40 border-width-2 rounded-left-pill border-primary" name="q" id="searchproduct-item" placeholder="Pesquisar produtos" aria-label="Pesquisar produtos" aria-describedby="searchProduct1" autocomplete="off">
                                         <div class="input-group-append">
                                             <!-- Select -->
                                             <select class="js-select selectpicker dropdown-select custom-search-categories-select"
+                                                name="categoria"
                                                 data-style="btn height-40 text-gray-60 font-weight-normal border-top border-bottom border-left-0 rounded-0 border-primary border-width-2 pl-0 pr-5 py-2">
-                                                <option value="one" selected>All Categories</option>
-                                                <option value="two">Two</option>
-                                                <option value="three">Three</option>
-                                                <option value="four">Four</option>
+                                                <option value="">Todas as categorias</option>
+                                                <% if (typeof categories !== 'undefined') { categories.forEach(function(cat) { %>
+                                                <option value="<%= cat.slug %>"><%= cat.name %></option>
+                                                <% }); } %>
                                             </select>
                                             <!-- End Select -->
-                                            <button class="btn btn-primary height-40 py-2 px-3 rounded-right-pill" type="button" id="searchProduct1">
+                                            <button class="btn btn-primary height-40 py-2 px-3 rounded-right-pill" type="submit" id="searchProduct1">
                                                 <span class="ec ec-search font-size-24"></span>
                                             </button>
                                         </div>
@@ -231,24 +232,33 @@
                                         </li>
                                         <!-- End Search -->
                                         
-                                        <li class="col d-none d-xl-block"><a href="#" data-require-login class="text-gray-90" data-toggle="tooltip" data-placement="top" title="Favoritos"><i class="font-size-22 ec ec-favorites"></i></a></li>
-                                        <li class="col d-xl-none px-2 px-sm-3"><a href="../shop/my-account.html" class="text-gray-90" data-toggle="tooltip" data-placement="top" title="A minha conta"><i class="font-size-22 ec ec-user"></i></a></li>
+                                        <!-- Favorites with popup -->
+                                        <li class="col d-none d-xl-block position-relative">
+                                            <a href="javascript:;" id="favHeaderBtn" class="text-gray-90 d-inline-block position-relative" title="Favoritos">
+                                                <i class="font-size-22 ec ec-favorites"></i>
+                                                <span id="favBadge" style="display:none;position:absolute;top:-5px;left:14px;background:#F57C00;color:#fff;font-size:10px;font-weight:700;width:18px;height:18px;border-radius:50%;align-items:center;justify-content:center;line-height:18px;text-align:center;"></span>
+                                            </a>
+                                            <div id="favDropdown" style="display:none;position:absolute;top:calc(100% + 10px);right:-60px;width:320px;background:#fff;border-radius:10px;box-shadow:0 8px 30px rgba(0,0,0,.15);z-index:10000;overflow:hidden;">
+                                                <div style="padding:12px 16px;border-bottom:1px solid #f0f0f0;font-weight:600;font-size:14px;color:#333;">Favoritos</div>
+                                                <div id="favDropdownBody" style="min-height:60px;max-height:270px;overflow-y:auto;"></div>
+                                                <div style="padding:10px 16px;border-top:1px solid #f0f0f0;text-align:center;">
+                                                    <a href="/perfil#favoritos" style="color:#F57C00;font-weight:600;font-size:13px;text-decoration:none;">Ver todos os favoritos →</a>
+                                                </div>
+                                            </div>
+                                        </li>
+                                        <!-- End Favorites -->
+                                        <li class="col d-xl-none px-2 px-sm-3"><a href="/perfil" class="text-gray-90" data-toggle="tooltip" data-placement="top" title="A minha conta"><i class="font-size-22 ec ec-user"></i></a></li>
                                         <li class="col pr-xl-0 px-2 px-sm-3 d-xl-none">
-                                            <a href="javascript:;" class="text-gray-90 position-relative d-flex js-cart-drawer-trigger" data-toggle="tooltip" data-placement="top" title="Cart">
+                                            <a href="javascript:;" class="text-gray-90 position-relative d-flex js-cart-drawer-trigger" title="Carrinho">
                                                 <i class="font-size-22 ec ec-shopping-bag"></i>
-                                                <span class="bg-lg-down-black width-22 height-22 bg-primary position-absolute d-flex align-items-center justify-content-center rounded-circle left-12 top-8 font-weight-bold font-size-12">2</span>
-                                                <span class="d-none d-xl-block font-weight-bold font-size-16 text-gray-90 ml-3 text-nowrap" style="white-space: nowrap; min-width: max-content;">17.850,00 Kz</span>
+                                                <span class="js-cart-count width-22 height-22 position-absolute d-flex align-items-center justify-content-center rounded-circle left-12 top-8 font-weight-bold font-size-12" style="background:#F57C00;color:#fff;display:none!important;"></span>
                                             </a>
                                         </li>
                                         <li class="col pr-xl-0 px-2 px-sm-3 d-none d-xl-block">
-                                            <div id="basicDropdownHoverInvoker" class="text-gray-90 position-relative d-flex js-cart-drawer-trigger" data-toggle="tooltip" data-placement="top" title="Cart"
-                                                role="button"
-                                                aria-controls="cartDrawer"
-                                                aria-haspopup="true"
-                                                aria-expanded="false">
+                                            <div class="text-gray-90 position-relative d-flex js-cart-drawer-trigger" role="button" aria-controls="cartDrawer" title="Carrinho">
                                                 <i class="font-size-22 ec ec-shopping-bag"></i>
-                                                <span class="bg-lg-down-black width-22 height-22 bg-primary position-absolute d-flex align-items-center justify-content-center rounded-circle left-12 top-8 font-weight-bold font-size-12">2</span>
-                                                <span class="d-none d-xl-block font-weight-bold font-size-16 text-gray-90 ml-3 text-nowrap" style="white-space: nowrap; min-width: max-content;">17.850,00 Kz</span>
+                                                <span class="js-cart-count width-22 height-22 position-absolute d-flex align-items-center justify-content-center rounded-circle left-12 top-8 font-weight-bold font-size-12" style="background:#F57C00;color:#fff;display:none!important;"></span>
+                                                <span class="d-none d-xl-block font-weight-bold font-size-16 text-gray-90 ml-3 text-nowrap js-cart-total" style="white-space:nowrap;min-width:max-content;">0,00 Kz</span>
                                             </div>
                                         </li>
                                     </ul>

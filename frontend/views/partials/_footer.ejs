@@ -1,107 +1,144 @@
-﻿<!-- ========== FOOTER ========== -->
-        <footer>
+<!-- ========== FOOTER ========== -->
+<footer>
 
-            <!-- Footer-bottom-widgets -->
-            <div class="pt-8 pb-4 bg-gray-13">
-                <div class="container mt-1">
-                    <div class="row">
-                        <div class="col-lg-5">
-                            <div class="mb-6">
-                                <a href="#" class="d-inline-block">
-                                    <img src="https://cdn100ka.sysvenus.com/logo/logo-1752749442.jpg" alt="100bytes" style="max-height:52px;width:auto;" />
-                                </a>
-                            </div>
-                            <div class="mb-4">
-                                <div class="row no-gutters">
-                                    <div class="col-auto">
-                                        <i class="ec ec-support text-primary font-size-56"></i>
-                                    </div>
-                                    <div class="col pl-3">
-                                        <div class="font-size-13 font-weight-light">Dúvidas? Ligue-nos 24/7!</div>
-                                        <a href="tel:+244946920849" class="font-size-20 text-gray-90">+244 946 920 849</a>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="mb-4">
-                                <h6 class="mb-1 font-weight-bold">Contato</h6>
-                                <address class="font-size-13">
-                                    <strong>100bytes</strong><br>
-                                    Rua António Américo Lencastre, 11<br>
-                                    Maianga, Luanda<br>
-                                    Angola<br><br>
-                                    <a href="mailto:comercial@100bytes.co.ao" class="text-gray-90">comercial@100bytes.co.ao</a><br>
-                                    <a href="tel:+244946920849" class="text-gray-90">+244 946 920 849</a>
-                                </address>
-                            </div>
-                            <div class="my-4 my-md-4">
-                                <h6 class="mb-3 font-weight-bold">Siga-nos</h6>
-                                <ul class="list-inline mb-0 opacity-7">
-                                    <li class="list-inline-item mr-0">
-                                        <a class="btn font-size-20 btn-icon btn-soft-dark btn-bg-transparent rounded-circle" href="https://www.facebook.com/p/100bytes-100063935954143/" target="_blank" rel="noopener noreferrer">
-                                            <span class="fab fa-facebook-f btn-icon__inner"></span>
-                                        </a>
-                                    </li>
-                                    <li class="list-inline-item mr-0">
-                                        <a class="btn font-size-20 btn-icon btn-soft-dark btn-bg-transparent rounded-circle" href="https://www.instagram.com/100.bytes/" target="_blank" rel="noopener noreferrer">
-                                            <span class="fab fa-instagram btn-icon__inner"></span>
-                                        </a>
-                                    </li>
-                                </ul>
-                            </div>
-                        </div>
-                        <div class="col-lg-7">
-                            <div class="row">
-                                <div class="col-12 col-md mb-4 mb-md-0">
-                                    <h6 class="mb-3 font-weight-bold">Encontre rapidamente</h6>
-                                    <% (categories || []).slice(0, 6).forEach(function(cat) { %>
-                                    <div class="mb-3">
-                                        <a class="list-group-item list-group-item-action" href="/categoria/<%= cat.slug %>"><%= cat.name %></a>
-                                        <% if (cat.children && cat.children.length > 0) { %>
-                                        <ul class="list-group list-group-flush list-group-borderless mb-0 list-group-transparent">
-                                            <% cat.children.forEach(function(sub) { %>
-                                            <li><a class="list-group-item list-group-item-action py-1 font-size-13" href="/categoria/<%= sub.slug %>"><%= sub.name %></a></li>
-                                            <% }); %>
-                                        </ul>
-                                        <% } %>
-                                    </div>
-                                    <% }); %>
-                                </div>
+    <!-- Newsletter Bar -->
+    <div style="background-color:#F57C00;padding:28px 0;">
+        <div class="container">
+            <div class="d-flex align-items-center flex-wrap" style="gap:16px;">
+                <div class="text-white" style="flex:1;min-width:260px;">
+                    <div style="font-size:18px;font-weight:700;margin-bottom:4px;">Cadastre-se e assine nosso boletim informativo</div>
+                    <div style="font-size:13px;opacity:.9;">Assine nosso boletim informativo mais recente para receber notícias sobre descontos especiais e vendas futuras</div>
+                </div>
+                <form class="d-flex" style="flex:1;min-width:260px;max-width:480px;" onsubmit="return false;">
+                    <input type="email" placeholder="Seu endereço de email" style="flex:1;border:none;outline:none;padding:0 16px;height:46px;font-size:13px;border-radius:0;">
+                    <button type="submit" style="background:#fff;color:#F57C00;border:none;padding:0 22px;font-weight:700;font-size:13px;white-space:nowrap;height:46px;cursor:pointer;letter-spacing:.5px;">SUBSCREVER</button>
+                </form>
+            </div>
+        </div>
+    </div>
+    <!-- End Newsletter Bar -->
 
-                                <div class="col-12 col-md mb-4 mb-md-0">
-                                    <% (categories || []).slice(6, 12).forEach(function(cat) { %>
-                                    <div class="mb-3">
-                                        <a class="list-group-item list-group-item-action" href="/categoria/<%= cat.slug %>"><%= cat.name %></a>
-                                        <% if (cat.children && cat.children.length > 0) { %>
-                                        <ul class="list-group list-group-flush list-group-borderless mb-0 list-group-transparent">
-                                            <% cat.children.forEach(function(sub) { %>
-                                            <li><a class="list-group-item list-group-item-action py-1 font-size-13" href="/categoria/<%= sub.slug %>"><%= sub.name %></a></li>
-                                            <% }); %>
-                                        </ul>
-                                        <% } %>
-                                    </div>
-                                    <% }); %>
-                                </div>
-                            </div>
-                        </div>
+    <!-- Main Footer -->
+    <div style="background:#fff;padding:40px 0 20px;border-top:1px solid #eee;">
+        <div class="container">
+            <div class="row">
+
+                <!-- Col 1: About -->
+                <div class="col-lg-3 col-md-6 mb-5">
+                    <h6 style="font-weight:700;font-size:15px;margin-bottom:10px;color:#212529;">100 BYTES</h6>
+                    <div style="width:30px;height:2px;background:#F57C00;margin-bottom:16px;"></div>
+                    <p style="font-size:13px;color:#666;line-height:1.75;margin-bottom:10px;">A 100 Bytes dispõe de soluções tecnológicas com rigor, qualidade e compromisso, garantindo a máxima satisfação dos seus clientes através de serviços eficientes, suporte especializado e dedicação contínua à excelência.</p>
+                    <p style="font-size:13px;font-style:italic;color:#333;font-weight:600;margin-bottom:16px;">"No problem... we do it!"</p>
+                    <p style="font-weight:700;font-size:13px;color:#212529;margin-bottom:10px;">Redes Sociais</p>
+                    <div class="d-flex" style="gap:10px;">
+                        <a href="https://www.instagram.com/100.bytes/" target="_blank" rel="noopener noreferrer"
+                           style="width:36px;height:36px;border-radius:50%;background:#eee;display:flex;align-items:center;justify-content:center;color:#333;font-size:16px;text-decoration:none;">
+                            <i class="fab fa-instagram"></i>
+                        </a>
+                        <a href="https://www.facebook.com/p/100bytes-100063935954143/" target="_blank" rel="noopener noreferrer"
+                           style="width:36px;height:36px;border-radius:50%;background:#eee;display:flex;align-items:center;justify-content:center;color:#333;font-size:16px;text-decoration:none;">
+                            <i class="fab fa-facebook-f"></i>
+                        </a>
                     </div>
                 </div>
-            </div>
-            <!-- End Footer-bottom-widgets -->
-            <!-- Footer-copy-right -->
-            <div class="bg-gray-14 py-2">
-                <div class="container">
-                    <div class="flex-center-between d-block d-md-flex">
-                        <div class="mb-3 mb-md-0">© 100bytes - <span id="copyrightYear">2026</span></div>
-                        <div class="text-md-right font-size-13 text-gray-70">Desenvolvido por <strong>OUTAFRO</strong></div>
+
+                <!-- Col 2: Produtos -->
+                <div class="col-lg-2 col-md-6 mb-5">
+                    <h6 style="font-weight:700;font-size:15px;margin-bottom:10px;color:#212529;">Produtos</h6>
+                    <div style="width:30px;height:2px;background:#F57C00;margin-bottom:16px;"></div>
+                    <ul style="list-style:none;padding:0;margin:0;">
+                        <li class="mb-2"><a href="/pesquisa?sort=price_asc" style="font-size:13px;color:#555;text-decoration:none;">Promoções</a></li>
+                        <li class="mb-2"><a href="/pesquisa?sort=newest" style="font-size:13px;color:#555;text-decoration:none;">Novidades</a></li>
+                        <li class="mb-2"><a href="/pesquisa" style="font-size:13px;color:#555;text-decoration:none;">Os mais vendidos</a></li>
+                    </ul>
+                </div>
+
+                <!-- Col 3: A Nossa Empresa -->
+                <div class="col-lg-2 col-md-6 mb-5">
+                    <h6 style="font-weight:700;font-size:15px;margin-bottom:10px;color:#212529;">A Nossa Empresa</h6>
+                    <div style="width:30px;height:2px;background:#F57C00;margin-bottom:16px;"></div>
+                    <ul style="list-style:none;padding:0;margin:0;">
+                        <li class="mb-2"><a href="#" style="font-size:13px;color:#555;text-decoration:none;">Sobre Nós</a></li>
+                        <li class="mb-2"><a href="#" style="font-size:13px;color:#555;text-decoration:none;">Lojas</a></li>
+                        <li class="mb-2"><a href="#" style="font-size:13px;color:#555;text-decoration:none;">Termos e Condições</a></li>
+                        <li class="mb-2"><a href="#" style="font-size:13px;color:#555;text-decoration:none;">Política de Privacidade</a></li>
+                        <li class="mb-2"><a href="#" style="font-size:13px;color:#555;text-decoration:none;">Política de Cookies</a></li>
+                        <li class="mb-2"><a href="#" style="font-size:13px;color:#555;text-decoration:none;">Trocas e Devoluções</a></li>
+                        <li class="mb-2"><a href="#" style="font-size:13px;color:#555;text-decoration:none;">Formas de Pagamento</a></li>
+                        <li class="mb-2"><a href="#" style="font-size:13px;color:#555;text-decoration:none;">FAQS</a></li>
+                        <li class="mb-2"><a href="#" style="font-size:13px;color:#555;text-decoration:none;">Apoio ao Cliente</a></li>
+                    </ul>
+                </div>
+
+                <!-- Col 4: A Sua Conta -->
+                <div class="col-lg-2 col-md-6 mb-5">
+                    <h6 style="font-weight:700;font-size:15px;margin-bottom:10px;color:#212529;">A Sua Conta</h6>
+                    <div style="width:30px;height:2px;background:#F57C00;margin-bottom:16px;"></div>
+                    <ul style="list-style:none;padding:0;margin:0;">
+                        <li class="mb-2"><a href="#" onclick="if(window.customerAuth)window.customerAuth.showRegisterModal();return false;" style="font-size:13px;color:#555;text-decoration:none;">Criar Conta</a></li>
+                        <li class="mb-2"><a href="#" onclick="if(window.customerAuth)window.customerAuth.showLoginModal();return false;" style="font-size:13px;color:#555;text-decoration:none;">Entrar</a></li>
+                        <li class="mb-2"><a href="#" style="font-size:13px;color:#555;text-decoration:none;">Os meus Alertas</a></li>
+                        <li class="mb-2"><a href="/perfil#favoritos" style="font-size:13px;color:#555;text-decoration:none;">Favoritos</a></li>
+                    </ul>
+                </div>
+
+                <!-- Col 5: Contacte-Nos -->
+                <div class="col-lg-3 col-md-6 mb-5">
+                    <h6 style="font-weight:700;font-size:15px;margin-bottom:10px;color:#212529;">Contacte-Nos</h6>
+                    <div style="width:30px;height:2px;background:#F57C00;margin-bottom:16px;"></div>
+
+                    <p style="font-weight:700;font-size:13px;color:#333;margin-bottom:8px;">SEDE</p>
+                    <div class="d-flex align-items-start mb-1" style="gap:8px;">
+                        <i class="fas fa-map-marker-alt" style="color:#e53935;font-size:13px;margin-top:2px;flex-shrink:0;"></i>
+                        <span style="font-size:13px;color:#555;">Rua António Américo Lencastre, n.º 11 - Luanda, Angola</span>
+                    </div>
+                    <div class="d-flex align-items-center mb-1" style="gap:8px;">
+                        <i class="fas fa-envelope" style="color:#e53935;font-size:12px;flex-shrink:0;"></i>
+                        <a href="mailto:geral@100bytes.co.ao" style="font-size:13px;color:#1a73e8;text-decoration:none;">geral@100bytes.co.ao</a>
+                    </div>
+                    <div class="d-flex align-items-center mb-4" style="gap:8px;">
+                        <i class="fas fa-phone" style="color:#e53935;font-size:12px;flex-shrink:0;"></i>
+                        <span style="font-size:13px;color:#555;">+244 946 920 882</span>
+                    </div>
+
+                    <p style="font-weight:700;font-size:13px;color:#333;margin-bottom:8px;">Loja 1 – Liga Africana / Centro de Assistência Técnica</p>
+                    <div class="d-flex align-items-start mb-1" style="gap:8px;">
+                        <i class="fas fa-map-marker-alt" style="color:#e53935;font-size:13px;margin-top:2px;flex-shrink:0;"></i>
+                        <span style="font-size:13px;color:#555;">Rua da Liga Africana, n.º 81 - Luanda, Angola</span>
+                    </div>
+                    <div class="d-flex align-items-center mb-4" style="gap:8px;">
+                        <i class="fas fa-phone" style="color:#e53935;font-size:12px;flex-shrink:0;"></i>
+                        <span style="font-size:13px;color:#555;">+244 928 499 325</span>
+                    </div>
+
+                    <p style="font-weight:700;font-size:13px;color:#333;margin-bottom:8px;">Loja 2 – Samba</p>
+                    <div class="d-flex align-items-start mb-1" style="gap:8px;">
+                        <i class="fas fa-map-marker-alt" style="color:#e53935;font-size:13px;margin-top:2px;flex-shrink:0;"></i>
+                        <span style="font-size:13px;color:#555;">Rua Direita da Samba, n.º 153 - Samba, Angola</span>
+                    </div>
+                    <div class="d-flex align-items-center mb-1" style="gap:8px;">
+                        <i class="fas fa-phone" style="color:#e53935;font-size:12px;flex-shrink:0;"></i>
+                        <span style="font-size:13px;color:#555;">+244 928 499 319</span>
                     </div>
                 </div>
+
             </div>
-            <!-- End Footer-copy-right -->
-        </footer>
-        <!-- ========== END FOOTER ========== -->
+        </div>
+    </div>
+    <!-- End Main Footer -->
 
-        <%- include('_customer-auth-modals') %>
-        
-        <!-- Customer Auth Script -->
-        <script src="/js/customer-auth.js"></script>
+    <!-- Bottom Bar -->
+    <div style="background:#f5f5f5;border-top:1px solid #e5e5e5;padding:14px 0;text-align:center;">
+        <span style="font-size:12px;color:#777;">© 2026 - Software de comércio eletrónico por PrestaShop™</span>
+    </div>
+    <!-- End Bottom Bar -->
 
+</footer>
+<!-- ========== END FOOTER ========== -->
+
+<%- include('_customer-auth-modals') %>
+<%- include('_cart-drawer') %>
+
+<!-- Scripts -->
+<script src="/js/cart.js"></script>
+<script src="/js/customer-auth.js"></script>

@@ -148,170 +148,6 @@
                 color: #ffffff !important;
             }
 
-            .floating-cart {
-                position: fixed;
-                right: 18px;
-                bottom: 78px;
-                z-index: 1032;
-                display: none;
-            }
-
-            .floating-cart.is-visible {
-                display: block;
-            }
-
-            .floating-cart__toggle {
-                width: 56px;
-                height: 56px;
-                border: 0;
-                border-radius: 50%;
-                background: var(--brand-primary);
-                color: #1f1f22;
-                box-shadow: 0 10px 24px rgba(0, 0, 0, 0.22);
-                font-size: 22px;
-                position: relative;
-            }
-
-            .floating-cart__count {
-                position: absolute;
-                top: -6px;
-                right: -6px;
-                width: 22px;
-                height: 22px;
-                border-radius: 50%;
-                background: #1f1f22;
-                color: #fff;
-                font-size: 12px;
-                font-weight: 700;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-            }
-
-            .cart-drawer-overlay {
-                position: fixed;
-                inset: 0;
-                background: rgba(0, 0, 0, 0.45);
-                z-index: 1040;
-                opacity: 0;
-                visibility: hidden;
-                transition: opacity .25s ease, visibility .25s ease;
-            }
-
-            .cart-drawer-overlay.is-open {
-                opacity: 1;
-                visibility: visible;
-            }
-
-            .cart-drawer {
-                position: fixed;
-                top: 0;
-                right: 0;
-                width: min(92vw, 420px);
-                height: 100vh;
-                background: #fff;
-                z-index: 1050;
-                transform: translateX(100%);
-                transition: transform .28s ease;
-                box-shadow: -12px 0 28px rgba(0, 0, 0, 0.2);
-                display: flex;
-                flex-direction: column;
-            }
-
-            .cart-drawer.is-open {
-                transform: translateX(0);
-            }
-
-            .cart-drawer__header {
-                display: flex;
-                align-items: center;
-                justify-content: space-between;
-                padding: 16px 18px;
-                border-bottom: 1px solid #ececec;
-            }
-
-            .cart-drawer__title {
-                margin: 0;
-                font-size: 26px;
-                line-height: 1;
-                color: #222;
-            }
-
-            .cart-drawer__close {
-                border: 0;
-                background: transparent;
-                color: #222;
-                font-size: 30px;
-                line-height: 1;
-                padding: 0;
-                cursor: pointer;
-            }
-
-            .cart-drawer__body {
-                flex: 1;
-                overflow-y: auto;
-                padding: 18px;
-            }
-
-            .cart-drawer__meta {
-                font-size: 17px;
-                color: #23262f;
-                margin-top: -4px;
-            }
-
-            .cart-drawer__empty {
-                min-height: calc(100vh - 140px);
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                flex-direction: column;
-                text-align: center;
-                color: #3a3f4b;
-            }
-
-            .cart-drawer__empty-icon {
-                width: 170px;
-                height: 170px;
-                border-radius: 50%;
-                background: #0f83cf;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                color: #fff;
-                font-size: 86px;
-                margin-bottom: 28px;
-            }
-
-            .cart-drawer__empty-text {
-                font-size: 46px;
-                line-height: 1.08;
-                color: #3e4555;
-                margin: 0;
-            }
-
-            @media (max-width: 575.98px) {
-                .cart-drawer__empty-text {
-                    font-size: 42px;
-                }
-
-                .cart-drawer__empty-icon {
-                    width: 160px;
-                    height: 160px;
-                    font-size: 80px;
-                }
-            }
-
-            .cart-drawer-open {
-                overflow: hidden;
-            }
-
-            @media (max-width: 1199.98px) {
-                .floating-cart,
-                .floating-cart.is-visible {
-                    display: none !important;
-                }
-            }
-
             /* === Product card hover image swap === */
             .product-img-wrap {
                 position: relative;
@@ -360,13 +196,26 @@
             <div class="mb-5">
                 <div class="overflow-hidden">
                     <div class="js-slick-carousel u-slick"
+                        data-autoplay="true"
+                        data-autoplay-speed="5000"
                         data-pagi-classes="text-center position-absolute right-0 bottom-0 left-0 u-slick__pagination u-slick__pagination--long mb-3 mb-md-4">
-                        <div class="js-slide">
-                            <img class="img-fluid w-100" src="https://cdn100ka.sysvenus.com/hero/hero2.png" alt="Hero 2">
-                        </div>
-                        <div class="js-slide">
-                            <img class="img-fluid w-100" src="https://cdn100ka.sysvenus.com/hero/hero1.png" alt="Hero 1">
-                        </div>
+                        <% if (sliders && sliders.length > 0) { %>
+                            <% sliders.forEach(function(slide) { %>
+                                <div class="js-slide">
+                                    <% if (slide.link) { %>
+                                        <a href="<%- slide.link %>">
+                                            <img class="img-fluid w-100" src="<%- slide.image %>" alt="Slide">
+                                        </a>
+                                    <% } else { %>
+                                        <img class="img-fluid w-100" src="<%- slide.image %>" alt="Slide">
+                                    <% } %>
+                                </div>
+                            <% }) %>
+                        <% } else { %>
+                            <div class="js-slide">
+                                <img class="img-fluid w-100" src="https://cdn100ka.sysvenus.com/hero/hero1.png" alt="Hero">
+                            </div>
+                        <% } %>
                     </div>
                 </div>
             </div>
@@ -511,7 +360,13 @@
                                             </div>
                                             <div class="product-item__footer">
                                                 <div class="border-top pt-2 flex-center-between flex-wrap">
-                                                    <a href="#" class="text-gray-6 font-size-13 js-favorite-toggle" data-product-id="<%= p.id %>"><i class="far fa-heart mr-1 font-size-15"></i> <span data-fav-label>Adicionar à lista de desejos</span></a>
+                                                    <a href="#" class="text-gray-6 font-size-13 js-favorite-toggle"
+                                                        data-product-id="<%= p.id %>"
+                                                        data-product-name="<%= p.name %>"
+                                                        data-product-image="<%= p.image || '' %>"
+                                                        data-product-price="<%= p.salePrice || p.basePrice || '' %>"
+                                                        data-product-url="/<%= p.categorySlug || 'produto' %>/<%= p.urlKey %>">
+                                                        <i class="far fa-heart mr-1 font-size-15"></i> <span data-fav-label>Adicionar à lista de desejos</span></a>
                                                 </div>
                                             </div>
                                         </div>
@@ -1119,29 +974,7 @@
         </a>
         <!-- End Go to Top -->
 
-        <div id="floatingCart" class="floating-cart" aria-live="polite">
-            <button id="floatingCartToggle" type="button" class="floating-cart__toggle js-cart-drawer-trigger" aria-label="Abrir carrinho">
-                <i class="ec ec-shopping-bag"></i>
-                <span class="floating-cart__count">2</span>
-            </button>
-        </div>
-
-        <div id="cartDrawerOverlay" class="cart-drawer-overlay" aria-hidden="true"></div>
-        <aside id="cartDrawer" class="cart-drawer" aria-hidden="true" aria-labelledby="cartDrawerTitle">
-            <div class="cart-drawer__header">
-                <div>
-                    <h2 id="cartDrawerTitle" class="cart-drawer__title">Carrinho</h2>
-                    <div class="cart-drawer__meta">0 Produto</div>
-                </div>
-                <button id="cartDrawerClose" type="button" class="cart-drawer__close" aria-label="Fechar carrinho">&times;</button>
-            </div>
-            <div class="cart-drawer__body">
-                <div class="cart-drawer__empty">
-                    <div class="cart-drawer__empty-icon" aria-hidden="true"><i class="ec ec-shopping-bag"></i></div>
-                    <p class="cart-drawer__empty-text">Seu carrinho está vazio</p>
-                </div>
-            </div>
-        </aside>
+        <!-- cart drawer is in _footer.ejs via _cart-drawer.ejs partial -->
 
         <!-- JS Global Compulsory -->
         <script src="/assets/vendor/jquery/dist/jquery.min.js"></script>
@@ -1320,68 +1153,7 @@
                     }
                 })();
 
-                // Carrinho em drawer lateral e botão flutuante visível no scroll
-                (function initFloatingCart() {
-                    var floating = document.getElementById('floatingCart');
-                    var toggle = document.getElementById('floatingCartToggle');
-                    var drawer = document.getElementById('cartDrawer');
-                    var overlay = document.getElementById('cartDrawerOverlay');
-                    var close = document.getElementById('cartDrawerClose');
-                    var triggers = document.querySelectorAll('.js-cart-drawer-trigger');
-
-                    if (!floating || !toggle || !drawer || !overlay || !close || !triggers.length) {
-                        return;
-                    }
-
-                    function openDrawer() {
-                        drawer.classList.add('is-open');
-                        overlay.classList.add('is-open');
-                        drawer.setAttribute('aria-hidden', 'false');
-                        overlay.setAttribute('aria-hidden', 'false');
-                        document.body.classList.add('cart-drawer-open');
-                    }
-
-                    function closeDrawer() {
-                        drawer.classList.remove('is-open');
-                        overlay.classList.remove('is-open');
-                        drawer.setAttribute('aria-hidden', 'true');
-                        overlay.setAttribute('aria-hidden', 'true');
-                        document.body.classList.remove('cart-drawer-open');
-                    }
-
-                    function syncVisibility() {
-                        if (window.innerWidth >= 1200 && window.scrollY > 320) {
-                            floating.classList.add('is-visible');
-                        } else {
-                            floating.classList.remove('is-visible');
-                        }
-                    }
-
-                    window.addEventListener('scroll', syncVisibility);
-                    window.addEventListener('resize', syncVisibility);
-                    syncVisibility();
-
-                    triggers.forEach(function (trigger) {
-                        trigger.addEventListener('click', function (e) {
-                            e.preventDefault();
-                            openDrawer();
-                        });
-                    });
-
-                    close.addEventListener('click', function () {
-                        closeDrawer();
-                    });
-
-                    overlay.addEventListener('click', function () {
-                        closeDrawer();
-                    });
-
-                    document.addEventListener('keydown', function (e) {
-                        if (e.key === 'Escape' && drawer.classList.contains('is-open')) {
-                            closeDrawer();
-                        }
-                    });
-                })();
+                // cart drawer handled by cart.js
             });
         </script>
 
