@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="pt-PT">
+<head>
+    <title><% if (order) { %>Encomenda <%= order.code %><% } else { %>Encomenda não encontrada<% } %> | 100bytes</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="shortcut icon" href="https://cdn100ka.sysvenus.com/logo/100byte_fav.png">
+    <link rel="icon" type="image/png" href="https://cdn100ka.sysvenus.com/logo/100byte_fav.png">
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700,800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/assets/vendor/font-awesome/css/fontawesome-all.min.css">
+    <link rel="stylesheet" href="/assets/css/font-electro.css">
+    <link rel="stylesheet" href="/assets/vendor/animate.css/animate.min.css">
+    <link rel="stylesheet" href="/assets/vendor/hs-megamenu/src/hs.megamenu.css">
+    <link rel="stylesheet" href="/assets/vendor/malihu-custom-scrollbar-plugin/jquery.mCustomScrollbar.css">
+    <link rel="stylesheet" href="/assets/css/theme.css">
+
+    <style>
+        :root { --brand: #F57C00; --brand-dark: #D96A00; }
+        .btn-primary, .btn-primary:hover, .btn-primary:focus, .btn-primary:active,
+        .btn-primary:not(:disabled):not(.disabled):active {
+            background-color: var(--brand) !important; border-color: var(--brand) !important;
+        }
+        .btn-primary:hover, .btn-primary:focus { background-color: var(--brand-dark) !important; border-color: var(--brand-dark) !important; }
+        .text-primary { color: var(--brand) !important; }
+        .u-header-topbar { background-color: #ffffff !important; border-bottom: 1px solid #e6e6e6; }
+        .u-header-topbar .topbar-left a, .u-header-topbar .u-header-topbar__nav-link,
+        .u-header-topbar .dropdown-nav-link { color: #2f2f33 !important; }
+        .u-header-topbar .u-header-topbar__nav-item-border::after { border-color: rgba(47,47,51,.28) !important; }
+        .u-header .form-control, .u-header .form-control::placeholder { color: #5f636b !important; font-weight: 600; }
+        .bg-primary-down-lg { background-color: #ffffff !important; }
+
+        body { background: #f5f5f5; }
+
+        /* ── Success card ── */
+        .ec-success-icon {
+            width: 80px; height: 80px; border-radius: 50%;
+            background: linear-gradient(135deg, #43a047, #2e7d32);
+            color: #fff; font-size: 36px;
+            display: flex; align-items: center; justify-content: center;
+            margin: 0 auto 20px;
+            box-shadow: 0 8px 24px rgba(46,125,50,.3);
+        }
+
+        /* ── Code box ── */
+        .order-code-box {
+            background: #fff8f0;
+            border: 2px dashed var(--brand);
+            border-radius: 10px;
+            padding: 16px 24px;
+            display: inline-flex;
+            align-items: center;
+            gap: 14px;
+            margin: 8px 0 20px;
+        }
+        .order-code-val {
+            font-size: 26px;
+            font-weight: 800;
+            color: var(--brand);
+            letter-spacing: 2px;
+            font-family: 'Courier New', monospace;
+        }
+        .order-code-copy {
+            background: var(--brand);
+            border: 0; border-radius: 6px;
+            color: #fff; font-size: 11px; font-weight: 700;
+            padding: 6px 12px; cursor: pointer;
+            text-transform: uppercase; letter-spacing: .5px;
+            transition: background .15s;
+            white-space: nowrap;
+        }
+        .order-code-copy:hover { background: var(--brand-dark); }
+
+        /* ── Status timeline ── */
+        .status-timeline {
+            display: flex; align-items: flex-start;
+            justify-content: center; gap: 0;
+            margin: 28px 0; flex-wrap: wrap;
+        }
+        .status-step {
+            display: flex; flex-direction: column; align-items: center;
+            flex: 1; min-width: 80px; position: relative;
+        }
+        .status-step:not(:last-child)::after {
+            content: '';
+            position: absolute;
+            top: 16px; left: 50%; right: -50%;
+            height: 2px;
+            background: #e0e0e0;
+            z-index: 0;
+        }
+        .status-step.done:not(:last-child)::after { background: #43a047; }
+        .status-dot {
+            width: 32px; height: 32px; border-radius: 50%;
+            background: #e8e8e8; color: #aaa;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 13px; font-weight: 700; position: relative; z-index: 1;
+            transition: background .3s;
+        }
+        .status-step.done .status-dot { background: #43a047; color: #fff; }
+        .status-step.active .status-dot { background: var(--brand); color: #fff; box-shadow: 0 0 0 4px rgba(245,124,0,.2); }
+        .status-label { font-size: 10px; color: #999; margin-top: 6px; text-align: center; font-weight: 600; text-transform: uppercase; letter-spacing: .3px; }
+        .status-step.done .status-label, .status-step.active .status-label { color: #1a1a2e; }
+
+        /* ── Info cards ── */
+        .ec-card {
+            background: #fff; border: 1px solid #e8e8e8;
+            border-radius: 10px; padding: 20px;
+            margin-bottom: 16px;
+            box-shadow: 0 2px 8px rgba(0,0,0,.04);
+        }
+        .ec-card-title {
+            font-size: 13px; font-weight: 700; color: #1a1a2e;
+            margin-bottom: 14px; padding-bottom: 10px;
+            border-bottom: 1px solid #f0f0f0;
+            display: flex; align-items: center; gap: 8px;
+        }
+        .ec-card-title i { color: var(--brand); }
+
+        /* ── Item row ── */
+        .ec-item { display: flex; align-items: center; gap: 10px; padding: 8px 0; border-bottom: 1px solid #f5f5f5; }
+        .ec-item:last-child { border-bottom: 0; }
+        .ec-item-img { width: 48px; height: 48px; object-fit: contain; border: 1px solid #eee; border-radius: 6px; background: #fafafa; flex-shrink: 0; }
+        .ec-item-name { flex: 1; font-size: 12px; font-weight: 500; color: #333; }
+        .ec-item-qty { font-size: 11px; color: #999; }
+        .ec-item-price { font-size: 13px; font-weight: 700; color: var(--brand); white-space: nowrap; }
+
+        /* ── Info row ── */
+        .ec-info-row { display: flex; gap: 8px; font-size: 13px; margin-bottom: 8px; }
+        .ec-info-row:last-child { margin-bottom: 0; }
+        .ec-info-label { color: #999; font-weight: 600; min-width: 80px; flex-shrink: 0; }
+        .ec-info-val { color: #1a1a2e; }
+
+        /* ── Status badge ── */
+        .status-badge {
+            display: inline-flex; align-items: center; gap: 6px;
+            padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 700;
+        }
+        .status-badge.pending { background: #fff3e0; color: #e65100; }
+        .status-badge.confirmed { background: #e8f5e9; color: #2e7d32; }
+        .status-badge.processing { background: #e3f2fd; color: #1565c0; }
+        .status-badge.shipped { background: #f3e5f5; color: #6a1b9a; }
+        .status-badge.delivered { background: #e8f5e9; color: #1b5e20; }
+        .status-badge.cancelled { background: #ffebee; color: #b71c1c; }
+
+        /* ── Buttons ── */
+        .ec-btn-primary {
+            display: inline-flex; align-items: center; gap: 8px;
+            background: var(--brand); color: #fff; border: 0;
+            border-radius: 8px; padding: 12px 24px;
+            font-size: 14px; font-weight: 700; text-decoration: none;
+            transition: background .2s; cursor: pointer;
+        }
+        .ec-btn-primary:hover { background: var(--brand-dark); color: #fff; text-decoration: none; }
+        .ec-btn-outline {
+            display: inline-flex; align-items: center; gap: 8px;
+            border: 2px solid var(--brand); color: var(--brand); background: #fff;
+            border-radius: 8px; padding: 10px 22px;
+            font-size: 14px; font-weight: 700; text-decoration: none;
+            transition: background .2s, color .2s;
+        }
+        .ec-btn-outline:hover { background: var(--brand); color: #fff; text-decoration: none; }
+    </style>
+</head>
+<body>
+
+<%- include('partials/_header') %>
+
+<main id="content" role="main" class="py-5">
+<div class="container">
+
+    <% if (!order) { %>
+    <!-- ── Encomenda não encontrada ── -->
+    <div class="text-center py-5">
+        <div style="font-size:64px;color:#ddd;margin-bottom:16px;"><i class="ec ec-transport"></i></div>
+        <h2 class="font-size-22 font-weight-bold mb-2" style="color:#1a1a2e;">Encomenda não encontrada</h2>
+        <p class="text-gray-5 mb-4">O código de encomenda é inválido ou expirou.</p>
+        <a href="/" class="ec-btn-primary"><i class="fas fa-home"></i> Ir para a loja</a>
+    </div>
+
+    <% } else { %>
+    <!-- ── Sucesso ── -->
+
+    <%
+    function fmtKz(v) {
+        return Number(v).toLocaleString('pt-PT', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' Kz';
+    }
+    function statusLabel(s) {
+        return ({ pending:'Aguardando confirmação', confirmed:'Confirmada', processing:'Em preparação', shipped:'A caminho', delivered:'Entregue', cancelled:'Cancelada' })[s] || s;
+    }
+    var statusSteps = [
+        { key:'pending',     label:'Recebida' },
+        { key:'confirmed',   label:'Confirmada' },
+        { key:'processing',  label:'Preparação' },
+        { key:'shipped',     label:'A caminho' },
+        { key:'delivered',   label:'Entregue' },
+    ];
+    var stepOrder = ['pending','confirmed','processing','shipped','delivered'];
+    var currentIdx = stepOrder.indexOf(order.status);
+    %>
+
+    <!-- Success header -->
+    <div class="text-center mb-5">
+        <div class="ec-success-icon"><i class="fas fa-check"></i></div>
+        <h1 class="font-size-26 font-weight-bold mb-1" style="color:#1a1a2e;">Encomenda recebida!</h1>
+        <p class="text-gray-5 mb-3" style="font-size:14px;">Obrigado pela sua compra. Entraremos em contacto brevemente para confirmar.</p>
+
+        <div class="order-code-box">
+            <div>
+                <div style="font-size:11px;color:#999;font-weight:600;text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px;">Código de encomenda</div>
+                <div class="order-code-val" id="orderCodeVal"><%= order.code %></div>
+            </div>
+            <button class="order-code-copy" onclick="copyCode()">
+                <i class="far fa-copy mr-1"></i> Copiar
+            </button>
+        </div>
+
+        <p style="font-size:12px;color:#aaa;">Guarde este código — é o identificador da sua encomenda para rastreio e levantamento.</p>
+
+        <!-- Status badge -->
+        <div class="mb-2">
+            <span class="status-badge <%= order.status %>">
+                <i class="fas fa-circle" style="font-size:7px;"></i>
+                <%= statusLabel(order.status) %>
+            </span>
+        </div>
+    </div>
+
+    <!-- Status timeline -->
+    <div class="status-timeline mb-5">
+        <% statusSteps.forEach(function(step, i) {
+            var isDone   = i < currentIdx;
+            var isActive = i === currentIdx;
+            var cls = isDone ? 'done' : isActive ? 'active' : '';
+        %>
+        <div class="status-step <%= cls %>">
+            <div class="status-dot">
+                <% if (isDone) { %><i class="fas fa-check" style="font-size:11px;"></i>
+                <% } else { %><%= i + 1 %><% } %>
+            </div>
+            <div class="status-label"><%= step.label %></div>
+        </div>
+        <% }); %>
+    </div>
+
+    <div class="row">
+
+        <!-- LEFT: Items + Total -->
+        <div class="col-lg-7 mb-4">
+            <div class="ec-card">
+                <div class="ec-card-title"><i class="ec ec-shopping-bag"></i> Produtos encomendados</div>
+                <% (order.items || []).forEach(function(item) { %>
+                <div class="ec-item">
+                    <% if (item.image) { %>
+                    <img class="ec-item-img" src="<%= item.image %>" alt="<%= item.name %>" onerror="this.style.display='none'">
+                    <% } else { %>
+                    <div class="ec-item-img d-flex align-items-center justify-content-center" style="font-size:10px;color:#ccc;">Sem img</div>
+                    <% } %>
+                    <div style="flex:1;min-width:0;">
+                        <div class="ec-item-name"><%= item.name %></div>
+                        <div class="ec-item-qty">Qtd: <%= item.qty %></div>
+                    </div>
+                    <div class="ec-item-price"><%= item.priceFormatted || fmtKz(item.price * item.qty) %></div>
+                </div>
+                <% }); %>
+
+                <div class="d-flex justify-content-between align-items-center mt-3 pt-3" style="border-top:2px solid #f0f0f0;">
+                    <span style="font-size:14px;font-weight:700;color:#1a1a2e;">Total</span>
+                    <span style="font-size:18px;font-weight:800;color:var(--brand);"><%= fmtKz(order.total) %></span>
+                </div>
+            </div>
+        </div>
+
+        <!-- RIGHT: Delivery info -->
+        <div class="col-lg-5 mb-4">
+            <div class="ec-card">
+                <div class="ec-card-title"><i class="fas fa-map-marker-alt"></i> Dados de entrega</div>
+                <div class="ec-info-row"><span class="ec-info-label">Nome</span><span class="ec-info-val"><%= order.customer.name %></span></div>
+                <div class="ec-info-row"><span class="ec-info-label">Email</span><span class="ec-info-val"><%= order.customer.email %></span></div>
+                <div class="ec-info-row"><span class="ec-info-label">Telefone</span><span class="ec-info-val"><%= order.customer.phone %></span></div>
+                <div class="ec-info-row"><span class="ec-info-label">Província</span><span class="ec-info-val"><%= order.delivery.province %></span></div>
+                <div class="ec-info-row"><span class="ec-info-label">Cidade</span><span class="ec-info-val"><%= order.delivery.city %></span></div>
+                <div class="ec-info-row"><span class="ec-info-label">Morada</span><span class="ec-info-val"><%= order.delivery.address %></span></div>
+                <% if (order.delivery.notes) { %>
+                <div class="ec-info-row"><span class="ec-info-label">Notas</span><span class="ec-info-val"><%= order.delivery.notes %></span></div>
+                <% } %>
+            </div>
+
+            <div class="ec-card" style="background:#fff8f0;border-color:#ffe0b2;">
+                <div style="display:flex;gap:10px;align-items:flex-start;">
+                    <i class="fas fa-info-circle" style="color:var(--brand);font-size:16px;flex-shrink:0;margin-top:1px;"></i>
+                    <div style="font-size:13px;color:#555;line-height:1.6;">
+                        A nossa equipa irá contactá-lo via <strong>telefone ou WhatsApp</strong> para confirmar a disponibilidade e agendar a entrega.
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Action buttons -->
+    <div class="text-center mt-2 mb-5 d-flex justify-content-center flex-wrap" style="gap:12px;">
+        <a href="/" class="ec-btn-outline"><i class="fas fa-arrow-left"></i> Continuar a comprar</a>
+        <a href="/rastreio/<%= order.code %>" class="ec-btn-primary" style="background:#78909c;border-color:#78909c;" title="Disponível em breve">
+            <i class="fas fa-map-marker-alt"></i> Rastrear encomenda
+        </a>
+    </div>
+
+    <% } %>
+
+</div>
+</main>
+
+<%- include('partials/_footer') %>
+
+<script src="/assets/vendor/jquery/dist/jquery.min.js"></script>
+<script src="/assets/vendor/jquery-migrate/dist/jquery-migrate.min.js"></script>
+<script src="/assets/vendor/popper.js/dist/umd/popper.min.js"></script>
+<script src="/assets/vendor/bootstrap/bootstrap.min.js"></script>
+<script src="/assets/vendor/hs-megamenu/src/hs.megamenu.js"></script>
+<script src="/assets/vendor/svg-injector/dist/svg-injector.min.js"></script>
+<script src="/assets/vendor/malihu-custom-scrollbar-plugin/jquery.mCustomScrollbar.concat.min.js"></script>
+<script src="/assets/js/hs.core.js"></script>
+<script src="/assets/js/components/hs.header.js"></script>
+<script src="/assets/js/components/hs.hamburgers.js"></script>
+<script src="/assets/js/components/hs.unfold.js"></script>
+<script src="/assets/js/components/hs.malihu-scrollbar.js"></script>
+<script src="/assets/js/components/hs.svg-injector.js"></script>
+
+<script>
+$(window).on('load', function () {
+    $('.js-mega-menu').HSMegaMenu({ event:'hover', direction:'horizontal', pageContainer:$('.container'), breakpoint:767.98, hideTimeOut:0 });
+    $.HSCore.components.HSSVGIngector.init('.js-svg-injector');
+});
+$(document).on('ready', function () {
+    $.HSCore.components.HSHeader.init($('#header'));
+    $.HSCore.components.HSHamburgers.init('.hamburger');
+    $.HSCore.components.HSUnfold.init($('[data-unfold-target]'), {
+        afterOpen: function () { $(this).find('input[type="search"]').focus(); }
+    });
+    $.HSCore.components.HSMalihuScrollBar.init($('.js-scrollbar'));
+});
+
+function copyCode() {
+    var code = document.getElementById('orderCodeVal');
+    if (!code) return;
+    navigator.clipboard.writeText(code.textContent.trim()).then(function () {
+        var btn = document.querySelector('.order-code-copy');
+        if (btn) { btn.innerHTML = '<i class="fas fa-check mr-1"></i> Copiado!'; setTimeout(function(){ btn.innerHTML = '<i class="far fa-copy mr-1"></i> Copiar'; }, 2000); }
+    }).catch(function () {
+        var range = document.createRange();
+        range.selectNode(code);
+        window.getSelection().removeAllRanges();
+        window.getSelection().addRange(range);
+        document.execCommand('copy');
+    });
+}
+</script>
+
+</body>
+</html>

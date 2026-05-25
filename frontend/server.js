@@ -7,6 +7,7 @@ const { createProxyMiddleware } = require("http-proxy-middleware");
 const { getRootCategories, getAllCategories, findCategoryBySlug, getCategoryBySlug, getTopCategories } = require("./api/categories");
 const { getFeatured, getOnSale, getNewest, getProductById, getRelated, getByCategory, getProductsPaged } = require("./api/products");
 const { getBrands } = require("./api/brands");
+const { createOrder, getOrderByCode, getOrdersByEmail } = require("./api/ordersStore");
 
 const app = express();
 const PORT = process.env.PORT || 3030;
@@ -165,6 +166,35 @@ async function forwardCustomerAuth(req, res, endpoint) {
   return res.status(response.status).json(data);
 }
 
+// ── ORDERS ────────────────────────────────────────────────────────────
+app.post("/api/orders", (req, res) => {
+  try {
+    const { customer, delivery, items } = req.body || {};
+    if (!customer || !delivery || !items || !items.length) {
+      return res.status(400).json({ message: "Dados incompletos." });
+    }
+    const order = createOrder({ customer, delivery, items });
+    return res.status(201).json({ ok: true, code: order.code, order });
+  } catch (e) {
+    console.error("[orders] Erro ao criar:", e.message);
+    return res.status(500).json({ message: "Erro interno. Tente novamente." });
+  }
+});
+
+app.get("/api/customers/orders", (req, res) => {
+  const customer = res.locals.currentCustomer;
+  if (!customer) return res.status(401).json({ message: "Não autenticado." });
+  const orders = getOrdersByEmail(customer.email).map(o => ({
+    reference: o.code,
+    code: o.code,
+    status: o.status,
+    createdAt: o.createdAt,
+    total: o.total,
+    items: o.items,
+  }));
+  return res.json({ orders });
+});
+
 app.post("/api/customers/register", async (req, res, next) => {
   try {
     return await forwardCustomerAuth(req, res, "register");
@@ -256,6 +286,13 @@ app.get("/perfil", (req, res) => {
 // Checkout
 app.get("/checkout", (req, res) => {
   res.render("checkout", { categories: cache.categories });
+});
+
+// Confirmação de encomenda
+app.get("/encomenda/:code", (req, res) => {
+  const order = getOrderByCode(req.params.code);
+  if (!order) return res.status(404).render("encomenda", { order: null, categories: cache.categories });
+  res.render("encomenda", { order, categories: cache.categories });
 });
 
 // Pesquisa
