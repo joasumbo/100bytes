@@ -13,6 +13,7 @@ import {
 import { Response, Request } from 'express';
 import { CustomersService } from './customers.service';
 import { CustomerGuard } from './customer.guard';
+import { AuthGuard } from '../auth/auth.guard';
 import { RegisterCustomerDto } from './dto/register-customer.dto';
 import { LoginCustomerDto } from './dto/login-customer.dto';
 import { ConfigService } from '@nestjs/config';
@@ -23,6 +24,13 @@ export class CustomersController {
     private svc: CustomersService,
     private config: ConfigService,
   ) {}
+
+  @Get()
+  @UseGuards(AuthGuard)
+  async listAll() {
+    const customers = await this.svc.listAll();
+    return { customers };
+  }
 
   @Post('register')
   async register(

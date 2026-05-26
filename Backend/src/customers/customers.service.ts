@@ -88,6 +88,13 @@ export class CustomersService {
     return favs.map((f) => f.productId);
   }
 
+  async listAll() {
+    return this.prisma.customer.findMany({
+      orderBy: { createdAt: 'desc' },
+      select: { id: true, name: true, email: true, phone: true, active: true, createdAt: true },
+    });
+  }
+
   private signToken(id: string, email: string, name: string) {
     return this.jwt.sign(
       { sub: id, email, name, type: 'customer' },
