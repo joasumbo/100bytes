@@ -1,1 +1,85 @@
-[]
+[
+  {
+    "code": "100B-MJ48Y8",
+    "status": "confirmed",
+    "customer": {
+      "name": "José Augusto",
+      "email": "joasumbo@gmail.com",
+      "phone": "925634793"
+    },
+    "delivery": {
+      "province": "Benguela",
+      "city": "Amora",
+      "address": "R. Infante Dom Augusto 98B",
+      "notes": ""
+    },
+    "items": [
+      {
+        "productId": "cmp185btf000004l13kbbnooa",
+        "name": "Dell Latitude 5450",
+        "qty": 1,
+        "price": 1493000,
+        "priceFormatted": "1 493 000,00 Kz",
+        "image": "https://cdn100ka.sysvenus.com/products/cmp185btf000004l13kbbnooa/1778505321721-0.png"
+      },
+      {
+        "productId": "cmp0fcy6g000btg75w3ym9eml",
+        "name": "Computador 290G9 MT I3-2GB1IE 8GB + Monitor Série 3 PRO 23.8\"",
+        "qty": 1,
+        "price": 1150606.56,
+        "priceFormatted": "1 150 606,56 Kz",
+        "image": "https://cdn100ka.sysvenus.com/products/cmp0fcy6g000btg75w3ym9eml/1778456967535-0.png"
+      },
+      {
+        "productId": "cmp0fb8pt000atg75dr52qb2u",
+        "name": "Computador Desktop 290G9 Mt CEL6900 8GB 512GB SSD W11P + Monitor 21.5\" S3 Pro 332Pv",
+        "qty": 1,
+        "price": 631080.06,
+        "priceFormatted": "631 080,06 Kz",
+        "image": "https://cdn100ka.sysvenus.com/products/cmp0fb8pt000atg75dr52qb2u/1778456888067-0.png"
+      }
+    ],
+    "total": 3274686.62,
+    "createdAt": "2026-05-25T22:48:19.758Z"
+  },
+  {
+    "code": "100B-7MVDX7",
+    "status": "pending",
+    "customer": {
+      "name": "João Sumbo",
+      "email": "joasumbo@gmail.com",
+      "phone": "925634793"
+    },
+    "delivery": {
+      "province": "Luanda",
+      "city": "Amora",
+      "address": "R. Infante Dom Augusto 98B",
+      "notes": ""
+    },
+    "items": [
+      {
+        "productId": "cmp1k342q000004la1npqkvz6",
+        "name": "MACBOOK AIR 13\" M1 8CPU/7GPU 256 GB",
+        "qty": 2,
+        "price": 1600000,
+        "priceFormatted": "1 600 000,00 Kz"
+      },
+      {
+        "productId": "cmp185btf000004l13kbbnooa",
+        "name": "Dell Latitude 5450",
+        "qty": 2,
+        "price": 1493000,
+        "priceFormatted": "1 493 000,00 Kz"
+      },
+      {
+        "productId": "cmp0fcy6g000btg75w3ym9eml",
+        "name": "Computador 290G9 MT I3-2GB1IE 8GB + Monitor Série 3 PRO 23.8\"",
+        "qty": 2,
+        "price": 1150606.56,
+        "priceFormatted": "1 150 606,56 Kz"
+      }
+    ],
+    "total": 8487213.120000001,
+    "createdAt": "2026-05-25T22:30:06.329Z"
+  }
+]
