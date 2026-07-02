@@ -82,10 +82,15 @@ export class BundleItemDto {
 export class ListProductsDto {
   search?: string;
   categoryId?: string;
+  categorySlug?: string;
   brandId?: string;
   active?: string;
   featured?: string;
   stockStatus?: string;
+  minPrice?: string;
+  maxPrice?: string;
+  sortBy?: string; // price | basePrice | salePrice | name | createdAt
+  sortOrder?: string; // asc | desc
   page?: string;
   perPage?: string;
   mode?: string;

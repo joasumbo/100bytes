@@ -81,6 +81,7 @@ model Product {
   brand          Brand?       @relation(fields: [brandId], references: [id])
   category       Category?    @relation(fields: [categoryId], references: [id])
   storeStocks    StoreStock[]
+  orderItems     OrderItem[]
 
   @@map("products")
 }
@@ -147,6 +148,7 @@ model Customer {
   createdAt    DateTime   @default(now())
   updatedAt    DateTime   @updatedAt
   favorites    Favorite[]
+  orders       Order[]
 
   @@map("customers")
 }
@@ -160,4 +162,57 @@ model Favorite {
 
   @@unique([customerId, productId])
   @@map("favorites")
+}
+
+model Order {
+  id            String   @id @default(cuid())
+  code          String   @unique
+  status        String   @default("pending") // pending|confirmed|preparing|shipped|delivered|cancelled
+
+  // Snapshot do cliente (funciona para convidado e cliente registado)
+  customerId    String?
+  customerName  String
+  customerEmail String
+  customerPhone String?
+
+  // Entrega
+  province      String?
+  city          String?
+  address       String?
+  notes         String?
+
+  // Pagamento (placeholder até integração)
+  paymentMethod String? // multicaixa|transferencia|referencia|cartao
+  paymentStatus String   @default("pending") // pending|paid|failed|refunded
+
+  // Totais
+  subtotal      Float    @default(0)
+  shipping      Float    @default(0)
+  total         Float    @default(0)
+
+  items         OrderItem[]
+  customer      Customer?   @relation(fields: [customerId], references: [id])
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+
+  @@index([customerEmail])
+  @@index([status])
+  @@map("orders")
+}
+
+model OrderItem {
+  id             String   @id @default(cuid())
+  orderId        String
+  productId      String?
+  name           String
+  reference      String?
+  priceFormatted String?
+  image          String?
+  unitPrice      Float
+  qty            Int
+  lineTotal      Float
+  order          Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  product        Product? @relation(fields: [productId], references: [id])
+
+  @@map("order_items")
 }

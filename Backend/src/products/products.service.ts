@@ -48,10 +48,15 @@ export class ProductsService {
     const {
       search = '',
       categoryId = '',
+      categorySlug = '',
       brandId = '',
       active,
       featured,
       stockStatus,
+      minPrice,
+      maxPrice,
+      sortBy,
+      sortOrder,
       page = '1',
       perPage = '24',
       mode,
@@ -68,6 +73,7 @@ export class ProductsService {
       ];
     }
     if (categoryId) where.categoryId = categoryId;
+    else if (categorySlug) where.category = { slug: categorySlug };
     if (brandId) where.brandId = brandId;
     if (active === 'true') where.active = true;
     if (active === 'false') where.active = false;
@@ -75,6 +81,34 @@ export class ProductsService {
     if (stockStatus === 'out') { where.trackStock = true; where.stock = 0; }
     else if (stockStatus === 'low') { where.trackStock = true; where.stock = { gt: 0, lte: 5 }; }
     else if (stockStatus === 'ok') { where.trackStock = true; where.stock = { gt: 5 }; }
+
+    // Filtro por preço efetivo (salePrice quando existe, senão basePrice)
+    const min = minPrice != null && minPrice !== '' ? parseFloat(minPrice) : null;
+    const max = maxPrice != null && maxPrice !== '' ? parseFloat(maxPrice) : null;
+    if (min != null || max != null) {
+      const range: Record<string, number> = {};
+      if (min != null) range.gte = min;
+      if (max != null) range.lte = max;
+      const and = (where.AND as unknown[]) || [];
+      and.push({
+        OR: [
+          { salePrice: { not: null, ...range } },
+          { AND: [{ salePrice: null }, { basePrice: range }] },
+        ],
+      });
+      where.AND = and;
+    }
+
+    // Ordenação. Preço ordena por basePrice (preço de tabela, sempre presente).
+    const dir: 'asc' | 'desc' = sortOrder === 'desc' ? 'desc' : 'asc';
+    let orderBy: Record<string, 'asc' | 'desc'> = { createdAt: 'desc' };
+    if (sortBy === 'price' || sortBy === 'salePrice' || sortBy === 'basePrice') {
+      orderBy = { basePrice: dir };
+    } else if (sortBy === 'name') {
+      orderBy = { name: dir };
+    } else if (sortBy === 'createdAt') {
+      orderBy = { createdAt: dir };
+    }
 
     if (mode === 'search') {
       const products = await this.prisma.product.findMany({
@@ -95,7 +129,7 @@ export class ProductsService {
           brand: { select: { id: true, name: true, logoKey: true } },
           _count: { select: { bundleItems: true } },
         },
-        orderBy: { createdAt: 'desc' },
+        orderBy,
         skip: (pageNum - 1) * perPageNum,
         take: perPageNum,
       }),

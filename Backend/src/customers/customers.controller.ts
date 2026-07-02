@@ -17,12 +17,16 @@ import { AuthGuard } from '../auth/auth.guard';
 import { RegisterCustomerDto } from './dto/register-customer.dto';
 import { LoginCustomerDto } from './dto/login-customer.dto';
 import { ConfigService } from '@nestjs/config';
+import { JwtService } from '@nestjs/jwt';
+import { OrdersService } from '../orders/orders.service';
 
 @Controller('customers')
 export class CustomersController {
   constructor(
     private svc: CustomersService,
     private config: ConfigService,
+    private jwt: JwtService,
+    private orders: OrdersService,
   ) {}
 
   @Get()
@@ -60,11 +64,28 @@ export class CustomersController {
     return { ok: true };
   }
 
+  // Verificação de sessão: devolve sempre 200.
+  // { customer: null } quando não há sessão (evita 401 ruidoso na consola).
   @Get('me')
-  @UseGuards(CustomerGuard)
   async me(@Req() req: Request) {
-    const customer = await this.svc.me(req['customer'].sub);
-    return { customer };
+    const token = req.cookies?.['customer_token'];
+    if (!token) return { customer: null };
+    try {
+      const payload = this.jwt.verify(token);
+      if (payload.type !== 'customer') return { customer: null };
+      const customer = await this.svc.me(payload.sub);
+      return { customer };
+    } catch {
+      return { customer: null };
+    }
+  }
+
+  @Get('orders')
+  @UseGuards(CustomerGuard)
+  async myOrders(@Req() req: Request) {
+    const c = req['customer'];
+    const orders = await this.orders.listByCustomer(c.sub, c.email);
+    return { orders };
   }
 
   @Get('favorites')
