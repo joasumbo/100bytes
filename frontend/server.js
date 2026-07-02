@@ -77,6 +77,15 @@ async function refreshCache() {
   }
 }
 
+// Garante a cache populada por pedido. Necessário em serverless (Vercel), onde
+// o processo congela entre pedidos e o setInterval não corre: sem isto o
+// catálogo fica vazio (0 produtos) num cold start.
+async function ensureCache() {
+  if (Date.now() - cache.fetchedAt > CACHE_TTL) {
+    try { await refreshCache(); } catch (e) { /* mantém a cache anterior */ }
+  }
+}
+
 refreshCache();
 setInterval(refreshCache, CACHE_TTL);
 
@@ -284,6 +293,16 @@ app.use(
 // ──────────────────────────────────────────
 //  ROTAS SSR
 // ──────────────────────────────────────────
+
+// Garante que o catálogo está carregado antes de renderizar qualquer página SSR
+// (serverless-safe). Não afeta /api, /assets nem /js.
+app.use(async (req, res, next) => {
+  if (req.path.startsWith("/api") || req.path.startsWith("/assets") || req.path.startsWith("/js")) {
+    return next();
+  }
+  try { await ensureCache(); } catch (e) { /* segue com a cache que houver */ }
+  next();
+});
 
 // Página inicial
 app.get(["/", "/index.html"], async (req, res, next) => {
