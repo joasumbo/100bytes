@@ -1,0 +1,118 @@
+datasource db {
+  provider = "postgresql"
+}
+
+generator client {
+  provider = "prisma-client"
+  output   = "../lib/generated/prisma"
+}
+
+model AdminUser {
+  id           String   @id @default(cuid())
+  name         String
+  email        String   @unique
+  passwordHash String
+  role         String   @default("admin")
+  active       Boolean  @default(true)
+  photoKey     String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@map("admin_users")
+}
+
+model Brand {
+  id        String    @id @default(cuid())
+  name      String
+  slug      String    @unique
+  country   String?
+  logoKey   String?
+  active    Boolean   @default(true)
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  products  Product[]
+
+  @@map("brands")
+}
+
+model Product {
+  id          String   @id @default(cuid())
+  reference   String   @unique
+  name        String
+  slug        String   @unique
+  description String?
+
+  // Imagens (até 4 keys R2)
+  imageKeys   String[]
+  // Ficha informativa (PDF)
+  sheetKey    String?
+
+  // Precificação
+  costPrice   Float?
+  basePrice   Float    @default(0)
+  hasIva      Boolean  @default(true)
+  ivaRate     Float    @default(14)
+  hasIec      Boolean  @default(false)
+  iecRate     Float    @default(0)
+  salePrice   Float?
+
+  // Stock
+  trackStock  Boolean  @default(true)
+  stock       Int      @default(0)
+  stockAlert  Int      @default(5)
+
+  // Relações
+  categoryId  String?
+  category    Category?    @relation(fields: [categoryId], references: [id])
+  brandId     String?
+  brand       Brand?        @relation(fields: [brandId], references: [id])
+
+  active      Boolean  @default(true)
+  featured    Boolean  @default(false)
+
+  bundleItems    BundleItem[] @relation("BundleParent")
+  linkedInBundle BundleItem[] @relation("BundleLinked")
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("products")
+}
+
+model BundleItem {
+  id       String  @id @default(cuid())
+
+  // Produto pai (dono do bundle)
+  parentId String
+  parent   Product @relation("BundleParent", fields: [parentId], references: [id], onDelete: Cascade)
+
+  // Produto existente ligado (opcional)
+  linkedId String?
+  linked   Product? @relation("BundleLinked", fields: [linkedId], references: [id], onDelete: SetNull)
+
+  // Dados do item (preenchidos manualmente ou copiados do produto ligado)
+  name        String
+  price       Float
+  discountPct Float   @default(0)
+  sortOrder   Int     @default(0)
+
+  @@map("bundle_items")
+}
+
+model Category {
+  id          String     @id @default(cuid())
+  name        String
+  slug        String     @unique
+  description String?
+  imageKey    String?
+  parentId    String?
+  parent      Category?  @relation("SubCategories", fields: [parentId], references: [id])
+  children    Category[] @relation("SubCategories")
+  products    Product[]
+  active      Boolean    @default(true)
+  sortOrder   Int        @default(0)
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+
+  @@map("categories")
+}
