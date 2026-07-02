@@ -1,137 +1,174 @@
 <!-- ========== FOOTER ========== -->
-<footer>
+<style>
+    /* Fonte global do site: Poppins. Aplicada na base + elementos-chave para
+       herdar em todo o texto; os ícones (FontAwesome / electro) mantêm a sua
+       própria font porque definem font-family nas suas classes. */
+    html, body, button, input, select, textarea, optgroup,
+    h1, h2, h3, h4, h5, h6, .btn, .form-control, .nav-link, .dropdown-item, .badge {
+        font-family: 'Poppins', Helvetica, Arial, sans-serif !important;
+    }
+
+    .site-footer { background: #fff; }
+    .site-footer a { transition: color .15s, padding-left .15s; }
+
+    /* Newsletter */
+    .footer-news { background: #F57C00; padding: 30px 0; }
+    .footer-news__title { font-size: 18px; font-weight: 700; margin-bottom: 4px; color: #fff; }
+    .footer-news__sub { font-size: 13px; color: #fff; opacity: .9; }
+    .footer-news__form { display: flex; flex: 1; min-width: 260px; max-width: 480px; border-radius: 8px; overflow: hidden; }
+    .footer-news__form input { flex: 1; border: 0; outline: 0; padding: 0 16px; height: 48px; font-size: 13px; }
+    .footer-news__form button { background: #1a1a2e; color: #fff; border: 0; padding: 0 24px; font-weight: 700; font-size: 12px; letter-spacing: .6px; height: 48px; cursor: pointer; transition: background .2s; }
+    .footer-news__form button:hover { background: #000; }
+
+    /* Main */
+    .footer-main { padding: 48px 0 24px; border-top: 1px solid #eee; }
+    .footer-col__title { font-weight: 700; font-size: 12px; letter-spacing: .8px; text-transform: uppercase; color: #1a1a2e; margin: 0 0 14px; padding-bottom: 10px; position: relative; }
+    .footer-col__title::after { content: ""; position: absolute; left: 0; bottom: 0; width: 32px; height: 2px; background: #F57C00; }
+    .footer-links { list-style: none; padding: 0; margin: 0; }
+    .footer-links li { margin-bottom: 9px; }
+    .footer-links a { font-size: 13px; color: #5a5a6a; text-decoration: none; }
+    .footer-links a:hover { color: #F57C00; padding-left: 4px; }
+
+    .footer-about__text { font-size: 13px; color: #666; line-height: 1.75; margin-bottom: 10px; }
+    .footer-about__tag { font-size: 13px; font-style: italic; color: #1a1a2e; font-weight: 600; margin-bottom: 18px; }
+
+    /* Social icons */
+    .footer-social { display: flex; gap: 10px; }
+    .footer-social a {
+        width: 40px; height: 40px; border-radius: 10px;
+        display: flex; align-items: center; justify-content: center;
+        color: #fff; font-size: 17px; text-decoration: none;
+        transition: transform .18s, box-shadow .18s, opacity .18s;
+    }
+    .footer-social a:hover { transform: translateY(-3px); box-shadow: 0 6px 14px rgba(0,0,0,.18); opacity: .95; }
+    .footer-social .s-ig { background: linear-gradient(45deg, #f09433, #e6683c 30%, #dc2743 55%, #cc2366 75%, #bc1888); }
+    .footer-social .s-fb { background: #1877f2; }
+    .footer-social .s-wa { background: #25d366; }
+
+    /* Contact blocks */
+    .footer-contact__group { margin-bottom: 18px; }
+    .footer-contact__label { font-weight: 700; font-size: 12px; color: #1a1a2e; margin-bottom: 8px; text-transform: uppercase; letter-spacing: .3px; }
+    .footer-contact__row { display: flex; align-items: flex-start; gap: 9px; margin-bottom: 6px; font-size: 13px; color: #5a5a6a; line-height: 1.5; }
+    .footer-contact__row i { color: #F57C00; font-size: 13px; margin-top: 3px; flex-shrink: 0; width: 14px; text-align: center; }
+    .footer-contact__row a { color: #F57C00; text-decoration: none; }
+    .footer-contact__row a:hover { text-decoration: underline; }
+
+    /* Bottom */
+    .footer-bottom { background: #1a1a2e; padding: 16px 0; }
+    .footer-bottom__inner { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px; }
+    .footer-bottom span { font-size: 12px; color: #aab; }
+    .footer-bottom .footer-bottom__pay { font-size: 12px; color: #889; letter-spacing: .3px; }
+</style>
+
+<footer class="site-footer">
 
     <!-- Newsletter Bar -->
-    <div style="background-color:#F57C00;padding:28px 0;">
+    <div class="footer-news">
         <div class="container">
-            <div class="d-flex align-items-center flex-wrap" style="gap:16px;">
-                <div class="text-white" style="flex:1;min-width:260px;">
-                    <div style="font-size:18px;font-weight:700;margin-bottom:4px;">Cadastre-se e assine nosso boletim informativo</div>
-                    <div style="font-size:13px;opacity:.9;">Assine nosso boletim informativo mais recente para receber notícias sobre descontos especiais e vendas futuras</div>
+            <div class="d-flex align-items-center flex-wrap" style="gap:20px;">
+                <div style="flex:1;min-width:260px;">
+                    <div class="footer-news__title">Subscreve a nossa newsletter</div>
+                    <div class="footer-news__sub">Recebe novidades, promoções e lançamentos em primeira mão.</div>
                 </div>
-                <form class="d-flex" style="flex:1;min-width:260px;max-width:480px;" onsubmit="return false;">
-                    <input type="email" placeholder="Seu endereço de email" style="flex:1;border:none;outline:none;padding:0 16px;height:46px;font-size:13px;border-radius:0;">
-                    <button type="submit" style="background:#fff;color:#F57C00;border:none;padding:0 22px;font-weight:700;font-size:13px;white-space:nowrap;height:46px;cursor:pointer;letter-spacing:.5px;">SUBSCREVER</button>
+                <form class="footer-news__form" onsubmit="return false;">
+                    <input type="email" placeholder="O teu endereço de email">
+                    <button type="submit">SUBSCREVER</button>
                 </form>
             </div>
         </div>
     </div>
-    <!-- End Newsletter Bar -->
 
     <!-- Main Footer -->
-    <div style="background:#fff;padding:40px 0 20px;border-top:1px solid #eee;">
+    <div class="footer-main">
         <div class="container">
             <div class="row">
 
-                <!-- Col 1: About -->
+                <!-- About -->
                 <div class="col-lg-3 col-md-6 mb-5">
-                    <h6 style="font-weight:700;font-size:15px;margin-bottom:10px;color:#212529;">100 BYTES</h6>
-                    <div style="width:30px;height:2px;background:#F57C00;margin-bottom:16px;"></div>
-                    <p style="font-size:13px;color:#666;line-height:1.75;margin-bottom:10px;">A 100 Bytes dispõe de soluções tecnológicas com rigor, qualidade e compromisso, garantindo a máxima satisfação dos seus clientes através de serviços eficientes, suporte especializado e dedicação contínua à excelência.</p>
-                    <p style="font-size:13px;font-style:italic;color:#333;font-weight:600;margin-bottom:16px;">"No problem... we do it!"</p>
-                    <p style="font-weight:700;font-size:13px;color:#212529;margin-bottom:10px;">Redes Sociais</p>
-                    <div class="d-flex" style="gap:10px;">
-                        <a href="https://www.instagram.com/100.bytes/" target="_blank" rel="noopener noreferrer"
-                           style="width:36px;height:36px;border-radius:50%;background:#eee;display:flex;align-items:center;justify-content:center;color:#333;font-size:16px;text-decoration:none;">
-                            <i class="fab fa-instagram"></i>
-                        </a>
-                        <a href="https://www.facebook.com/p/100bytes-100063935954143/" target="_blank" rel="noopener noreferrer"
-                           style="width:36px;height:36px;border-radius:50%;background:#eee;display:flex;align-items:center;justify-content:center;color:#333;font-size:16px;text-decoration:none;">
-                            <i class="fab fa-facebook-f"></i>
-                        </a>
+                    <h6 class="footer-col__title">100 Bytes</h6>
+                    <p class="footer-about__text">A 100 Bytes oferece soluções tecnológicas com rigor, qualidade e compromisso — produtos, suporte especializado e dedicação contínua à excelência.</p>
+                    <p class="footer-about__tag">"No problem... we do it!"</p>
+                    <div class="footer-social">
+                        <a class="s-ig" href="https://www.instagram.com/100.bytes/" target="_blank" rel="noopener noreferrer" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+                        <a class="s-fb" href="https://www.facebook.com/p/100bytes-100063935954143/" target="_blank" rel="noopener noreferrer" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
+                        <a class="s-wa" href="https://wa.me/244946920882" target="_blank" rel="noopener noreferrer" aria-label="WhatsApp"><i class="fab fa-whatsapp"></i></a>
                     </div>
                 </div>
 
-                <!-- Col 2: Produtos -->
+                <!-- Produtos -->
                 <div class="col-lg-2 col-md-6 mb-5">
-                    <h6 style="font-weight:700;font-size:15px;margin-bottom:10px;color:#212529;">Produtos</h6>
-                    <div style="width:30px;height:2px;background:#F57C00;margin-bottom:16px;"></div>
-                    <ul style="list-style:none;padding:0;margin:0;">
-                        <li class="mb-2"><a href="/pesquisa?sort=price_asc" style="font-size:13px;color:#555;text-decoration:none;">Promoções</a></li>
-                        <li class="mb-2"><a href="/pesquisa?sort=newest" style="font-size:13px;color:#555;text-decoration:none;">Novidades</a></li>
-                        <li class="mb-2"><a href="/pesquisa" style="font-size:13px;color:#555;text-decoration:none;">Os mais vendidos</a></li>
+                    <h6 class="footer-col__title">Produtos</h6>
+                    <ul class="footer-links">
+                        <li><a href="/pesquisa?sort=price_asc">Promoções</a></li>
+                        <li><a href="/pesquisa?sort=newest">Novidades</a></li>
+                        <li><a href="/pesquisa">Os mais vendidos</a></li>
+                        <li><a href="/tendencias">Tendências</a></li>
+                        <li><a href="/ofertas">Oferta do dia</a></li>
                     </ul>
                 </div>
 
-                <!-- Col 3: A Nossa Empresa -->
+                <!-- Empresa -->
                 <div class="col-lg-2 col-md-6 mb-5">
-                    <h6 style="font-weight:700;font-size:15px;margin-bottom:10px;color:#212529;">A Nossa Empresa</h6>
-                    <div style="width:30px;height:2px;background:#F57C00;margin-bottom:16px;"></div>
-                    <ul style="list-style:none;padding:0;margin:0;">
-                        <li class="mb-2"><a href="#" style="font-size:13px;color:#555;text-decoration:none;">Sobre Nós</a></li>
-                        <li class="mb-2"><a href="#" style="font-size:13px;color:#555;text-decoration:none;">Lojas</a></li>
-                        <li class="mb-2"><a href="#" style="font-size:13px;color:#555;text-decoration:none;">Termos e Condições</a></li>
-                        <li class="mb-2"><a href="#" style="font-size:13px;color:#555;text-decoration:none;">Política de Privacidade</a></li>
-                        <li class="mb-2"><a href="#" style="font-size:13px;color:#555;text-decoration:none;">Política de Cookies</a></li>
-                        <li class="mb-2"><a href="#" style="font-size:13px;color:#555;text-decoration:none;">Trocas e Devoluções</a></li>
-                        <li class="mb-2"><a href="#" style="font-size:13px;color:#555;text-decoration:none;">Formas de Pagamento</a></li>
-                        <li class="mb-2"><a href="#" style="font-size:13px;color:#555;text-decoration:none;">FAQS</a></li>
-                        <li class="mb-2"><a href="#" style="font-size:13px;color:#555;text-decoration:none;">Apoio ao Cliente</a></li>
+                    <h6 class="footer-col__title">Empresa</h6>
+                    <ul class="footer-links">
+                        <li><a href="#">Sobre Nós</a></li>
+                        <li><a href="#">Lojas</a></li>
+                        <li><a href="#">Termos e Condições</a></li>
+                        <li><a href="#">Política de Privacidade</a></li>
+                        <li><a href="#">Trocas e Devoluções</a></li>
+                        <li><a href="#">Formas de Pagamento</a></li>
+                        <li><a href="#">FAQs &amp; Apoio ao Cliente</a></li>
                     </ul>
                 </div>
 
-                <!-- Col 4: A Sua Conta -->
+                <!-- Conta -->
                 <div class="col-lg-2 col-md-6 mb-5">
-                    <h6 style="font-weight:700;font-size:15px;margin-bottom:10px;color:#212529;">A Sua Conta</h6>
-                    <div style="width:30px;height:2px;background:#F57C00;margin-bottom:16px;"></div>
-                    <ul style="list-style:none;padding:0;margin:0;">
-                        <li class="mb-2"><a href="#" onclick="if(window.customerAuth)window.customerAuth.showRegisterModal();return false;" style="font-size:13px;color:#555;text-decoration:none;">Criar Conta</a></li>
-                        <li class="mb-2"><a href="#" onclick="if(window.customerAuth)window.customerAuth.showLoginModal();return false;" style="font-size:13px;color:#555;text-decoration:none;">Entrar</a></li>
-                        <li class="mb-2"><a href="#" style="font-size:13px;color:#555;text-decoration:none;">Os meus Alertas</a></li>
-                        <li class="mb-2"><a href="/perfil#favoritos" style="font-size:13px;color:#555;text-decoration:none;">Favoritos</a></li>
+                    <h6 class="footer-col__title">A Sua Conta</h6>
+                    <ul class="footer-links">
+                        <li><a href="#" onclick="if(window.customerAuth)window.customerAuth.showRegisterModal();return false;">Criar Conta</a></li>
+                        <li><a href="#" onclick="if(window.customerAuth)window.customerAuth.showLoginModal();return false;">Entrar</a></li>
+                        <li><a href="/perfil#encomendas">As minhas encomendas</a></li>
+                        <li><a href="/perfil#favoritos">Favoritos</a></li>
                     </ul>
                 </div>
 
-                <!-- Col 5: Contacte-Nos -->
+                <!-- Contactos -->
                 <div class="col-lg-3 col-md-6 mb-5">
-                    <h6 style="font-weight:700;font-size:15px;margin-bottom:10px;color:#212529;">Contacte-Nos</h6>
-                    <div style="width:30px;height:2px;background:#F57C00;margin-bottom:16px;"></div>
+                    <h6 class="footer-col__title">Contacte-Nos</h6>
 
-                    <p style="font-weight:700;font-size:13px;color:#333;margin-bottom:8px;">SEDE</p>
-                    <div class="d-flex align-items-start mb-1" style="gap:8px;">
-                        <i class="fas fa-map-marker-alt" style="color:#e53935;font-size:13px;margin-top:2px;flex-shrink:0;"></i>
-                        <span style="font-size:13px;color:#555;">Rua António Américo Lencastre, n.º 11 - Luanda, Angola</span>
-                    </div>
-                    <div class="d-flex align-items-center mb-1" style="gap:8px;">
-                        <i class="fas fa-envelope" style="color:#e53935;font-size:12px;flex-shrink:0;"></i>
-                        <a href="mailto:geral@100bytes.co.ao" style="font-size:13px;color:#1a73e8;text-decoration:none;">geral@100bytes.co.ao</a>
-                    </div>
-                    <div class="d-flex align-items-center mb-4" style="gap:8px;">
-                        <i class="fas fa-phone" style="color:#e53935;font-size:12px;flex-shrink:0;"></i>
-                        <span style="font-size:13px;color:#555;">+244 946 920 882</span>
+                    <div class="footer-contact__group">
+                        <div class="footer-contact__label">Sede</div>
+                        <div class="footer-contact__row"><i class="fas fa-map-marker-alt"></i><span>Rua António Américo Lencastre, n.º 11 — Luanda, Angola</span></div>
+                        <div class="footer-contact__row"><i class="fas fa-envelope"></i><a href="mailto:geral@100bytes.co.ao">geral@100bytes.co.ao</a></div>
+                        <div class="footer-contact__row"><i class="fas fa-phone"></i><a href="tel:+244946920882">+244 946 920 882</a></div>
                     </div>
 
-                    <p style="font-weight:700;font-size:13px;color:#333;margin-bottom:8px;">Loja 1 – Liga Africana / Centro de Assistência Técnica</p>
-                    <div class="d-flex align-items-start mb-1" style="gap:8px;">
-                        <i class="fas fa-map-marker-alt" style="color:#e53935;font-size:13px;margin-top:2px;flex-shrink:0;"></i>
-                        <span style="font-size:13px;color:#555;">Rua da Liga Africana, n.º 81 - Luanda, Angola</span>
-                    </div>
-                    <div class="d-flex align-items-center mb-4" style="gap:8px;">
-                        <i class="fas fa-phone" style="color:#e53935;font-size:12px;flex-shrink:0;"></i>
-                        <span style="font-size:13px;color:#555;">+244 928 499 325</span>
+                    <div class="footer-contact__group">
+                        <div class="footer-contact__label">Loja 1 — Liga Africana / Assistência Técnica</div>
+                        <div class="footer-contact__row"><i class="fas fa-map-marker-alt"></i><span>Rua da Liga Africana, n.º 81 — Luanda, Angola</span></div>
+                        <div class="footer-contact__row"><i class="fas fa-phone"></i><a href="tel:+244928499325">+244 928 499 325</a></div>
                     </div>
 
-                    <p style="font-weight:700;font-size:13px;color:#333;margin-bottom:8px;">Loja 2 – Samba</p>
-                    <div class="d-flex align-items-start mb-1" style="gap:8px;">
-                        <i class="fas fa-map-marker-alt" style="color:#e53935;font-size:13px;margin-top:2px;flex-shrink:0;"></i>
-                        <span style="font-size:13px;color:#555;">Rua Direita da Samba, n.º 153 - Samba, Angola</span>
-                    </div>
-                    <div class="d-flex align-items-center mb-1" style="gap:8px;">
-                        <i class="fas fa-phone" style="color:#e53935;font-size:12px;flex-shrink:0;"></i>
-                        <span style="font-size:13px;color:#555;">+244 928 499 319</span>
+                    <div class="footer-contact__group" style="margin-bottom:0;">
+                        <div class="footer-contact__label">Loja 2 — Samba</div>
+                        <div class="footer-contact__row"><i class="fas fa-map-marker-alt"></i><span>Rua Direita da Samba, n.º 153 — Samba, Angola</span></div>
+                        <div class="footer-contact__row"><i class="fas fa-phone"></i><a href="tel:+244928499319">+244 928 499 319</a></div>
                     </div>
                 </div>
 
             </div>
         </div>
     </div>
-    <!-- End Main Footer -->
 
     <!-- Bottom Bar -->
-    <div style="background:#f5f5f5;border-top:1px solid #e5e5e5;padding:14px 0;text-align:center;">
-        <span style="font-size:12px;color:#777;">© 2026 - Software de comércio eletrónico por PrestaShop™</span>
+    <div class="footer-bottom">
+        <div class="container">
+            <div class="footer-bottom__inner">
+                <span>© 2026 100 Bytes — Todos os direitos reservados.</span>
+                <span class="footer-bottom__pay">Loja online de tecnologia · Luanda, Angola 🇦🇴</span>
+            </div>
+        </div>
     </div>
-    <!-- End Bottom Bar -->
 
 </footer>
 <!-- ========== END FOOTER ========== -->
@@ -140,5 +177,6 @@
 <%- include('_cart-drawer') %>
 
 <!-- Scripts -->
+<script src="/js/ui.js"></script>
 <script src="/js/cart.js"></script>
 <script src="/js/customer-auth.js"></script>

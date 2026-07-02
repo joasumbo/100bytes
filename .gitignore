@@ -15,6 +15,11 @@ coverage/
 **/.next/
 **/out/
 
+# ...but keep vendored front-end assets that live in a dist/ folder
+# (template libraries served at runtime, NOT build output)
+!frontend/public/assets/vendor/**/dist/
+!frontend/public/assets/vendor/**/dist/**
+
 # Environment
 .env
 .env.*

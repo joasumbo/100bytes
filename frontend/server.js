@@ -7,7 +7,6 @@ const { createProxyMiddleware } = require("http-proxy-middleware");
 const { getRootCategories, getAllCategories, findCategoryBySlug, getCategoryBySlug, getTopCategories } = require("./api/categories");
 const { getFeatured, getOnSale, getNewest, getProductById, getRelated, getByCategory, getProductsPaged } = require("./api/products");
 const { getBrands } = require("./api/brands");
-const { createOrder, getOrderByCode, getOrdersByEmail, updateOrderStatus, deleteOrder } = require("./api/ordersStore");
 
 const app = express();
 const PORT = process.env.PORT || 3030;
@@ -167,53 +166,61 @@ async function forwardCustomerAuth(req, res, endpoint) {
 }
 
 // ── ORDERS ────────────────────────────────────────────────────────────
-app.post("/api/orders", (req, res) => {
+// As encomendas são agora persistidas na base de dados pelo backend NestJS.
+//   POST /api/orders                        → criado no backend (desconta stock)
+//   GET/PATCH/DELETE /api/admin/orders/...   → backend (protegido por admin)
+//   GET /api/customers/orders                → backend (sessão de cliente)
+// GET/PATCH/DELETE /api/admin/orders e GET /api/customers/orders são
+// encaminhados pelos proxies /api/customers e /api/** definidos mais abaixo.
+// O POST de criação é reencaminhado aqui explicitamente porque o proxy não
+// reenvia o corpo JSON já consumido pelo express.json().
+app.post("/api/orders", async (req, res) => {
   try {
-    const { customer, delivery, items } = req.body || {};
-    if (!customer || !delivery || !items || !items.length) {
-      return res.status(400).json({ message: "Dados incompletos." });
-    }
-    const order = createOrder({ customer, delivery, items });
-    return res.status(201).json({ ok: true, code: order.code, order });
+    const r = await fetch(`${BACKEND_URL}/api/orders`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        ...(req.headers.cookie ? { cookie: req.headers.cookie } : {}),
+      },
+      body: JSON.stringify(req.body || {}),
+    });
+    const data = await r.json().catch(() => ({ message: "Erro inesperado." }));
+    return res.status(r.status).json(data);
   } catch (e) {
-    console.error("[orders] Erro ao criar:", e.message);
-    return res.status(500).json({ message: "Erro interno. Tente novamente." });
+    console.error("[orders] Erro ao reencaminhar:", e.message);
+    return res.status(500).json({ message: "Erro de ligação ao servidor. Tente novamente." });
   }
 });
 
-app.get("/api/admin/orders", (req, res) => {
-  const { readOrders } = require("./api/ordersStore");
-  return res.json({ orders: readOrders() });
-});
-
-app.patch("/api/admin/orders/:code/status", (req, res) => {
-  const { status } = req.body || {};
-  const valid = ['pending','confirmed','preparing','shipped','delivered','cancelled'];
-  if (!valid.includes(status)) return res.status(400).json({ message: "Estado inválido." });
-  const order = updateOrderStatus(req.params.code, status);
-  if (!order) return res.status(404).json({ message: "Encomenda não encontrada." });
-  return res.json({ ok: true, order });
-});
-
-app.delete("/api/admin/orders/:code", (req, res) => {
-  const ok = deleteOrder(req.params.code);
-  if (!ok) return res.status(404).json({ message: "Encomenda não encontrada." });
-  return res.json({ ok: true });
-});
-
-app.get("/api/customers/orders", (req, res) => {
-  const customer = res.locals.currentCustomer;
-  if (!customer) return res.status(401).json({ message: "Não autenticado." });
-  const orders = getOrdersByEmail(customer.email).map(o => ({
-    reference: o.code,
+// Converte a encomenda do backend para o formato esperado pelos templates EJS.
+function mapOrder(o) {
+  if (!o) return null;
+  return {
     code: o.code,
+    reference: o.code,
     status: o.status,
-    createdAt: o.createdAt,
     total: o.total,
-    items: o.items,
-  }));
-  return res.json({ orders });
-});
+    subtotal: o.subtotal,
+    shipping: o.shipping,
+    createdAt: o.createdAt,
+    customer: { name: o.customerName, email: o.customerEmail, phone: o.customerPhone },
+    delivery: { province: o.province, city: o.city, address: o.address, notes: o.notes },
+    items: (o.items || []).map(function (i) {
+      return { name: i.name, price: i.unitPrice, priceFormatted: i.priceFormatted, qty: i.qty, image: i.image };
+    }),
+  };
+}
+
+async function fetchOrderByCode(code) {
+  try {
+    const r = await fetch(`${BACKEND_URL}/api/orders/${encodeURIComponent(code)}`);
+    if (!r.ok) return null;
+    const data = await r.json();
+    return mapOrder(data.order);
+  } catch (e) {
+    return null;
+  }
+}
 
 app.post("/api/customers/register", async (req, res, next) => {
   try {
@@ -309,8 +316,8 @@ app.get("/checkout", (req, res) => {
 });
 
 // Confirmação de encomenda
-app.get("/encomenda/:code", (req, res) => {
-  const order = getOrderByCode(req.params.code);
+app.get("/encomenda/:code", async (req, res) => {
+  const order = await fetchOrderByCode(req.params.code);
   if (!order) return res.status(404).render("encomenda", { order: null, categories: cache.categories });
   res.render("encomenda", { order, categories: cache.categories });
 });
@@ -319,8 +326,8 @@ app.get("/encomenda/:code", (req, res) => {
 app.get("/rastreio", (req, res) => {
   res.render("rastreio", { order: null, searched: false, categories: cache.categories });
 });
-app.get("/rastreio/:code", (req, res) => {
-  const order = getOrderByCode(req.params.code);
+app.get("/rastreio/:code", async (req, res) => {
+  const order = await fetchOrderByCode(req.params.code);
   res.render("rastreio", { order: order || null, searched: true, code: req.params.code.toUpperCase(), categories: cache.categories });
 });
 
@@ -330,6 +337,9 @@ app.get("/pesquisa", async (req, res, next) => {
   const categoria = req.query.categoria || "";
   const page = Math.max(1, parseInt(req.query.page) || 1);
   const sort = req.query.sort || "";
+  const minPrice = req.query.minPrice || null;
+  const maxPrice = req.query.maxPrice || null;
+  const brandId = req.query.brandId || null;
   const { sortBy, sortOrder } = mapSort(sort);
   try {
     const paged = await getProductsPaged({
@@ -339,6 +349,9 @@ app.get("/pesquisa", async (req, res, next) => {
       categorySlug: categoria || undefined,
       sortBy,
       sortOrder,
+      minPrice,
+      maxPrice,
+      brandId,
     });
     res.render("categoria", {
       category: null,
@@ -348,7 +361,7 @@ app.get("/pesquisa", async (req, res, next) => {
       topProducts: [],
       brands: cache.brands,
       pagination: { page: paged.page, pages: paged.pages, total: paged.total, perPage: paged.perPage },
-      currentFilters: { sort, minPrice: null, maxPrice: null, brandId: null },
+      currentFilters: { sort, minPrice, maxPrice, brandId },
     });
   } catch (e) {
     next(e);

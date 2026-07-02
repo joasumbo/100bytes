@@ -5,7 +5,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <link rel="shortcut icon" href="https://cdn100ka.sysvenus.com/logo/100byte_fav.png">
-    <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="/assets/vendor/font-awesome/css/fontawesome-all.min.css">
     <link rel="stylesheet" href="/assets/css/font-electro.css">
     <link rel="stylesheet" href="/assets/vendor/animate.css/animate.min.css">
@@ -225,6 +225,7 @@
             const res = await fetch('/api/customers/me', { credentials: 'include' });
             if (!res.ok) { window.location.href = '/?openLogin=1'; return; }
             const { customer } = await res.json();
+            if (!customer) { window.location.href = '/?openLogin=1'; return; }
             document.getElementById('profileAvatar').textContent = (customer.name || '?')[0].toUpperCase();
             document.getElementById('sidebarName').textContent = customer.name || '';
             document.getElementById('sidebarEmail').textContent = customer.email || '';

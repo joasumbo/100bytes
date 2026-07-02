@@ -219,6 +219,100 @@
     transition: background .2s;
 }
 .cart-checkout-btn:hover { background: #D96A00; }
+.cart-continue-btn {
+    display: block;
+    width: 100%;
+    padding: 10px;
+    margin-top: 8px;
+    background: #fff;
+    color: #F57C00;
+    border: 1px solid #F57C00;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 600;
+    text-align: center;
+    cursor: pointer;
+    transition: background .2s;
+}
+.cart-continue-btn:hover { background: #fff3e6; }
+.cart-clear-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    width: 100%;
+    padding: 8px;
+    margin-top: 8px;
+    background: transparent;
+    color: #c62828;
+    border: 0;
+    border-radius: 6px;
+    font-size: 12.5px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background .15s;
+}
+.cart-clear-btn:hover { background: #fdecec; }
+
+/* Stepper que substitui o botão "Adicionar ao carrinho" quando o item já está no carrinho */
+.cart-stepper {
+    display: inline-flex;
+    align-items: center;
+    border: 2px solid #F57C00;
+    border-radius: 6px;
+    overflow: hidden;
+    background: #fff;
+    line-height: 1;
+}
+.cart-stepper__btn {
+    border: 0;
+    background: #fff;
+    color: #F57C00;
+    font-weight: 700;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background .15s;
+}
+.cart-stepper__btn:hover { background: #fff3e6; }
+.cart-stepper__val {
+    text-align: center;
+    font-weight: 700;
+    color: #222;
+    user-select: none;
+}
+/* full: página de produto — preenche como o botão "Adicionar" */
+.cart-stepper--full { display: flex; flex-grow: 1; align-self: stretch; }
+.cart-stepper--full .cart-stepper__btn { width: 52px; align-self: stretch; font-size: 20px; }
+.cart-stepper--full .cart-stepper__val { flex-grow: 1; font-size: 16px; padding: 11px 0; }
+/* card: ícone de carrinho nos cartões de produto (compacto) */
+.cart-stepper--card { height: 34px; flex-shrink: 0; }
+.cart-stepper--card .cart-stepper__btn { width: 26px; height: 100%; font-size: 15px; }
+.cart-stepper--card .cart-stepper__val { min-width: 20px; font-size: 13px; }
+
+/* O preço NUNCA quebra (os espaços dos milhares não devem partir "Kz" para baixo).
+   Se o preço + stepper não couberem, o stepper desce para a linha de baixo. */
+.product-item .flex-center-between.mb-1 { flex-wrap: wrap; row-gap: 6px; }
+.product-item .prodcut-price { white-space: nowrap; min-width: 0; }
+.product-item .prodcut-price .d-flex { flex-wrap: nowrap !important; }
+.product-item .prodcut-add-cart { flex-shrink: 0; }
+
+/* Link "Remover do carrinho" (página de produto) */
+.cart-remove-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin: -4px 0 12px;
+    padding: 4px 2px;
+    background: transparent;
+    border: 0;
+    color: #c62828;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+}
+.cart-remove-link:hover { color: #8e0000; text-decoration: underline; }
 
 /* Floating Button */
 .floating-cart {
@@ -302,5 +396,7 @@
             <span class="cart-subtotal__value" id="cartSubtotal">0,00 Kz</span>
         </div>
         <a href="/checkout" class="cart-checkout-btn">Finalizar encomenda &rarr;</a>
+        <button type="button" class="cart-continue-btn js-cart-continue">Continuar a comprar</button>
+        <button type="button" class="cart-clear-btn js-cart-clear"><i class="fas fa-trash-alt"></i> Esvaziar carrinho</button>
     </div>
 </aside>

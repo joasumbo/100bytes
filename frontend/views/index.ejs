@@ -13,7 +13,7 @@
         <link rel="icon" type="image/png" href="https://cdn100ka.sysvenus.com/logo/100byte_fav.png">
 
         <!-- Google Fonts -->
-        <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,300i,400,400i,600,600i,700,700i,800,800i&display=swap" rel="stylesheet">
+        <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 
         <!-- CSS Implementing Plugins -->
         <link rel="stylesheet" href="/assets/vendor/font-awesome/css/fontawesome-all.min.css">
@@ -354,7 +354,7 @@
                                                         <% } %>
                                                     </div>
                                                     <div class="prodcut-add-cart">
-                                                        <button type="button" class="btn-add-cart btn-primary transition-3d-hover js-add-to-cart"
+                                                        <button type="button" class="btn-add-cart btn-primary transition-3d-hover js-add-to-cart" data-cart-style="card"
                                                             data-id="<%= p.id %>"
                                                             data-name="<%= p.name %>"
                                                             data-price="<%= p.salePriceValue != null ? p.salePriceValue : p.basePriceValue %>"
@@ -448,7 +448,7 @@
                                                         <% } %>
                                                     </div>
                                                     <div class="prodcut-add-cart">
-                                                        <button type="button" class="btn-add-cart btn-primary transition-3d-hover js-add-to-cart"
+                                                        <button type="button" class="btn-add-cart btn-primary transition-3d-hover js-add-to-cart" data-cart-style="card"
                                                             data-id="<%= p.id %>"
                                                             data-name="<%= p.name %>"
                                                             data-price="<%= p.salePriceValue != null ? p.salePriceValue : p.basePriceValue %>"
@@ -504,7 +504,7 @@
                                                         <% } %>
                                                     </div>
                                                     <div class="prodcut-add-cart">
-                                                        <button type="button" class="btn-add-cart btn-primary transition-3d-hover js-add-to-cart"
+                                                        <button type="button" class="btn-add-cart btn-primary transition-3d-hover js-add-to-cart" data-cart-style="card"
                                                             data-id="<%= p.id %>"
                                                             data-name="<%= p.name %>"
                                                             data-price="<%= p.salePriceValue != null ? p.salePriceValue : p.basePriceValue %>"
@@ -1045,7 +1045,7 @@
                 $.HSCore.components.HSSVGIngector.init('.js-svg-injector');
             });
 
-            $(document).on('ready', function () {
+            $(document).ready(function () {
                 // initialization of header
                 $.HSCore.components.HSHeader.init($('#header'));
 

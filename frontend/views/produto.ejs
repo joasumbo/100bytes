@@ -13,7 +13,7 @@
         <link rel="icon" type="image/png" href="https://cdn100ka.sysvenus.com/logo/100byte_fav.png">
 
         <!-- Google Fonts -->
-        <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,300i,400,400i,600,600i,700,700i,800,800i&display=swap" rel="stylesheet">
+        <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 
         <!-- CSS Implementing Plugins -->
         <link rel="stylesheet" href="/assets/vendor/font-awesome/css/fontawesome-all.min.css">
@@ -642,6 +642,7 @@
                     <% } %>
                 </div>
                 <button type="button" class="ncr-sticky-cart js-add-to-cart"
+                    data-cart-style="card"
                     data-id="<%= product.id %>"
                     data-name="<%= product.name %>"
                     data-price="<%= product.salePriceValue != null ? product.salePriceValue : product.basePriceValue %>"
@@ -740,6 +741,7 @@
                                     </div>
                                     <button type="button" class="btn ncr-btn-add-cart px-3 py-2 flex-grow-1 js-add-to-cart"
                                         id="btnAddToCart"
+                                        data-cart-style="full"
                                         data-id="<%= product.id %>"
                                         data-name="<%= product.name %>"
                                         data-price="<%= product.salePriceValue != null ? product.salePriceValue : product.basePriceValue %>"
@@ -747,6 +749,9 @@
                                         data-image="<%= product.image || '' %>"
                                         data-url="/<%= product.categorySlug %>/<%= product.urlKey %>">Adicionar ao carrinho</button>
                                 </div>
+
+                                <!-- Preenchido por cart.js quando o produto está no carrinho -->
+                                <div id="cartRemoveSlot"></div>
 
                                 <button type="button" class="btn ncr-btn-buy btn-block py-3 mb-3 font-weight-bold js-buy-now"
                                     data-id="<%= product.id %>"
@@ -1222,7 +1227,7 @@
                 $.HSCore.components.HSSVGIngector.init('.js-svg-injector');
             });
 
-            $(document).on('ready', function () {
+            $(document).ready(function () {
                 // initialization of header
                 $.HSCore.components.HSHeader.init($('#header'));
 
@@ -1553,9 +1558,12 @@
                     }).catch(function() {});
                 } else {
                     navigator.clipboard.writeText(window.location.href).then(function() {
-                        alert('Link copiado para a área de transferência!');
+                        window.ui.toast('Link copiado para a área de transferência!', { type: 'success' });
                     }).catch(function() {
-                        prompt('Copie o link:', window.location.href);
+                        window.ui.alert('Copie o link do produto:', {
+                            title: 'Partilhar',
+                            html: '<input type="text" readonly value="' + window.location.href.replace(/"/g, '&quot;') + '" onclick="this.select()">'
+                        });
                     });
                 }
             }

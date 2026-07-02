@@ -25,7 +25,8 @@
     }
     saveCart(cart);
     updateUI();
-    openDrawer();
+    // NÃO abrir o drawer automaticamente — o estado fica visível no botão
+    // (vira stepper) e no ícone do carrinho. O drawer só abre por clique no ícone.
   }
 
   function removeItem(id) {
@@ -37,7 +38,20 @@
     var cart = getCart();
     var item = cart.find(function (i) { return i.id === id; });
     if (!item) return;
-    item.qty = Math.max(1, Math.min(99, item.qty + delta));
+    var next = item.qty + delta;
+    if (next <= 0) { removeItem(id); return; }   // baixar de 1 → remove (volta ao botão "Adicionar")
+    item.qty = Math.min(99, next);
+    saveCart(cart);
+    updateUI();
+  }
+
+  function setQty(id, qty) {
+    qty = parseInt(qty, 10) || 0;
+    if (qty <= 0) { removeItem(id); return; }
+    var cart = getCart();
+    var item = cart.find(function (i) { return i.id === id; });
+    if (!item) return;
+    item.qty = Math.min(99, qty);
     saveCart(cart);
     updateUI();
   }
@@ -91,6 +105,9 @@
     var meta = document.getElementById('cartDrawerCount');
     if (meta) meta.textContent = count + (count === 1 ? ' produto' : ' produtos');
 
+    // Reflete o estado do carrinho nos botões "Adicionar" (vira +/- stepper)
+    syncAddControls();
+
     var empty = document.getElementById('cartEmpty');
     var itemsList = document.getElementById('cartItems');
     var footer = document.getElementById('cartFooter');
@@ -140,6 +157,61 @@
         removeItem(btn.dataset.id);
       });
     });
+  }
+
+  // ── Add-to-cart controls (botão ↔ stepper) ───────────────────
+  // Cada botão .js-add-to-cart vira um stepper (− qty +) quando o produto
+  // está no carrinho, e volta a botão quando é removido. Reflete sempre o
+  // estado real do carrinho — inclusive ao recarregar a página.
+
+  function syncAddControls() {
+    var cart = getCart();
+    document.querySelectorAll('.js-add-to-cart').forEach(function (btn) {
+      var id = btn.dataset.id;
+      var item = cart.find(function (i) { return i.id === id; });
+      var style = btn.dataset.cartStyle || 'full';
+      var stepper = btn.nextElementSibling &&
+        btn.nextElementSibling.classList &&
+        btn.nextElementSibling.classList.contains('cart-stepper')
+          ? btn.nextElementSibling : null;
+
+      if (item) {
+        if (!stepper) {
+          stepper = document.createElement('div');
+          stepper.className = 'cart-stepper cart-stepper--' + style;
+          btn.parentNode.insertBefore(stepper, btn.nextSibling);
+        }
+        stepper.dataset.id = id;
+        stepper.innerHTML =
+          '<button type="button" class="cart-stepper__btn" data-cart-action="dec" aria-label="Reduzir">&#8722;</button>' +
+          '<span class="cart-stepper__val">' + item.qty + '</span>' +
+          '<button type="button" class="cart-stepper__btn" data-cart-action="inc" aria-label="Aumentar">+</button>';
+        btn.style.display = 'none';
+      } else {
+        if (stepper) stepper.parentNode.removeChild(stepper);
+        btn.style.display = '';
+      }
+    });
+
+    // Página de produto: esconder o seletor de quantidade e a pré-visualização
+    // do total quando o produto já está no carrinho (o stepper passa a mandar).
+    var addBtn = document.getElementById('btnAddToCart');
+    if (addBtn) {
+      var inCart = cart.some(function (i) { return i.id === addBtn.dataset.id; });
+      var qw = document.getElementById('qtyWidget');
+      var tw = document.getElementById('totalPriceWrap');
+      if (qw) qw.style.display = inCart ? 'none' : '';
+      if (inCart && tw) tw.classList.add('d-none');
+
+      // Link explícito "Remover do carrinho" (só quando o produto está no carrinho)
+      var slot = document.getElementById('cartRemoveSlot');
+      if (slot) {
+        slot.innerHTML = inCart
+          ? '<button type="button" class="cart-remove-link js-cart-remove" data-id="' +
+              escHtml(addBtn.dataset.id) + '"><i class="fas fa-trash-alt"></i> Remover do carrinho</button>'
+          : '';
+      }
+    }
   }
 
   // ── Drawer ───────────────────────────────────────────────────
@@ -217,6 +289,38 @@
         window.location.href = '/checkout';
         return;
       }
+      // +/- nos steppers que substituem o botão "Adicionar"
+      var stepBtn = e.target.closest('.cart-stepper__btn');
+      if (stepBtn) {
+        e.preventDefault();
+        var stepper = stepBtn.closest('.cart-stepper');
+        if (stepper) {
+          changeQty(stepper.dataset.id, stepBtn.dataset.cartAction === 'inc' ? 1 : -1);
+        }
+        return;
+      }
+      var rmBtn = e.target.closest('.js-cart-remove');
+      if (rmBtn) {
+        e.preventDefault();
+        removeItem(rmBtn.dataset.id);
+        return;
+      }
+      if (e.target.closest('.js-cart-clear')) {
+        e.preventDefault();
+        if (getCount() === 0) return;
+        var ask = (window.ui && window.ui.confirm)
+          ? window.ui.confirm('Esta ação remove todos os produtos do carrinho.', {
+              title: 'Esvaziar carrinho?', okText: 'Esvaziar', danger: true,
+            })
+          : Promise.resolve(true);
+        ask.then(function (ok) { if (ok) clearCart(); });
+        return;
+      }
+      if (e.target.closest('.js-cart-continue')) {
+        e.preventDefault();
+        closeDrawer();
+        return;
+      }
       if (e.target.closest('.js-cart-drawer-trigger')) {
         e.preventDefault();
         openDrawer();
@@ -243,6 +347,7 @@
     addItem: addItem,
     removeItem: removeItem,
     changeQty: changeQty,
+    setQty: setQty,
     clearCart: clearCart,
     getCart: getCart,
     getCount: getCount,

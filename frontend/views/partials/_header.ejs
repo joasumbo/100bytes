@@ -381,3 +381,25 @@
             </div>
         </header>
         <!-- ========== END HEADER ========== -->
+
+        <script>
+            // Dropdown de categorias da barra de pesquisa: escolher uma categoria
+            // navega para a página dela (ou pesquisa dentro dela se houver texto).
+            (function () {
+                if (window.__catSelectWired) return;
+                window.__catSelectWired = true;
+                document.addEventListener('change', function (e) {
+                    var sel = e.target.closest('.custom-search-categories-select');
+                    if (!sel) return;
+                    var slug = (sel.value || '').trim();
+                    var form = sel.closest('form');
+                    var qEl = form ? form.querySelector('input[name="q"]') : null;
+                    var q = qEl ? qEl.value.trim() : '';
+                    if (slug && !q) {
+                        window.location.href = '/' + encodeURIComponent(slug);
+                    } else if (form) {
+                        form.submit();
+                    }
+                });
+            })();
+        </script>
