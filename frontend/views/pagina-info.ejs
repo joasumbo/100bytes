@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="pt-PT">
+    <head>
+        <title><%= titulo %> | 100bytes</title>
+
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+        <% if (typeof metaDescription !== 'undefined' && metaDescription) { %>
+        <meta name="description" content="<%= metaDescription %>">
+        <% } %>
+
+        <link rel="shortcut icon" href="https://cdn100ka.sysvenus.com/logo/100byte_fav.png">
+        <link rel="icon" type="image/png" href="https://cdn100ka.sysvenus.com/logo/100byte_fav.png">
+        <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+        <link rel="stylesheet" href="/assets/vendor/font-awesome/css/fontawesome-all.min.css">
+        <link rel="stylesheet" href="/assets/css/font-electro.css">
+        <link rel="stylesheet" href="/assets/vendor/animate.css/animate.min.css">
+        <link rel="stylesheet" href="/assets/vendor/hs-megamenu/src/hs.megamenu.css">
+        <link rel="stylesheet" href="/assets/vendor/malihu-custom-scrollbar-plugin/jquery.mCustomScrollbar.css">
+        <link rel="stylesheet" href="/assets/vendor/bootstrap-select/dist/css/bootstrap-select.min.css">
+        <link rel="stylesheet" href="/assets/css/theme.css">
+
+        <style>
+            :root { --brand: #F57C00; --brand-dark: #D96A00; }
+            .btn-primary, .btn-primary:hover, .btn-primary:focus, .btn-primary:active,
+            .btn-primary:not(:disabled):not(.disabled):active {
+                background-color: var(--brand) !important; border-color: var(--brand) !important;
+            }
+            .btn-primary:hover, .btn-primary:focus { background-color: var(--brand-dark) !important; border-color: var(--brand-dark) !important; }
+            .u-header-topbar { background-color: #fff !important; border-bottom: 1px solid #e6e6e6; }
+
+            /* Conteúdo — segue a tipografia/paleta do template Electro */
+            .info-body { color: #51545f; font-size: 15px; line-height: 1.8; }
+            .info-body > *:first-child { margin-top: 0; }
+            .info-body h2 { font-size: 20px; font-weight: 700; color: #2f2f33; margin: 34px 0 14px; }
+            .info-body h3 { font-size: 16px; font-weight: 600; color: #2f2f33; margin: 22px 0 8px; }
+            .info-body p { margin: 0 0 14px; }
+            .info-body ul, .info-body ol { margin: 0 0 16px; padding-left: 22px; }
+            .info-body li { margin-bottom: 8px; }
+            .info-body strong { color: #2f2f33; font-weight: 600; }
+            .info-body a { color: var(--brand-dark); }
+            .info-body a:hover { color: var(--brand); }
+
+            .info-note { background: #f8f9fa; border: 1px solid #ededed; border-left: 3px solid var(--brand);
+                border-radius: 4px; padding: 16px 20px; margin: 20px 0; }
+            .info-note p:last-child { margin-bottom: 0; }
+
+            .info-card { border: 1px solid #ededed; border-radius: 6px; padding: 24px 26px; margin-bottom: 20px; }
+            .info-card h3 { margin-top: 0; }
+            .info-meta { margin-top: 14px; }
+            .info-meta div { display: flex; align-items: flex-start; gap: 10px; font-size: 14px; color: #51545f; margin-bottom: 7px; }
+            .info-meta i { color: var(--brand); width: 16px; margin-top: 3px; text-align: center; }
+            .info-meta a { color: var(--brand-dark); }
+
+            .info-steps { display: flex; flex-wrap: wrap; gap: 16px; margin: 22px 0; }
+            .info-step { flex: 1; min-width: 190px; border: 1px solid #ededed; border-radius: 6px; padding: 20px 22px; }
+            .info-step__year { font-size: 15px; font-weight: 700; color: var(--brand-dark); }
+            .info-step__t { font-weight: 600; color: #2f2f33; margin: 2px 0 8px; font-size: 14px; }
+            .info-step p { font-size: 13.5px; color: #6b6e78; margin: 0; line-height: 1.6; }
+
+            /* FAQ — acordeão discreto (linhas, sem caixas coloridas) */
+            .faq-item { border-bottom: 1px solid #ededed; }
+            .faq-q { width: 100%; text-align: left; background: none; border: 0; padding: 15px 0; font-size: 15px;
+                font-weight: 600; color: #2f2f33; cursor: pointer; display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+            .faq-q:hover { color: var(--brand-dark); }
+            .faq-q i { color: #b0b3bb; font-size: 13px; transition: transform .2s; flex-shrink: 0; }
+            .faq-item.open .faq-q i { transform: rotate(180deg); color: var(--brand); }
+            .faq-a { max-height: 0; overflow: hidden; transition: max-height .3s ease; }
+            .faq-a__in { padding: 0 0 16px; font-size: 14.5px; color: #6b6e78; line-height: 1.7; }
+            .faq-item.open .faq-a { max-height: 700px; }
+
+            .contact-form label { font-size: 13px; font-weight: 600; color: #2f2f33; margin-bottom: 5px; }
+            .contact-form .form-control { border-radius: 4px; border: 1px solid #e3e5ea; font-size: 14px; }
+            .contact-form .form-control:focus { border-color: var(--brand); box-shadow: 0 0 0 .15rem rgba(245,124,0,.12); }
+            .contact-form textarea.form-control { min-height: 130px; }
+        </style>
+    </head>
+
+    <body>
+        <%- include('partials/_header') %>
+
+        <main id="content" role="main">
+            <!-- breadcrumb -->
+            <div class="bg-gray-13 bg-md-transparent">
+                <div class="container">
+                    <div class="my-md-3">
+                        <nav aria-label="breadcrumb">
+                            <ol class="breadcrumb mb-3 flex-nowrap flex-xl-wrap overflow-auto overflow-xl-visble">
+                                <li class="breadcrumb-item flex-shrink-0 flex-xl-shrink-1"><a href="/">Início</a></li>
+                                <li class="breadcrumb-item flex-shrink-0 flex-xl-shrink-1 active" aria-current="page"><%= titulo %></li>
+                            </ol>
+                        </nav>
+                    </div>
+                </div>
+            </div>
+            <!-- End breadcrumb -->
+
+            <div class="container mb-6">
+                <div class="row">
+                    <div class="col-lg-9 mx-auto">
+                        <h1 class="font-size-30 font-weight-bold text-gray-90 mb-1"><%= titulo %></h1>
+                        <% if (typeof subtitulo !== 'undefined' && subtitulo) { %>
+                        <p class="font-size-15 text-gray-50 mb-4"><%= subtitulo %></p>
+                        <% } %>
+                        <hr class="mt-2 mb-4">
+                        <div class="info-body">
+                            <%- conteudo %>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <%- include('partials/_footer') %>
+
+        <script src="/assets/vendor/jquery/dist/jquery.min.js"></script>
+        <script src="/assets/vendor/jquery-migrate/dist/jquery-migrate.min.js"></script>
+        <script src="/assets/vendor/popper.js/dist/umd/popper.min.js"></script>
+        <script src="/assets/vendor/bootstrap/bootstrap.min.js"></script>
+        <script src="/assets/vendor/hs-megamenu/src/hs.megamenu.js"></script>
+        <script src="/assets/vendor/svg-injector/dist/svg-injector.min.js"></script>
+        <script src="/assets/vendor/malihu-custom-scrollbar-plugin/jquery.mCustomScrollbar.concat.min.js"></script>
+        <script src="/assets/vendor/bootstrap-select/dist/js/bootstrap-select.min.js"></script>
+        <script src="/assets/js/hs.core.js"></script>
+        <script src="/assets/js/components/hs.header.js"></script>
+        <script src="/assets/js/components/hs.hamburgers.js"></script>
+        <script src="/assets/js/components/hs.unfold.js"></script>
+        <script src="/assets/js/components/hs.malihu-scrollbar.js"></script>
+        <script src="/assets/js/components/hs.svg-injector.js"></script>
+        <script src="/assets/js/components/hs.selectpicker.js"></script>
+
+        <script>
+            $(window).on('load', function () {
+                $('.js-mega-menu').HSMegaMenu({ event: 'hover', direction: 'horizontal', pageContainer: $('.container'), breakpoint: 767.98, hideTimeOut: 0 });
+                try { $.HSCore.components.HSSVGIngector.init('.js-svg-injector'); } catch (e) {}
+            });
+            $(document).ready(function () {
+                $.HSCore.components.HSHeader.init($('#header'));
+                $.HSCore.components.HSUnfold.init($('[data-unfold-target]'));
+                $.HSCore.components.HSMalihuScrollBar.init($('.js-scrollbar'));
+                $.HSCore.components.HSHamburgers.init('#hamburgerTrigger');
+                try { $.HSCore.components.HSSelectPicker.init('.js-select'); } catch (e) {}
+
+                $('#headerSidebarList [data-toggle="collapse"]').on('click', function (e) {
+                    e.preventDefault();
+                    var target = $(this).data('target');
+                    if ($(this).attr('aria-expanded') === "true") { $(target).collapse('hide'); }
+                    else { $(target).collapse('show'); }
+                });
+
+                document.querySelectorAll('.faq-q').forEach(function (btn) {
+                    btn.addEventListener('click', function () { btn.closest('.faq-item').classList.toggle('open'); });
+                });
+
+                var f = document.getElementById('supportForm');
+                if (f) {
+                    f.addEventListener('submit', function (e) {
+                        e.preventDefault();
+                        var g = function (id) { return (document.getElementById(id) || {}).value || ''; };
+                        var corpo = 'Nome: ' + g('sfNome') + '\nEmail: ' + g('sfEmail') + '\n\n' + g('sfMensagem');
+                        window.location.href = 'mailto:geral@100bytes.co.ao?subject='
+                            + encodeURIComponent(g('sfAssunto') || 'Pedido de apoio') + '&body=' + encodeURIComponent(corpo);
+                    });
+                }
+            });
+        </script>
+    </body>
+</html>

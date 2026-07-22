@@ -7,6 +7,7 @@ const { createProxyMiddleware } = require("http-proxy-middleware");
 const { getRootCategories, getAllCategories, findCategoryBySlug, getCategoryBySlug, getTopCategories } = require("./api/categories");
 const { getFeatured, getOnSale, getNewest, getProductById, getRelated, getByCategory, getProductsPaged } = require("./api/products");
 const { getBrands } = require("./api/brands");
+const { paginas } = require("./data/paginas");
 
 const app = express();
 const PORT = process.env.PORT || 3030;
@@ -435,6 +436,21 @@ app.get("/ofertas", async (req, res, next) => {
   } catch (e) {
     next(e);
   }
+});
+
+// ── PÁGINAS INSTITUCIONAIS (coluna "Empresa" do footer) ──
+// Registadas antes das rotas dinâmicas de produto/categoria. Se o slug não
+// corresponder a uma página institucional, passa para as rotas seguintes.
+app.get("/:slug([a-z0-9][a-z0-9-]*)", (req, res, next) => {
+  const pagina = paginas[req.params.slug];
+  if (!pagina) return next();
+  res.render("pagina-info", {
+    titulo: pagina.titulo,
+    subtitulo: pagina.subtitulo,
+    metaDescription: pagina.metaDescription,
+    conteudo: pagina.conteudo,
+    categories: cache.categories,
+  });
 });
 
 // ── PRODUTOS ──
