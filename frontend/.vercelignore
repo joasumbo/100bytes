@@ -1,2 +1,9 @@
 public/assets/vendor/custombox/src
 public/assets/vendor/summernote/src
+
+# Ficheiros de ambiente locais / segredos — nunca subir para o deploy.
+# (Em produção o Vercel usa as env vars configuradas no projeto.)
+.env
+.env.*
+.env.vercel.production
+.env.dev
