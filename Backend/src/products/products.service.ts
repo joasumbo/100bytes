@@ -138,6 +138,40 @@ export class ProductsService {
     return { products, total, page: pageNum, perPage: perPageNum, pages: Math.ceil(total / perPageNum) };
   }
 
+  // ─── MAIS VENDIDOS ────────────────────────────────────────────────────────────
+  // Ranking por unidades vendidas (soma de order_items.qty por produto).
+  // Só considera produtos ainda activos. Devolve-os já ordenados por vendas.
+  async bestSellers(limit = 24) {
+    const take = Math.min(100, Math.max(1, limit));
+    const grouped = await this.prisma.orderItem.groupBy({
+      by: ['productId'],
+      where: { productId: { not: null } },
+      _sum: { qty: true },
+      orderBy: { _sum: { qty: 'desc' } },
+      take: take * 2, // folga para compensar produtos entretanto inactivos
+    });
+
+    const ids = grouped.map((g) => g.productId).filter((id): id is string => !!id);
+    if (ids.length === 0) return { products: [], total: 0 };
+
+    const products = await this.prisma.product.findMany({
+      where: { id: { in: ids }, active: true },
+      include: {
+        category: { select: { id: true, name: true, slug: true } },
+        brand: { select: { id: true, name: true, logoKey: true } },
+      },
+    });
+
+    // Preserva a ordem do ranking e anexa as unidades vendidas.
+    const soldById = new Map(grouped.map((g) => [g.productId, g._sum.qty ?? 0]));
+    const ordered = products
+      .sort((a, b) => (soldById.get(b.id) ?? 0) - (soldById.get(a.id) ?? 0))
+      .slice(0, take)
+      .map((p) => ({ ...p, unitsSold: soldById.get(p.id) ?? 0 }));
+
+    return { products: ordered, total: ordered.length };
+  }
+
   // ─── GET ONE ─────────────────────────────────────────────────────────────────
   async findOne(id: string) {
     const product = await this.prisma.product.findUnique({

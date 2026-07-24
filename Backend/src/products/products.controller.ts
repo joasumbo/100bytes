@@ -17,6 +17,12 @@ export class ProductsController {
     return this.products.findAll(query);
   }
 
+  // Rota estática antes de :id, senão "bestsellers" seria interpretado como id.
+  @Get('bestsellers')
+  bestSellers(@Query('limit') limit?: string) {
+    return this.products.bestSellers(parseInt(limit ?? '24'));
+  }
+
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.products.findOne(id);
