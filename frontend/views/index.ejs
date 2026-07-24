@@ -2,7 +2,7 @@
 <html lang="pt-PT">
     <head>
         <!-- Title -->
-        <title>Página inicial | 100bytes - Loja de eletrónica</title>
+        <title>Bem-vindo à 100 bytes</title>
 
         <!-- Required Meta Tags Always Come First -->
         <meta charset="utf-8">
@@ -242,7 +242,7 @@
                             </div>
                             <div>
                                 <h5 class="font-size-15 font-weight-bold text-gray-90 mb-0">Suporte online</h5>
-                                <p class="font-size-13 text-gray-70 mb-0">comercial@100bytes.co.ao</p>
+                                <p class="font-size-13 text-gray-70 mb-0">geral@100bytes.co.ao</p>
                             </div>
                         </div>
                         <!-- End Vantagem 2 -->
@@ -253,11 +253,11 @@
                             </div>
                             <div>
                                 <h5 class="font-size-15 font-weight-bold text-gray-90 mb-0">Envio Nacional</h5>
-                                <p class="font-size-13 text-gray-70 mb-0">Entregas seguras em dias úteis</p>
+                                <p class="font-size-13 text-gray-70 mb-0">Entregas seguras</p>
                             </div>
                         </div>
                         <!-- End Vantagem 3 -->
-                        <!-- Vantagem 4: Devolução em até 30 dias -->
+                        <!-- Vantagem 4: Devolução em até 7 dias -->
                         <div class="col-md-6 col-lg-3 d-flex align-items-center px-3 py-2 py-lg-0">
                             <div class="mr-3">
                                 <svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -265,7 +265,7 @@
                                 </svg>
                             </div>
                             <div>
-                                <h5 class="font-size-15 font-weight-bold text-gray-90 mb-0">Devolução em até 30 dias</h5>
+                                <h5 class="font-size-15 font-weight-bold text-gray-90 mb-0">Devolução em até 7 dias</h5>
                                 <p class="font-size-13 text-gray-70 mb-0">Para trocar de produto</p>
                             </div>
                         </div>
@@ -566,6 +566,52 @@
             </style>
             <!-- End Promo Banners -->
 
+            <!-- Testemunhos -->
+            <% if (typeof testimonials !== 'undefined' && testimonials.length) { %>
+            <div class="container-fluid px-0 my-6">
+                <div class="testi-wrap">
+                    <div class="container">
+                        <div class="text-center mb-5">
+                            <h2 class="testi-title">O que dizem os nossos clientes</h2>
+                            <p class="testi-sub">A confiança de quem já comprou na 100 Bytes.</p>
+                        </div>
+                        <div class="row no-gutters justify-content-center">
+                            <% testimonials.forEach(function (t) { var r = Math.max(0, Math.min(5, parseInt(t.rating) || 5)); %>
+                            <div class="col-12 col-sm-6 col-lg-3 px-2 mb-3">
+                                <div class="testi-card">
+                                    <div class="testi-stars" aria-label="<%= r %> de 5 estrelas">
+                                        <% for (var i = 0; i < 5; i++) { %><i class="fas fa-star<%= i < r ? '' : '-o' %>"></i><% } %>
+                                    </div>
+                                    <p class="testi-text">“<%= t.text %>”</p>
+                                    <div class="testi-author">
+                                        <div class="testi-avatar"><%= (t.name || '?').trim().charAt(0).toUpperCase() %></div>
+                                        <div>
+                                            <div class="testi-name"><%= t.name %></div>
+                                            <% if (t.location) { %><div class="testi-loc"><%= t.location %></div><% } %>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <% }); %>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <style>
+                .testi-wrap { background: linear-gradient(135deg, #F57C00 0%, #FF9800 55%, #FFB74D 100%); padding: 56px 0; }
+                .testi-title { color: #fff; font-weight: 800; font-size: 28px; margin-bottom: 6px; }
+                .testi-sub { color: rgba(255,255,255,.92); font-size: 15px; margin: 0; }
+                .testi-card { background: #fff; border-radius: 16px; padding: 22px 20px; height: 100%; box-shadow: 0 8px 26px rgba(0,0,0,.14); display: flex; flex-direction: column; }
+                .testi-stars { color: #FFB300; font-size: 14px; margin-bottom: 12px; letter-spacing: 2px; }
+                .testi-text { color: #4a4d57; font-size: 14px; line-height: 1.65; flex: 1; margin-bottom: 18px; }
+                .testi-author { display: flex; align-items: center; gap: 12px; }
+                .testi-avatar { width: 42px; height: 42px; border-radius: 50%; background: linear-gradient(135deg,#F57C00,#FF9800); color: #fff; font-weight: 700; font-size: 18px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+                .testi-name { font-weight: 700; color: #23262f; font-size: 14px; }
+                .testi-loc { color: #9195a1; font-size: 12px; }
+            </style>
+            <% } %>
+            <!-- End Testemunhos -->
+
             <div class="container">
             <!-- Recently viewed -->
             <div id="recently-viewed-section" class="mb-6" style="display:none">
@@ -595,8 +641,8 @@
                 <div class="rv-wrap">
                     <div class="rv-side">
                         <img src="https://cdn100ka.sysvenus.com/8ce85169089745f4026037c29464fc155369f674-removebg-preview.png" alt="">
-                        <p class="rv-side-title">Vê novamente seus produtos.</p>
-                        <p class="rv-side-sub">Vistos Recentemente</p>
+                        <p class="rv-side-title">Vistos recentemente</p>
+                        <p class="rv-side-sub">Volte aos produtos que viu</p>
                     </div>
                     <div class="rv-cards-wrap">
                         <div id="recently-viewed-list" class="rv-cards"></div>

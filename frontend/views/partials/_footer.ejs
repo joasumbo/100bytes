@@ -71,7 +71,7 @@
                     <div class="footer-news__sub">Recebe novidades, promoções e lançamentos em primeira mão.</div>
                 </div>
                 <form class="footer-news__form" onsubmit="return false;">
-                    <input type="email" placeholder="O teu endereço de email">
+                    <input type="email" placeholder="O seu endereço de email">
                     <button type="submit">SUBSCREVER</button>
                 </form>
             </div>
@@ -87,7 +87,6 @@
                 <div class="col-lg-3 col-md-6 mb-5">
                     <h6 class="footer-col__title">100 Bytes</h6>
                     <p class="footer-about__text">A 100 Bytes oferece soluções tecnológicas com rigor, qualidade e compromisso — produtos, suporte especializado e dedicação contínua à excelência.</p>
-                    <p class="footer-about__tag">"No problem... we do it!"</p>
                     <div class="footer-social">
                         <a class="s-ig" href="https://www.instagram.com/100.bytes/" target="_blank" rel="noopener noreferrer" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
                         <a class="s-fb" href="https://www.facebook.com/p/100bytes-100063935954143/" target="_blank" rel="noopener noreferrer" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
@@ -99,11 +98,10 @@
                 <div class="col-lg-2 col-md-6 mb-5">
                     <h6 class="footer-col__title">Produtos</h6>
                     <ul class="footer-links">
-                        <li><a href="/pesquisa?sort=price_asc">Promoções</a></li>
-                        <li><a href="/pesquisa?sort=newest">Novidades</a></li>
-                        <li><a href="/pesquisa">Os mais vendidos</a></li>
-                        <li><a href="/tendencias">Tendências</a></li>
-                        <li><a href="/ofertas">Oferta do dia</a></li>
+                        <li><a href="/promocoes">Promoções</a></li>
+                        <li><a href="/novidades">Novidades</a></li>
+                        <li><a href="/mais-vendidos">Mais vendidos</a></li>
+                        <li><a href="/apoio-ao-cliente">Apoio ao cliente</a></li>
                     </ul>
                 </div>
 
@@ -117,7 +115,8 @@
                         <li><a href="/politica-de-privacidade">Política de Privacidade</a></li>
                         <li><a href="/trocas-e-devolucoes">Trocas e Devoluções</a></li>
                         <li><a href="/formas-de-pagamento">Formas de Pagamento</a></li>
-                        <li><a href="/apoio-ao-cliente">FAQs &amp; Apoio ao Cliente</a></li>
+                        <li><a href="/faq">Perguntas Frequentes</a></li>
+                        <li><a href="/apoio-ao-cliente">Apoio ao Cliente</a></li>
                     </ul>
                 </div>
 
@@ -143,16 +142,10 @@
                         <div class="footer-contact__row"><i class="fas fa-phone"></i><a href="tel:+244946920882">+244 946 920 882</a></div>
                     </div>
 
-                    <div class="footer-contact__group">
+                    <div class="footer-contact__group" style="margin-bottom:0;">
                         <div class="footer-contact__label">Loja 1 — Liga Africana / Assistência Técnica</div>
                         <div class="footer-contact__row"><i class="fas fa-map-marker-alt"></i><span>Rua da Liga Africana, n.º 81 — Luanda, Angola</span></div>
                         <div class="footer-contact__row"><i class="fas fa-phone"></i><a href="tel:+244928499325">+244 928 499 325</a></div>
-                    </div>
-
-                    <div class="footer-contact__group" style="margin-bottom:0;">
-                        <div class="footer-contact__label">Loja 2 — Samba</div>
-                        <div class="footer-contact__row"><i class="fas fa-map-marker-alt"></i><span>Rua Direita da Samba, n.º 153 — Samba, Angola</span></div>
-                        <div class="footer-contact__row"><i class="fas fa-phone"></i><a href="tel:+244928499319">+244 928 499 319</a></div>
                     </div>
                 </div>
 
@@ -180,6 +173,49 @@
 
 <%- include('_customer-auth-modals') %>
 <%- include('_cart-drawer') %>
+
+<!-- Botão flutuante de WhatsApp — o cliente inicia o contacto (sem pop-ups). -->
+<a class="wa-float" href="https://wa.me/244928499325?text=Ol%C3%A1%21%20Vim%20do%20site%20da%20100%20Bytes%20e%20gostaria%20de%20mais%20informa%C3%A7%C3%B5es."
+   target="_blank" rel="noopener noreferrer"
+   aria-label="Falar connosco por WhatsApp" title="Falar connosco por WhatsApp">
+    <i class="fab fa-whatsapp" aria-hidden="true"></i>
+    <span class="wa-float__label">Fale connosco</span>
+</a>
+<style>
+    .wa-float {
+        position: fixed; right: 22px; bottom: 22px; z-index: 1030;
+        display: flex; align-items: center; gap: 0;
+        height: 56px; padding: 0 16px; border-radius: 28px;
+        background: #25D366; color: #fff; text-decoration: none;
+        box-shadow: 0 6px 20px rgba(37,211,102,.45);
+        transition: box-shadow .25s ease, transform .25s ease, gap .25s ease, padding .25s ease;
+    }
+    .wa-float:hover, .wa-float:focus {
+        color: #fff; text-decoration: none;
+        box-shadow: 0 10px 28px rgba(37,211,102,.6); transform: translateY(-2px);
+        gap: 10px; padding-right: 22px;
+    }
+    .wa-float i { font-size: 28px; line-height: 1; }
+    /* O rótulo só se revela ao passar o rato — em repouso fica só o ícone. */
+    .wa-float__label {
+        max-width: 0; overflow: hidden; white-space: nowrap;
+        font-size: 14px; font-weight: 600; opacity: 0;
+        transition: max-width .25s ease, opacity .2s ease;
+    }
+    .wa-float:hover .wa-float__label, .wa-float:focus .wa-float__label { max-width: 160px; opacity: 1; }
+    .wa-float:focus-visible { outline: 3px solid #128C7E; outline-offset: 3px; }
+    /* Em ecrãs pequenos fica sempre compacto, para não tapar conteúdo. */
+    @media (max-width: 575.98px) {
+        .wa-float { right: 16px; bottom: 16px; height: 52px; padding: 0 12px; }
+        .wa-float i { font-size: 26px; }
+        .wa-float:hover, .wa-float:focus { gap: 0; padding-right: 12px; }
+        .wa-float__label { display: none; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+        .wa-float, .wa-float__label { transition: none; }
+        .wa-float:hover, .wa-float:focus { transform: none; }
+    }
+</style>
 
 <!-- Scripts -->
 <script src="/js/ui.js"></script>

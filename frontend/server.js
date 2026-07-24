@@ -5,7 +5,7 @@ const cookieParser = require("cookie-parser");
 const jwt = require("jsonwebtoken");
 const { createProxyMiddleware } = require("http-proxy-middleware");
 const { getRootCategories, getAllCategories, findCategoryBySlug, getCategoryBySlug, getTopCategories } = require("./api/categories");
-const { getFeatured, getOnSale, getNewest, getProductById, getRelated, getByCategory, getProductsPaged } = require("./api/products");
+const { getFeatured, getOnSale, getNewest, getProductById, getRelated, getByCategory, getProductsPaged, getBestSellers, NOVIDADE_MS } = require("./api/products");
 const { getBrands } = require("./api/brands");
 const { paginas } = require("./data/paginas");
 
@@ -46,12 +46,18 @@ app.use((req, res, next) => {
 });
 
 // Cache de dados — refresca a cada 5 minutos
-let cache = { categories: [], allCategories: [], featured: [], onSale: [], newest: [], tabsData: { topCats: [], byCategory: {} }, brands: [], sliders: [], fetchedAt: 0 };
+const DEFAULT_FREE_SHIPPING = 200000; // Kz — acordado com o cliente em 12/07/2026
+let cache = { categories: [], allCategories: [], featured: [], onSale: [], newest: [], tabsData: { topCats: [], byCategory: {} }, brands: [], sliders: [], freeShippingThreshold: DEFAULT_FREE_SHIPPING, testimonials: [], fetchedAt: 0 };
 const CACHE_TTL = 5 * 60 * 1000; // 5 minutos
+
+// Formata um valor em Kwanzas (sem casas decimais) para os textos de montra.
+function formatKz(value) {
+  return Number(value).toLocaleString("pt-PT", { maximumFractionDigits: 0 }) + " Kz";
+}
 
 async function refreshCache() {
   try {
-    const [categories, allCategories, featured, onSale, newest, topCats, brands, slidersRes] = await Promise.all([
+    const [categories, allCategories, featured, onSale, newest, topCats, brands, slidersRes, shippingRes, testimonialsRes] = await Promise.all([
       getRootCategories(12),
       getAllCategories(),
       getFeatured(),
@@ -60,7 +66,16 @@ async function refreshCache() {
       getTopCategories(5),
       getBrands(),
       fetch(`${BACKEND_URL}/api/content/home-sliders`).then((r) => r.json()).catch(() => null),
+      fetch(`${BACKEND_URL}/api/content/shipping`).then((r) => r.json()).catch(() => null),
+      fetch(`${BACKEND_URL}/api/content/testimonials`).then((r) => r.json()).catch(() => null),
     ]);
+
+    const threshold = Number(shippingRes?.entry?.data?.freeShippingThreshold);
+    const freeShippingThreshold = Number.isFinite(threshold) && threshold > 0 ? threshold : DEFAULT_FREE_SHIPPING;
+
+    const testimonials = Array.isArray(testimonialsRes?.entry?.data?.testimonials)
+      ? testimonialsRes.entry.data.testimonials
+      : [];
 
     // Buscar produtos para cada tab de categoria em paralelo
     const catProducts = await Promise.all(topCats.map((cat) => getByCategory(cat.id, 8)));
@@ -71,7 +86,7 @@ async function refreshCache() {
       .filter((s) => s.active)
       .sort((a, b) => a.order - b.order);
 
-    cache = { categories, allCategories, featured, onSale, newest, tabsData: { topCats, byCategory }, brands, sliders, fetchedAt: Date.now() };
+    cache = { categories, allCategories, featured, onSale, newest, tabsData: { topCats, byCategory }, brands, sliders, freeShippingThreshold, testimonials, fetchedAt: Date.now() };
     console.log(`[cache] ${categories.length} cat-raiz, ${allCategories.length} cat-total, ${featured.length} destaque, ${onSale.length} oferta, ${sliders.length} slides`);
   } catch (e) {
     console.error("[cache] Erro ao carregar:", e.message);
@@ -302,6 +317,9 @@ app.use(async (req, res, next) => {
     return next();
   }
   try { await ensureCache(); } catch (e) { /* segue com a cache que houver */ }
+  // Disponibiliza o limiar de portes grátis (editável no backoffice) a todas as views.
+  res.locals.freeShippingThreshold = cache.freeShippingThreshold;
+  res.locals.freeShippingLabel = formatKz(cache.freeShippingThreshold);
   next();
 });
 
@@ -316,6 +334,7 @@ app.get(["/", "/index.html"], async (req, res, next) => {
       tabsData: cache.tabsData,
       brands: cache.brands,
       sliders: cache.sliders,
+      testimonials: cache.testimonials,
     });
   } catch (e) {
     next(e);
@@ -388,54 +407,111 @@ app.get("/pesquisa", async (req, res, next) => {
   }
 });
 
-// Tendências (/tendencias)
-app.get("/tendencias", async (req, res, next) => {
+// ── LISTAGENS DE MONTRA ──
+// Renderiza uma listagem paginada com o mesmo template da categoria.
+function montra({ pageTitle, defaultSort, filter }) {
+  return async (req, res, next) => {
+    try {
+      const page = Math.max(1, parseInt(req.query.page) || 1);
+      const sort = req.query.sort || defaultSort;
+      const minPrice = req.query.minPrice || null;
+      const maxPrice = req.query.maxPrice || null;
+      const brandId = req.query.brandId || null;
+      const { sortBy, sortOrder } = mapSort(sort);
+      // perPage maior quando há filtro em memória, para o corte não esvaziar a página
+      const paged = await getProductsPaged({
+        page: filter ? 1 : page,
+        perPage: filter ? 120 : 24,
+        sortBy,
+        sortOrder,
+        minPrice,
+        maxPrice,
+        brandId,
+      });
+
+      let products = paged.products;
+      let pagination = { page: paged.page, pages: paged.pages, total: paged.total, perPage: paged.perPage };
+
+      if (filter) {
+        const todos = products.filter(filter);
+        const perPage = 24;
+        const pages = Math.max(1, Math.ceil(todos.length / perPage));
+        const safePage = Math.min(page, pages);
+        products = todos.slice((safePage - 1) * perPage, safePage * perPage);
+        pagination = { page: safePage, pages, total: todos.length, perPage };
+      }
+
+      res.render("categoria", {
+        category: null,
+        pageTitle,
+        categories: cache.categories,
+        products,
+        topProducts: [],
+        brands: cache.brands,
+        pagination,
+        currentFilters: { sort, minPrice, maxPrice, brandId },
+      });
+    } catch (e) {
+      next(e);
+    }
+  };
+}
+
+// Promoções — produtos com preço promocional activo
+app.get("/promocoes", montra({
+  pageTitle: "Promoções",
+  defaultSort: "price_asc",
+  filter: (p) => p.salePriceValue != null && p.salePriceValue > 0,
+}));
+
+// Novidades — artigos adicionados nos últimos 7 dias (critério acordado com o cliente)
+app.get("/novidades", montra({
+  pageTitle: "Novidades",
+  defaultSort: "newest",
+  filter: (p) => p.createdAt && (Date.now() - new Date(p.createdAt).getTime()) < NOVIDADE_MS,
+}));
+
+// Mais vendidos — ranking por volume de vendas (agregação em order_items no backend).
+// Sem histórico de vendas ainda, recai nos artigos mais recentes para não ficar vazio.
+app.get("/mais-vendidos", async (req, res, next) => {
   try {
     const page = Math.max(1, parseInt(req.query.page) || 1);
-    const sort = req.query.sort || "newest";
-    const minPrice = req.query.minPrice || null;
-    const maxPrice = req.query.maxPrice || null;
-    const brandId = req.query.brandId || null;
-    const { sortBy, sortOrder } = mapSort(sort);
-    const paged = await getProductsPaged({ page, perPage: 24, sortBy, sortOrder, minPrice, maxPrice, brandId });
+    let products = await getBestSellers(72);
+
+    if (products.length === 0) {
+      const paged = await getProductsPaged({ page: 1, perPage: 72, sortBy: "createdAt", sortOrder: "desc" });
+      products = paged.products;
+    }
+
+    const perPage = 24;
+    const total = products.length;
+    const pages = Math.max(1, Math.ceil(total / perPage));
+    const safePage = Math.min(page, pages);
+    const pageProducts = products.slice((safePage - 1) * perPage, safePage * perPage);
+
     res.render("categoria", {
       category: null,
-      pageTitle: "Tendencias",
+      pageTitle: "Mais vendidos",
       categories: cache.categories,
-      products: paged.products,
+      products: pageProducts,
       topProducts: [],
       brands: cache.brands,
-      pagination: { page: paged.page, pages: paged.pages, total: paged.total, perPage: paged.perPage },
-      currentFilters: { sort, minPrice, maxPrice, brandId },
+      pagination: { page: safePage, pages, total, perPage },
+      currentFilters: { sort: "", minPrice: null, maxPrice: null, brandId: null },
     });
   } catch (e) {
     next(e);
   }
 });
 
-// Super Ofertas (/ofertas)
-app.get("/ofertas", async (req, res, next) => {
-  try {
-    const page = Math.max(1, parseInt(req.query.page) || 1);
-    const sort = req.query.sort || "price_asc";
-    const minPrice = req.query.minPrice || null;
-    const maxPrice = req.query.maxPrice || null;
-    const brandId = req.query.brandId || null;
-    const { sortBy, sortOrder } = mapSort(sort);
-    const paged = await getProductsPaged({ page, perPage: 24, sortBy, sortOrder, minPrice, maxPrice, brandId });
-    res.render("categoria", {
-      category: null,
-      pageTitle: "Super Ofertas",
-      categories: cache.categories,
-      products: paged.products,
-      topProducts: [],
-      brands: cache.brands,
-      pagination: { page: paged.page, pages: paged.pages, total: paged.total, perPage: paged.perPage },
-      currentFilters: { sort, minPrice, maxPrice, brandId },
-    });
-  } catch (e) {
-    next(e);
-  }
+// URLs antigos → novos (301, preserva links já partilhados)
+app.get("/ofertas", (req, res) => {
+  const q = new URLSearchParams(req.query || {}).toString();
+  res.redirect(301, `/promocoes${q ? `?${q}` : ""}`);
+});
+app.get("/tendencias", (req, res) => {
+  const q = new URLSearchParams(req.query || {}).toString();
+  res.redirect(301, `/mais-vendidos${q ? `?${q}` : ""}`);
 });
 
 // ── PÁGINAS INSTITUCIONAIS (coluna "Empresa" do footer) ──

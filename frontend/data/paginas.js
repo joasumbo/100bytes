@@ -6,7 +6,6 @@
 
 const SEDE_TEL = "+244 946 920 882";
 const LOJA1_TEL = "+244 928 499 325";
-const LOJA2_TEL = "+244 928 499 319";
 const EMAIL = "geral@100bytes.co.ao";
 const tel = (t) => t.replace(/\s/g, "");
 
@@ -26,8 +25,6 @@ const paginas = {
 
       <p>Conta com técnicos especializados, preparados para responder com eficiência aos desafios tecnológicos. Em constante evolução, acompanha tendências e inovações, posicionando-se como um parceiro tecnológico dedicado a simplificar e impulsionar o progresso dos seus clientes.</p>
 
-      <div class="info-note"><p>“No problem… we do it!” — o compromisso que resume a forma como trabalhamos todos os dias.</p></div>
-
       <h2>A nossa jornada</h2>
       <div class="info-steps">
         <div class="info-step">
@@ -37,13 +34,8 @@ const paginas = {
         </div>
         <div class="info-step">
           <div class="info-step__year">Julho de 2025</div>
-          <div class="info-step__t">Abertura da 1.ª loja física</div>
-          <p>Um novo capítulo começa com a abertura da nossa primeira loja física, mais perto de si.</p>
-        </div>
-        <div class="info-step">
-          <div class="info-step__year">Dezembro de 2025</div>
-          <div class="info-step__t">Abertura da 2.ª loja física</div>
-          <p>Crescemos mais um passo com a abertura da nossa segunda loja física, para servir ainda melhor.</p>
+          <div class="info-step__t">Abertura da loja física</div>
+          <p>Um novo capítulo começa com a abertura da nossa loja física na Liga Africana, mais perto de você.</p>
         </div>
       </div>
     `,
@@ -54,7 +46,7 @@ const paginas = {
     titulo: "Lojas",
     subtitulo: "Visite-nos. Atendimento personalizado e assistência técnica especializada.",
     metaDescription:
-      "Lojas físicas da 100 Bytes em Luanda: Loja 1 — Liga Africana (com centro de assistência técnica) e Loja 2 — Samba.",
+      "Loja física da 100 Bytes em Luanda: Liga Africana, com centro de assistência técnica especializada.",
     conteudo: `
       <div class="info-card">
         <h3>Loja 1 — Liga Africana</h3>
@@ -65,17 +57,6 @@ const paginas = {
           <div><i class="fas fa-map-marker-alt"></i><span>Rua da Liga Africana, n.º 81 — Luanda, Angola</span></div>
           <div><i class="fas fa-phone"></i><a href="tel:${tel(LOJA1_TEL)}">${LOJA1_TEL}</a></div>
           <div><i class="fab fa-whatsapp"></i><a href="https://wa.me/244928499325" target="_blank" rel="noopener">Falar por WhatsApp</a></div>
-        </div>
-      </div>
-
-      <div class="info-card">
-        <h3>Loja 2 — Samba</h3>
-        <p>No final de 2025, demos mais um passo no crescimento da marca com a abertura da nossa segunda loja. Visite-nos na Rua Direita da Samba, n.º 153, em Luanda (ao lado da Mecauto), e descubra uma oferta completa de soluções tecnológicas para o dia a dia, tanto para clientes particulares como empresariais.</p>
-        <p>Disponibilizamos uma ampla gama de produtos, incluindo equipamentos informáticos novos e seminovos, impressoras, periféricos, acessórios e consumíveis. Tal como na nossa primeira loja, destacamo-nos pela forte oferta em equipamentos de rede (switches e routers) e servidores, sempre com foco na qualidade e em preços competitivos.</p>
-        <p>A loja conta também com apoio técnico especializado, garantindo assistência e acompanhamento na escolha e manutenção dos equipamentos.</p>
-        <div class="info-meta">
-          <div><i class="fas fa-map-marker-alt"></i><span>Rua Direita da Samba, n.º 153 — Samba, Luanda (ao lado da Mecauto)</span></div>
-          <div><i class="fas fa-phone"></i><a href="tel:${tel(LOJA2_TEL)}">${LOJA2_TEL}</a></div>
         </div>
       </div>
 
@@ -187,12 +168,43 @@ const paginas = {
     `,
   },
 
-  // ─────────────────────────────────────── APOIO AO CLIENTE + FAQS ────
+  // ─────────────────────────────────────── PERGUNTAS FREQUENTES (FAQ) ──
+  faq: {
+    titulo: "Perguntas Frequentes",
+    subtitulo: "Reunimos as respostas às dúvidas mais comuns sobre compras, devoluções, garantias e assistência.",
+    metaDescription:
+      "Perguntas frequentes (FAQ) da 100 Bytes sobre devoluções, trocas, garantias, reparações, pagamentos e lojas.",
+    conteudo: `
+      ${faq([
+        ["Posso devolver um produto?", "Sim. O Cliente dispõe do direito de livre resolução, podendo devolver o produto no prazo de <strong>7 (sete) dias</strong> a contar da sua receção, sem necessidade de indicação de motivo e sem encargos indemnizatórios. O exercício deste direito deve ser efetuado nos termos da legislação aplicável e das condições estabelecidas pela 100 Bytes."],
+        ["Como faço um pedido de devolução?", "Para solicitar a devolução, o Cliente deverá contactar a 100 Bytes através dos canais disponíveis, indicando o número da encomenda ou da fatura. Após validação, serão fornecidas as instruções necessárias para a devolução do produto."],
+        ["Em que condições posso devolver um produto?", "A devolução apenas será aceite caso o produto se encontre em perfeito estado de conservação, acompanhado da embalagem original, bem como de todos os acessórios, manuais e componentes incluídos. Não poderão existir sinais de uso indevido, danos ou qualquer alteração que comprometa a sua integridade."],
+        ["Quem paga os custos de devolução?", "Os custos de devolução são suportados pelo Cliente nos casos de livre resolução por insatisfação. Contudo, em situações de defeito, erro de envio ou dano no transporte, os mesmos serão assumidos pela 100 Bytes, após validação da ocorrência."],
+        ["Posso trocar um produto?", "Sim. A troca de produtos é possível, desde que sejam integralmente cumpridas as condições de devolução estabelecidas. O pedido encontra-se sujeito a verificação técnica prévia, com vista à confirmação do estado e conformidade do produto."],
+        ["Existem produtos que não podem ser devolvidos?", "Sim. Determinados produtos não são elegíveis para devolução, designadamente: software ou licenças ativadas; produtos personalizados; equipamentos instalados por entidades não autorizadas; telemóveis ou dispositivos similares, salvo em caso de defeito comprovado."],
+        ["O que acontece após a devolução ser aceite?", "Após a aceitação da devolução, a 100 Bytes poderá, conforme aplicável, proceder à substituição do produto, reparação, reembolso do valor pago ou emissão de crédito, de acordo com a situação verificada."],
+        ["Os produtos têm garantia?", "Sim. Todos os produtos comercializados beneficiam de garantia, nos termos e condições definidos pelos respetivos fabricantes. A mesma aplica-se a eventuais defeitos de fabrico ou anomalias de funcionamento, em conformidade com a legislação aplicável."],
+        ["Qual é o prazo de garantia?", "O prazo de garantia varia em função do fabricante, do tipo de produto e das condições específicas associadas a cada equipamento. Aplicam-se, para o efeito, os termos definidos pelo fabricante, em conformidade com a legislação em vigor."],
+        ["O que não está coberto pela garantia?", "A garantia não abrange situações resultantes de utilização indevida, negligente ou em desconformidade com as instruções do fabricante. Estão igualmente excluídos danos físicos, intervenções técnicas não autorizadas e prejuízos decorrentes de fatores externos, como falhas de energia, líquidos, humidade ou condições ambientais inadequadas."],
+        ["A 100 Bytes faz reparações?", "Sim. A 100 Bytes disponibiliza serviços técnicos especializados, assegurados por uma equipa qualificada para diagnóstico, manutenção e reparação de diversos equipamentos eletrónicos."],
+        ["O que devo fazer antes de enviar um equipamento para reparação?", "Antes de entregar o equipamento para reparação, o Cliente deverá assegurar a realização de cópias de segurança (backup) de todos os dados. A 100 Bytes não se responsabiliza por qualquer perda de informação durante o processo técnico."],
+        ["O que fazer se a embalagem chegar danificada?", "Caso a embalagem apresente danos ou sinais de violação, o Cliente deverá abster-se de a abrir, registar evidência fotográfica do estado no momento da receção e contactar de imediato a 100 Bytes para as devidas diligências."],
+        ["Quais são os métodos de pagamento disponíveis?", "A 100 Bytes disponibiliza os seguintes métodos de pagamento: Entidade e Referência, Caixa Express e transferência bancária (IBAN), assegurando soluções seguras e eficientes."],
+        ["Como posso contactar o suporte?", "Através de email (<a href='mailto:" + EMAIL + "'>" + EMAIL + "</a>), telefone (<a href='tel:" + tel(LOJA1_TEL) + "'>" + LOJA1_TEL + "</a>) ou pelo formulário na página de <a href='/apoio-ao-cliente'>Apoio ao Cliente</a>."],
+        ["Onde está localizada a loja?", "Rua da Liga Africana, n.º 81, Luanda."],
+        ["Onde está localizado o Centro de Assistência Técnica?", "Na nossa loja — Rua da Liga Africana, n.º 81, Luanda."],
+      ])}
+
+      <div class="info-note"><p>Não encontrou a resposta que procurava? Fale connosco através da página de <a href="/apoio-ao-cliente">Apoio ao Cliente</a>.</p></div>
+    `,
+  },
+
+  // ─────────────────────────────────────── APOIO AO CLIENTE ───────────
   "apoio-ao-cliente": {
-    titulo: "FAQs & Apoio ao Cliente",
+    titulo: "Apoio ao Cliente",
     subtitulo: "Estamos comprometidos em prestar um apoio rápido, eficiente e personalizado.",
     metaDescription:
-      "Apoio ao Cliente da 100 Bytes e perguntas frequentes (FAQs) sobre devoluções, trocas, garantias, reparações, pagamentos e lojas.",
+      "Apoio ao Cliente da 100 Bytes: contactos, formulário de suporte e assistência técnica especializada.",
     conteudo: `
       <p>Na 100 Bytes, estamos comprometidos em prestar um apoio rápido, eficiente e personalizado. A nossa equipa encontra-se disponível para esclarecer dúvidas, prestar assistência técnica e acompanhar qualquer questão relacionada com os nossos produtos e serviços.</p>
 
@@ -200,9 +212,11 @@ const paginas = {
         <div class="info-meta" style="margin-top:0;">
           <div><i class="fas fa-envelope"></i><a href="mailto:${EMAIL}">${EMAIL}</a></div>
           <div><i class="fas fa-phone"></i><a href="tel:${tel(LOJA1_TEL)}">${LOJA1_TEL}</a></div>
-          <div><i class="fas fa-map-marker-alt"></i><span>Loja 1 — Rua da Liga Africana, n.º 81, Luanda</span></div>
+          <div><i class="fas fa-map-marker-alt"></i><span>Rua da Liga Africana, n.º 81, Luanda</span></div>
         </div>
       </div>
+
+      <div class="info-note"><p>Antes de nos contactar, veja se a sua dúvida já tem resposta nas <a href="/faq">Perguntas Frequentes</a>.</p></div>
 
       <h2>Formulário de contacto</h2>
       <p>Submeta o seu pedido de forma simples e direta. A nossa equipa analisará a sua solicitação e responderá com a maior brevidade possível.</p>
@@ -227,27 +241,6 @@ const paginas = {
         </div>
         <button type="submit" class="btn btn-primary px-4">Enviar pedido</button>
       </form>
-
-      <h2>Perguntas frequentes</h2>
-      ${faq([
-        ["Posso devolver um produto?", "Sim. O Cliente dispõe do direito de livre resolução, podendo devolver o produto no prazo de <strong>7 (sete) dias</strong> a contar da sua receção, sem necessidade de indicação de motivo e sem encargos indemnizatórios. O exercício deste direito deve ser efetuado nos termos da legislação aplicável e das condições estabelecidas pela 100 Bytes."],
-        ["Como faço um pedido de devolução?", "Para solicitar a devolução, o Cliente deverá contactar a 100 Bytes através dos canais disponíveis, indicando o número da encomenda ou da fatura. Após validação, serão fornecidas as instruções necessárias para a devolução do produto."],
-        ["Em que condições posso devolver um produto?", "A devolução apenas será aceite caso o produto se encontre em perfeito estado de conservação, acompanhado da embalagem original, bem como de todos os acessórios, manuais e componentes incluídos. Não poderão existir sinais de uso indevido, danos ou qualquer alteração que comprometa a sua integridade."],
-        ["Quem paga os custos de devolução?", "Os custos de devolução são suportados pelo Cliente nos casos de livre resolução por insatisfação. Contudo, em situações de defeito, erro de envio ou dano no transporte, os mesmos serão assumidos pela 100 Bytes, após validação da ocorrência."],
-        ["Posso trocar um produto?", "Sim. A troca de produtos é possível, desde que sejam integralmente cumpridas as condições de devolução estabelecidas. O pedido encontra-se sujeito a verificação técnica prévia, com vista à confirmação do estado e conformidade do produto."],
-        ["Existem produtos que não podem ser devolvidos?", "Sim. Determinados produtos não são elegíveis para devolução, designadamente: software ou licenças ativadas; produtos personalizados; equipamentos instalados por entidades não autorizadas; telemóveis ou dispositivos similares, salvo em caso de defeito comprovado."],
-        ["O que acontece após a devolução ser aceite?", "Após a aceitação da devolução, a 100 Bytes poderá, conforme aplicável, proceder à substituição do produto, reparação, reembolso do valor pago ou emissão de crédito, de acordo com a situação verificada."],
-        ["Os produtos têm garantia?", "Sim. Todos os produtos comercializados beneficiam de garantia, nos termos e condições definidos pelos respetivos fabricantes. A mesma aplica-se a eventuais defeitos de fabrico ou anomalias de funcionamento, em conformidade com a legislação aplicável."],
-        ["Qual é o prazo de garantia?", "O prazo de garantia varia em função do fabricante, do tipo de produto e das condições específicas associadas a cada equipamento. Aplicam-se, para o efeito, os termos definidos pelo fabricante, em conformidade com a legislação em vigor."],
-        ["O que não está coberto pela garantia?", "A garantia não abrange situações resultantes de utilização indevida, negligente ou em desconformidade com as instruções do fabricante. Estão igualmente excluídos danos físicos, intervenções técnicas não autorizadas e prejuízos decorrentes de fatores externos, como falhas de energia, líquidos, humidade ou condições ambientais inadequadas."],
-        ["A 100 Bytes faz reparações?", "Sim. A 100 Bytes disponibiliza serviços técnicos especializados, assegurados por uma equipa qualificada para diagnóstico, manutenção e reparação de diversos equipamentos eletrónicos."],
-        ["O que devo fazer antes de enviar um equipamento para reparação?", "Antes de entregar o equipamento para reparação, o Cliente deverá assegurar a realização de cópias de segurança (backup) de todos os dados. A 100 Bytes não se responsabiliza por qualquer perda de informação durante o processo técnico."],
-        ["O que fazer se a embalagem chegar danificada?", "Caso a embalagem apresente danos ou sinais de violação, o Cliente deverá abster-se de a abrir, registar evidência fotográfica do estado no momento da receção e contactar de imediato a 100 Bytes para as devidas diligências."],
-        ["Quais são os métodos de pagamento disponíveis?", "A 100 Bytes disponibiliza os seguintes métodos de pagamento: Entidade e Referência, Caixa Express e transferência bancária (IBAN), assegurando soluções seguras e eficientes."],
-        ["Como posso contactar o suporte?", "Através de email (<a href='mailto:" + EMAIL + "'>" + EMAIL + "</a>), telefone (<a href='tel:" + tel(LOJA1_TEL) + "'>" + LOJA1_TEL + "</a>) ou pelo formulário disponível nesta página."],
-        ["Onde estão localizadas as lojas?", "Loja 1 — Rua da Liga Africana, n.º 81, Luanda. Loja 2 — Rua Direita da Samba, n.º 153, Samba."],
-        ["Onde está localizado o Centro de Assistência Técnica?", "Loja 1 — Rua da Liga Africana, n.º 81, Luanda."],
-      ])}
     `,
   },
 
@@ -260,7 +253,7 @@ const paginas = {
     conteudo: `
       <h2>1. Identificação da Empresa</h2>
       <p>1.1. A presente entidade, <strong>100 BYTES – SOLUÇÕES TECNOLÓGICAS, LDA.</strong>, sociedade comercial constituída ao abrigo da legislação angolana, com o número de matrícula 707-20/200817, com sede na Rua António Américo Lencastre, n.º 11, Luanda, e com o número de identificação fiscal 5000568651, doravante designada por "Empresa", estabelece os presentes Termos e Condições.</p>
-      <p>1.2. A Empresa dispõe ainda de estabelecimentos comerciais localizados: (a) Rua da Liga Africana, n.º 81 – Luanda; (b) Rua da Samba, n.º 153 – Samba.</p>
+      <p>1.2. A Empresa dispõe ainda de estabelecimento comercial localizado na Rua da Liga Africana, n.º 81 – Luanda.</p>
 
       <h2>2. Objeto</h2>
       <p>2.1. Os presentes Termos e Condições têm por objeto a definição e regulação das relações jurídicas estabelecidas entre a Empresa e os seus Clientes, no âmbito da disponibilização, comercialização e prestação de bens e serviços na área das tecnologias de informação.</p>

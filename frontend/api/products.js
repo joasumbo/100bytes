@@ -2,6 +2,11 @@ const { apiFetch } = require("./client");
 
 const CDN_URL = process.env.CDN_URL || "https://cdn100ka.sysvenus.com";
 
+// Janela durante a qual um artigo conta como "novidade". Acordado com o cliente
+// em 12/07/2026: 7 dias. Usada tanto no selo "Novo" do cartão de produto como
+// na listagem /novidades.
+const NOVIDADE_MS = 7 * 24 * 60 * 60 * 1000;
+
 function imageUrl(imageKeys, idx = 0) {
   if (!imageKeys || imageKeys.length <= idx) return null;
   return `${CDN_URL}/${imageKeys[idx]}`;
@@ -22,7 +27,7 @@ function mapProduct(p) {
     ? Math.round((1 - saleNum / baseNum) * 100)
     : null;
   const isNew = p.createdAt
-    ? (Date.now() - new Date(p.createdAt).getTime()) < 30 * 60 * 1000
+    ? (Date.now() - new Date(p.createdAt).getTime()) < NOVIDADE_MS
     : false;
   const lowStock = p.trackStock && Number(p.stock) > 0 && Number(p.stock) <= 10;
   return {
@@ -104,6 +109,11 @@ async function getProductById(id) {
   };
 }
 
+async function getBestSellers(limit = 24) {
+  const data = await apiFetch(`/products/bestsellers?limit=${limit}`);
+  return (data.products || []).map(mapProduct);
+}
+
 async function getByCategory(categoryId, limit = 8) {
   const data = await apiFetch(`/products?active=true&categoryId=${encodeURIComponent(categoryId)}&perPage=${limit}`);
   return (data.products || []).map(mapProduct);
@@ -128,4 +138,4 @@ async function getProductsPaged({ page = 1, perPage = 24, categoryId, categorySl
   };
 }
 
-module.exports = { getFeatured, getOnSale, getNewest, getProductById, getRelated, getByCategory, getProductsPaged };
+module.exports = { getFeatured, getOnSale, getNewest, getProductById, getRelated, getByCategory, getProductsPaged, getBestSellers, NOVIDADE_MS };
