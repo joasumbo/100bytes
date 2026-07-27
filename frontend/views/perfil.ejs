@@ -4,7 +4,7 @@
     <title>Minha Conta | 100bytes</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <link rel="shortcut icon" href="https://cdn100ka.sysvenus.com/logo/100byte_fav.png">
+    <link rel="shortcut icon" href="https://cdn.100bytes.co.ao/logo/100byte_fav.png">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="/assets/vendor/font-awesome/css/fontawesome-all.min.css">
     <link rel="stylesheet" href="/assets/css/font-electro.css">
@@ -349,7 +349,7 @@
                     .then(d => {
                         if (!d?.product) return;
                         const p = d.product;
-                        const img = p.imageKeys?.[0] ? 'https://cdn100ka.sysvenus.com/' + p.imageKeys[0] : '';
+                        const img = p.imageKeys?.[0] ? 'https://cdn.100bytes.co.ao/' + p.imageKeys[0] : '';
                         const priceVal = p.salePrice || p.basePrice;
                         const price = priceVal ? Number(priceVal).toLocaleString('pt-PT', { minimumFractionDigits: 2 }) + ' Kz' : '';
                         const slug = p.category?.slug || 'produto';

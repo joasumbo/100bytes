@@ -16,8 +16,8 @@ const __heading = __pageTitle || (__category ? __category.name : 'Produtos');
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
-    <link rel="shortcut icon" href="https://cdn100ka.sysvenus.com/logo/100byte_fav.png">
-    <link rel="icon" type="image/png" href="https://cdn100ka.sysvenus.com/logo/100byte_fav.png">
+    <link rel="shortcut icon" href="https://cdn.100bytes.co.ao/logo/100byte_fav.png">
+    <link rel="icon" type="image/png" href="https://cdn.100bytes.co.ao/logo/100byte_fav.png">
 
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 
@@ -235,7 +235,7 @@ const __heading = __pageTitle || (__category ? __category.name : 'Produtos');
                         <% __topProducts.forEach(function(p) { %>
                         <div class="media mb-3">
                             <a href="/<%= p.categorySlug %>/<%= p.urlKey %>" class="d-block mr-3">
-                                <img src="<%= p.image || 'https://cdn100ka.sysvenus.com/logo/logo-1752749442.jpg' %>" alt="<%= p.name %>" style="width:58px;height:58px;object-fit:cover;border:1px solid #eee;border-radius:4px;">
+                                <img src="<%= p.image || 'https://cdn.100bytes.co.ao/logo/logo-1752749442.jpg' %>" alt="<%= p.name %>" style="width:58px;height:58px;object-fit:cover;border:1px solid #eee;border-radius:4px;">
                             </a>
                             <div class="media-body">
                                 <a href="/<%= p.categorySlug %>/<%= p.urlKey %>" class="text-gray-90 font-size-13 d-block"><%= p.name %></a>
@@ -274,7 +274,7 @@ const __heading = __pageTitle || (__category ? __category.name : 'Produtos');
                                                 <img class="product-img-primary" src="<%= product.image %>" alt="<%= product.name %>">
                                                 <img class="product-img-hover" src="<%= product.image2 || product.image %>" alt="<%= product.name %>">
                                                 <% } else { %>
-                                                <img class="product-img-primary" src="https://cdn100ka.sysvenus.com/logo/logo-1752749442.jpg" alt="<%= product.name %>">
+                                                <img class="product-img-primary" src="https://cdn.100bytes.co.ao/logo/logo-1752749442.jpg" alt="<%= product.name %>">
                                                 <% } %>
                                             </a>
                                             <% if (product.discountPct) { %><span style="position:absolute;top:8px;left:8px;background:#ffc107;color:#212529;font-size:11px;font-weight:700;padding:3px 8px;border-radius:20px;z-index:2;line-height:1.5;pointer-events:none">-<%= product.discountPct %>%</span><% } %>

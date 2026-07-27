@@ -18,7 +18,7 @@ export class R2Service {
       },
     });
     this.bucket = config.get<string>('R2_BUCKET')!;
-    this.cdnUrl = config.get<string>('CDN_URL', 'https://cdn100ka.sysvenus.com');
+    this.cdnUrl = config.get<string>('CDN_URL', 'https://cdn.100bytes.co.ao');
   }
 
   async upload(key: string, body: Buffer, contentType: string): Promise<string> {

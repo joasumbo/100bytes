@@ -88,7 +88,7 @@ export const mockPayments = [
 ];
 
 export const mockBanners = [
-  { id: "BN001", title: "Promoção HP Portáteis", position: "hero", image: "https://cdn100ka.sysvenus.com/logo/logo-1752749442.jpg", link: "/produtos/portateis", active: true, order: 1 },
+  { id: "BN001", title: "Promoção HP Portáteis", position: "hero", image: "https://cdn.100bytes.co.ao/logo/logo-1752749442.jpg", link: "/produtos/portateis", active: true, order: 1 },
   { id: "BN002", title: "Software Microsoft", position: "hero", image: "https://ncrangola.vtexassets.com/arquivos/ids/170438/Office.jpg?v=638858485735500000", link: "/produtos/software", active: true, order: 2 },
   { id: "BN003", title: "Acessórios em Destaque", position: "sidebar", image: "", link: "/produtos/acessorios", active: false, order: 1 },
 ];

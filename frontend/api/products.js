@@ -1,6 +1,6 @@
 const { apiFetch } = require("./client");
 
-const CDN_URL = process.env.CDN_URL || "https://cdn100ka.sysvenus.com";
+const CDN_URL = process.env.CDN_URL || "https://cdn.100bytes.co.ao";
 
 // Janela durante a qual um artigo conta como "novidade". Acordado com o cliente
 // em 12/07/2026: 7 dias. Usada tanto no selo "Novo" do cartão de produto como

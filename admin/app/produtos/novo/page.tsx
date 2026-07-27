@@ -4,7 +4,7 @@ import { useEffect, useRef, useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 
-const CDN = "https://cdn100ka.sysvenus.com";
+const CDN = "https://cdn.100bytes.co.ao";
 const IVA_RATE = 14;
 const DRAFT_KEY = "produto_novo_draft";
 const IEC_OPTIONS = [

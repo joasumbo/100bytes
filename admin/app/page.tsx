@@ -68,7 +68,7 @@ export default function LoginPage() {
             {/* Logo */}
             <div className="flex flex-col items-center mb-9">
               <img
-                src="https://cdn100ka.sysvenus.com/logo/logo_100bytes.png"
+                src="https://cdn.100bytes.co.ao/logo/logo_100bytes.png"
                 alt="100bytes"
                 className="h-10 w-auto object-contain mb-7"
               />

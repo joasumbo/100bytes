@@ -4,7 +4,7 @@ import { useEffect, useState, useCallback, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 
-const CDN = "https://cdn100ka.sysvenus.com";
+const CDN = "https://cdn.100bytes.co.ao";
 
 interface Product {
   id: string;
@@ -301,7 +301,7 @@ function ImportModal({ onClose, onDone }: { onClose: () => void; onDone: () => v
 }
 
 // ─── StatsModal ───────────────────────────────────────────────────────────────
-const CDN_STATS = "https://cdn100ka.sysvenus.com";
+const CDN_STATS = "https://cdn.100bytes.co.ao";
 
 function StatCard({ label, value, sub, color = "gray" }: { label: string; value: string | number; sub?: string; color?: "gray" | "green" | "orange" | "blue" | "purple" }) {
   const colors = {

@@ -25,7 +25,7 @@ export default function UserAvatar({ name, photoKey, size = 40, className = "", 
   if (photoKey) {
     return (
       <img
-        src={`https://cdn100ka.sysvenus.com/${photoKey}`}
+        src={`https://cdn.100bytes.co.ao/${photoKey}`}
         alt={name}
         width={size}
         height={size}

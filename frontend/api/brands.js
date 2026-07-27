@@ -1,6 +1,6 @@
 const { apiFetch } = require("./client");
 
-const CDN_URL = process.env.CDN_URL || "https://cdn100ka.sysvenus.com";
+const CDN_URL = process.env.CDN_URL || "https://cdn.100bytes.co.ao";
 
 async function getBrands() {
   const data = await apiFetch("/brands/public");

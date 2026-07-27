@@ -62,7 +62,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         <div className="flex items-center gap-3">
           {/* Logo */}
           <Link href="/dashboard" className="flex-shrink-0 mr-2">
-            <img src="https://cdn100ka.sysvenus.com/logo/logo_100bytes.png" alt="100bytes" className="h-12 w-auto object-contain" />
+            <img src="https://cdn.100bytes.co.ao/logo/logo_100bytes.png" alt="100bytes" className="h-12 w-auto object-contain" />
           </Link>
 
           {/* Hamburger */}
@@ -197,7 +197,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         }}
       >
         <div className="flex items-center justify-between px-6 py-5 border-b border-gray-100">
-          <img src="https://cdn100ka.sysvenus.com/logo/logo_100bytes.png" alt="100bytes" className="h-12" />
+          <img src="https://cdn.100bytes.co.ao/logo/logo_100bytes.png" alt="100bytes" className="h-12" />
           <button
             onClick={() => setDrawerOpen(false)}
             className="w-9 h-9 rounded-full hover:bg-gray-100 flex items-center justify-center transition"

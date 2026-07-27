@@ -3,7 +3,7 @@ import { fetchAPI } from "@/lib/api";
 import { useEffect, useState, useCallback, useRef } from "react";
 import { toast } from "sonner";
 
-const CDN = "https://cdn100ka.sysvenus.com";
+const CDN = "https://cdn.100bytes.co.ao";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 interface Brand {

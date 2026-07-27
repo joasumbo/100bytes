@@ -4,7 +4,7 @@ import { useRouter, useParams } from "next/navigation";
 import { toast } from "sonner";
 import { fetchAPI } from "@/lib/api";
 
-const CDN = "https://cdn100ka.sysvenus.com";
+const CDN = "https://cdn.100bytes.co.ao";
 const IVA_RATE = 14;
 const IEC_OPTIONS = [
   { label: "2% — Produtos de luxo (nível 1)", value: 2 },

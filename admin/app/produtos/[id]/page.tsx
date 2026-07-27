@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { useRouter, useParams } from "next/navigation";
 import { fetchAPI } from "@/lib/api";
 
-const CDN = "https://cdn100ka.sysvenus.com";
+const CDN = "https://cdn.100bytes.co.ao";
 const IVA_RATE = 14;
 
 interface Product {
