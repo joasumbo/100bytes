@@ -1,0 +1,78 @@
+name: Deploy to VPS
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+    inputs:
+      apps:
+        description: "Apps a fazer deploy (ex.: backend frontend admin). Vazio = detetar por alterações."
+        default: ""
+
+concurrency:
+  group: deploy-vps
+  cancel-in-progress: false
+
+jobs:
+  changes:
+    runs-on: ubuntu-latest
+    outputs:
+      backend: ${{ steps.f.outputs.backend }}
+      frontend: ${{ steps.f.outputs.frontend }}
+      admin: ${{ steps.f.outputs.admin }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dorny/paths-filter@v3
+        id: f
+        with:
+          filters: |
+            backend:
+              - 'Backend/**'
+            frontend:
+              - 'frontend/**'
+            admin:
+              - 'admin/**'
+
+  deploy:
+    needs: changes
+    runs-on: ubuntu-latest
+    steps:
+      - name: Determinar apps
+        id: apps
+        run: |
+          MANUAL="${{ github.event.inputs.apps }}"
+          if [ -n "$MANUAL" ]; then echo "list=$MANUAL" >> "$GITHUB_OUTPUT"; exit 0; fi
+          APPS=""
+          [ "${{ needs.changes.outputs.backend }}" = "true" ]  && APPS="$APPS backend"
+          [ "${{ needs.changes.outputs.frontend }}" = "true" ] && APPS="$APPS frontend"
+          [ "${{ needs.changes.outputs.admin }}" = "true" ]    && APPS="$APPS admin"
+          echo "list=$(echo $APPS | xargs)" >> "$GITHUB_OUTPUT"
+
+      - name: Sem alterações
+        if: steps.apps.outputs.list == ''
+        run: echo "Nenhuma app alterada — nada a fazer."
+
+      - name: Preparar SSH
+        if: steps.apps.outputs.list != ''
+        run: |
+          mkdir -p ~/.ssh
+          printf '%s\n' "${{ secrets.VPS_SSH_KEY }}" > ~/.ssh/id_ed25519
+          chmod 600 ~/.ssh/id_ed25519
+          ssh-keyscan -H "${{ secrets.VPS_HOST }}" >> ~/.ssh/known_hosts 2>/dev/null
+
+      - name: Deploy (VPS)
+        if: steps.apps.outputs.list != ''
+        run: |
+          echo "A fazer deploy de: ${{ steps.apps.outputs.list }}"
+          ssh -i ~/.ssh/id_ed25519 "${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }}" \
+            "bash /var/www/100bytes/deploy.sh ${{ steps.apps.outputs.list }}"
+
+      - name: Health check
+        if: steps.apps.outputs.list != ''
+        run: |
+          ssh -i ~/.ssh/id_ed25519 "${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }}" '
+            set -e
+            curl -fsS -o /dev/null -w "frontend  %{http_code}\n" http://127.0.0.1:3030/
+            curl -fsS -o /dev/null -w "backend   %{http_code}\n" http://127.0.0.1:3001/api/categories
+            curl -fsS -o /dev/null -w "admin     %{http_code}\n" http://127.0.0.1:3000/
+          '
