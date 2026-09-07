@@ -20,6 +20,7 @@ jobs:
       backend: ${{ steps.f.outputs.backend }}
       frontend: ${{ steps.f.outputs.frontend }}
       admin: ${{ steps.f.outputs.admin }}
+      painel: ${{ steps.f.outputs.painel }}
     steps:
       - uses: actions/checkout@v4
       - uses: dorny/paths-filter@v3
@@ -32,6 +33,8 @@ jobs:
               - 'frontend/**'
             admin:
               - 'admin/**'
+            painel:
+              - 'painel/**'
 
   deploy:
     needs: changes
@@ -46,6 +49,7 @@ jobs:
           [ "${{ needs.changes.outputs.backend }}" = "true" ]  && APPS="$APPS backend"
           [ "${{ needs.changes.outputs.frontend }}" = "true" ] && APPS="$APPS frontend"
           [ "${{ needs.changes.outputs.admin }}" = "true" ]    && APPS="$APPS admin"
+          [ "${{ needs.changes.outputs.painel }}" = "true" ]   && APPS="$APPS painel"
           echo "list=$(echo $APPS | xargs)" >> "$GITHUB_OUTPUT"
 
       - name: Sem alterações
