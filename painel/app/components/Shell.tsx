@@ -9,12 +9,14 @@ import {
   Database,
   Image as ImageIcon,
   Settings,
+  ChartColumn,
   LogOut,
   Server,
 } from "lucide-react";
 
 const NAV = [
   { href: "/", label: "Visão geral", icon: LayoutGrid },
+  { href: "/analytics", label: "Analytics", icon: ChartColumn },
   { href: "/servicos", label: "Serviços & Deploys", icon: Rocket },
   { href: "/base-dados", label: "Base de dados", icon: Database },
   { href: "/media", label: "Média", icon: ImageIcon },
