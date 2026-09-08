@@ -8,6 +8,7 @@ const { getRootCategories, getAllCategories, findCategoryBySlug, getCategoryBySl
 const { getFeatured, getOnSale, getNewest, getProductById, getRelated, getByCategory, getProductsPaged, getBestSellers, NOVIDADE_MS } = require("./api/products");
 const { getBrands } = require("./api/brands");
 const { paginas } = require("./data/paginas");
+const { reportError } = require("./api/reporter");
 
 const app = express();
 const PORT = process.env.PORT || 3030;
@@ -711,8 +712,17 @@ app.use(
 
 app.use((err, req, res, next) => {
   console.error("[frontend] Erro nao tratado:", err.message);
+  reportError({ message: err.message, stack: err.stack, url: req.originalUrl, meta: { method: req.method } });
   if (res.headersSent) return next(err);
   return res.status(502).send("Servico temporariamente indisponivel. Tenta novamente em instantes.");
+});
+
+// Erros fatais ao nível do processo
+process.on("unhandledRejection", (reason) => {
+  reportError({ level: "fatal", message: reason && reason.message ? reason.message : String(reason), stack: reason && reason.stack, meta: { kind: "unhandledRejection" } });
+});
+process.on("uncaughtException", (err) => {
+  reportError({ level: "fatal", message: err.message, stack: err.stack, meta: { kind: "uncaughtException" } });
 });
 
 // Fallback 404
