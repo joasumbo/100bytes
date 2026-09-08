@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useState, useCallback } from "react";
 import { toast } from "sonner";
+import { GitCommitHorizontal, RotateCw, Rocket } from "lucide-react";
 
 type Proc = { name: string; status: string; cpu: number; memMB: number; uptime: number; restarts: number };
 type Data = { procs: Proc[]; commit: string; branch: string; system: Record<string, string> };
@@ -13,6 +14,17 @@ function since(ms: number) {
 }
 
 const APPS = ["backend", "frontend", "admin", "painel"];
+const ok = (v: string) => v === "active" || v === "online";
+
+function Badge({ v }: { v: string }) {
+  const good = ok(v);
+  return (
+    <span className="badge" style={{ color: good ? "var(--success)" : "var(--danger)", borderColor: good ? "#c7ecd4" : "#f4c7c9", background: good ? "#f2fbf5" : "#fef2f2" }}>
+      <span className="dot" style={{ background: good ? "var(--success)" : "var(--danger)" }} />
+      {v}
+    </span>
+  );
+}
 
 export default function Services() {
   const [data, setData] = useState<Data | null>(null);
@@ -23,74 +35,70 @@ export default function Services() {
     if (r.ok) setData(await r.json());
   }, []);
 
-  useEffect(() => {
-    load();
-    const t = setInterval(load, 5000);
-    return () => clearInterval(t);
-  }, [load]);
+  useEffect(() => { load(); const t = setInterval(load, 5000); return () => clearInterval(t); }, [load]);
 
   async function deploy(app: string) {
     setDeploying(app);
     toast.loading(`A fazer deploy: ${app}…`, { id: "dep" });
     try {
-      const r = await fetch("/api/deploy", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ apps: app === "todos" ? [] : [app] }),
-      });
+      const r = await fetch("/api/deploy", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ apps: app === "todos" ? [] : [app] }) });
       const j = await r.json();
-      toast[j.ok ? "success" : "error"](j.ok ? `Deploy OK (${j.commit})` : "Deploy falhou", { id: "dep" });
+      toast[j.ok ? "success" : "error"](j.ok ? `Deploy concluído · ${j.commit}` : "Deploy falhou", { id: "dep" });
       load();
-    } catch {
-      toast.error("Erro no deploy", { id: "dep" });
-    } finally {
-      setDeploying(null);
-    }
+    } catch { toast.error("Erro no deploy", { id: "dep" }); }
+    finally { setDeploying(null); }
   }
-
-  const dot = (v: string) => (
-    <span style={{ color: v === "active" || v === "online" ? "#22c55e" : "#f87171" }}>●</span>
-  );
 
   return (
     <div>
-      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 8 }}>
-        <h1 style={{ fontSize: 22, fontWeight: 700, margin: 0 }}>Serviços & Deploys</h1>
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 6 }}>
+        <h1>Serviços & Deploys</h1>
         <button className="btn" onClick={() => deploy("todos")} disabled={!!deploying}>
-          {deploying ? "A fazer deploy…" : "Deploy total"}
+          <Rocket size={15} /> {deploying ? "A fazer deploy…" : "Deploy total"}
         </button>
       </div>
       {data && (
-        <p className="muted" style={{ fontSize: 13, marginBottom: 20 }}>
-          Repo <b>{data.branch}</b> · {data.commit}
+        <p className="muted" style={{ fontSize: 13, marginBottom: 22, display: "flex", alignItems: "center", gap: 6 }}>
+          <GitCommitHorizontal size={15} /> <b style={{ color: "var(--text)", fontWeight: 500 }}>{data.branch}</b>
+          <span className="mono">{data.commit}</span>
         </p>
       )}
 
-      <div className="card" style={{ padding: 0, marginBottom: 20, overflow: "hidden" }}>
-        {(data?.procs || []).map((p) => (
-          <div key={p.name} style={{ display: "flex", alignItems: "center", gap: 16, padding: "14px 18px", borderBottom: "1px solid var(--border)" }}>
-            <span style={{ width: 150, fontWeight: 600 }}>{dot(p.status)} {p.name.replace("100bytes-", "")}</span>
-            <span className="muted" style={{ fontSize: 13, width: 90 }}>{p.status}</span>
-            <span className="muted" style={{ fontSize: 13, width: 80 }}>CPU {p.cpu}%</span>
-            <span className="muted" style={{ fontSize: 13, width: 100 }}>{p.memMB} MB</span>
-            <span className="muted" style={{ fontSize: 13, width: 90 }}>up {since(p.uptime)}</span>
-            <span className="muted" style={{ fontSize: 13, flex: 1 }}>↺ {p.restarts}</span>
-            {APPS.includes(p.name.replace("100bytes-", "")) && (
-              <button className="btn-ghost" onClick={() => deploy(p.name.replace("100bytes-", ""))} disabled={!!deploying}>
-                Deploy
-              </button>
-            )}
-          </div>
-        ))}
-        {!data?.procs?.length && <div style={{ padding: 18 }} className="muted">A carregar serviços…</div>}
+      <div className="card" style={{ overflow: "hidden", marginBottom: 24 }}>
+        <table>
+          <thead><tr><th>Serviço</th><th>Estado</th><th>CPU</th><th>Memória</th><th>Uptime</th><th>Restarts</th><th></th></tr></thead>
+          <tbody>
+            {(data?.procs || []).map((p) => {
+              const short = p.name.replace("100bytes-", "");
+              return (
+                <tr key={p.name}>
+                  <td style={{ fontWeight: 500 }}>{short}</td>
+                  <td><Badge v={p.status} /></td>
+                  <td className="muted">{p.cpu}%</td>
+                  <td className="muted">{p.memMB} MB</td>
+                  <td className="muted">{since(p.uptime)}</td>
+                  <td className="muted">{p.restarts}</td>
+                  <td style={{ textAlign: "right" }}>
+                    {APPS.includes(short) && (
+                      <button className="btn-ghost btn-sm" onClick={() => deploy(short)} disabled={!!deploying}>
+                        <RotateCw size={13} /> Deploy
+                      </button>
+                    )}
+                  </td>
+                </tr>
+              );
+            })}
+            {!data?.procs?.length && <tr><td colSpan={7} className="muted" style={{ padding: 20 }}>A carregar serviços…</td></tr>}
+          </tbody>
+        </table>
       </div>
 
-      <h2 style={{ fontSize: 15, fontWeight: 600, marginBottom: 10 }}>Serviços de sistema</h2>
+      <h2 style={{ marginBottom: 12 }}>Serviços de sistema</h2>
       <div style={{ display: "flex", gap: 14, flexWrap: "wrap" }}>
         {data && Object.entries(data.system).map(([k, v]) => (
-          <div key={k} className="card" style={{ padding: 16, minWidth: 150 }}>
-            <div className="muted" style={{ fontSize: 12 }}>{k}</div>
-            <div style={{ fontSize: 16, fontWeight: 600, marginTop: 4 }}>{dot(v)} {v}</div>
+          <div key={k} className="card" style={{ padding: 16, minWidth: 160 }}>
+            <div className="muted" style={{ fontSize: 12.5, marginBottom: 8 }}>{k}</div>
+            <Badge v={v} />
           </div>
         ))}
       </div>

@@ -22,11 +22,7 @@ export default function Logs() {
 
   const load = useCallback(async (s: string) => {
     const r = await fetch(`/api/logs?src=${s}`, { cache: "no-store" });
-    if (r.ok) {
-      const j = await r.json();
-      setContent(j.content);
-      if (j.sources) setSources(j.sources);
-    }
+    if (r.ok) { const j = await r.json(); setContent(j.content); if (j.sources) setSources(j.sources); }
   }, []);
 
   useEffect(() => {
@@ -38,23 +34,23 @@ export default function Logs() {
 
   return (
     <div>
-      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 16 }}>
-        <h1 style={{ fontSize: 22, fontWeight: 700, margin: 0 }}>Logs</h1>
-        <label className="muted" style={{ fontSize: 13, display: "flex", gap: 6, alignItems: "center" }}>
-          <input type="checkbox" checked={auto} onChange={(e) => setAuto(e.target.checked)} style={{ width: "auto" }} />
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 18 }}>
+        <h1>Logs</h1>
+        <label className="muted" style={{ fontSize: 13, display: "flex", gap: 7, alignItems: "center", cursor: "pointer" }}>
+          <input type="checkbox" checked={auto} onChange={(e) => setAuto(e.target.checked)} style={{ width: "auto", accentColor: "#171717" }} />
           auto-refresh
         </label>
       </div>
-      <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginBottom: 14 }}>
+      <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginBottom: 16 }}>
         {(sources.length ? sources : Object.keys(LABELS)).map((s) => (
-          <button key={s} className={s === src ? "btn" : "btn-ghost"} style={{ fontSize: 12, padding: "6px 10px" }} onClick={() => setSrc(s)}>
+          <button key={s} className={s === src ? "btn btn-sm" : "btn-ghost btn-sm"} onClick={() => setSrc(s)}>
             {LABELS[s] || s}
           </button>
         ))}
       </div>
       <pre
-        className="card"
-        style={{ padding: 16, fontSize: 12, lineHeight: 1.5, maxHeight: "70vh", overflow: "auto", whiteSpace: "pre-wrap", wordBreak: "break-word", fontFamily: "ui-monospace, monospace" }}
+        className="card mono"
+        style={{ padding: 16, fontSize: 12.5, lineHeight: 1.6, maxHeight: "70vh", overflow: "auto", whiteSpace: "pre-wrap", wordBreak: "break-word", color: "#333" }}
       >
         {content || "(vazio)"}
       </pre>
