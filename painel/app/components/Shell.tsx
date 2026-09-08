@@ -7,6 +7,8 @@ import {
   ScrollText,
   TriangleAlert,
   Database,
+  Image as ImageIcon,
+  Settings,
   LogOut,
   Server,
 } from "lucide-react";
@@ -15,8 +17,10 @@ const NAV = [
   { href: "/", label: "Visão geral", icon: LayoutGrid },
   { href: "/servicos", label: "Serviços & Deploys", icon: Rocket },
   { href: "/base-dados", label: "Base de dados", icon: Database },
+  { href: "/media", label: "Média", icon: ImageIcon },
   { href: "/logs", label: "Logs", icon: ScrollText },
   { href: "/erros", label: "Erros", icon: TriangleAlert },
+  { href: "/definicoes", label: "Definições", icon: Settings },
 ];
 
 export default function Shell({ children, user, title }: { children: React.ReactNode; user?: string; title?: string }) {
