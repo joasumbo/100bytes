@@ -26,6 +26,45 @@ app.use(express.json());
 app.use(express.static(PUBLIC_DIR, { index: false }));
 app.use(cookieParser());
 
+// ── MODO MANUTENÇÃO ("site em construção") ──
+// Se MAINTENANCE_MODE=on, mostra a página de manutenção a todos, EXCETO:
+//  - quem está autenticado no admin (cookie admin_token válido, partilhado no domínio)
+//  - quem tem o cookie de pré-visualização (via link secreto /preview/<token>)
+const MAINTENANCE_BYPASS = process.env.MAINTENANCE_BYPASS || "";
+const maintenanceOn = () => String(process.env.MAINTENANCE_MODE || "").toLowerCase() === "on";
+
+function isAdminLoggedIn(req) {
+  const t = req.cookies && req.cookies.admin_token;
+  if (!t) return false;
+  try { jwt.verify(t, JWT_SECRET); return true; } catch { return false; }
+}
+
+// Link secreto de pré-visualização: ativa/desativa o acesso à loja em manutenção
+app.get("/preview/:token", (req, res) => {
+  if (MAINTENANCE_BYPASS && req.params.token === MAINTENANCE_BYPASS) {
+    res.cookie("site_preview", MAINTENANCE_BYPASS, {
+      httpOnly: true, sameSite: "lax", path: "/",
+      maxAge: 1000 * 60 * 60 * 24 * 365,
+      secure: process.env.NODE_ENV === "production",
+    });
+    return res.redirect("/");
+  }
+  return res.status(404).send("Nao encontrado");
+});
+app.get("/preview-sair", (req, res) => {
+  res.clearCookie("site_preview", { path: "/" });
+  res.redirect("/");
+});
+
+app.use((req, res, next) => {
+  if (!maintenanceOn()) return next();
+  if (isAdminLoggedIn(req)) return next();
+  if (MAINTENANCE_BYPASS && req.cookies && req.cookies.site_preview === MAINTENANCE_BYPASS) return next();
+  res.status(503);
+  res.set("Retry-After", "3600");
+  return res.render("manutencao");
+});
+
 // Middleware que verifica JWT do cliente e passa para EJS
 app.use((req, res, next) => {
   const token = req.cookies.customer_token;

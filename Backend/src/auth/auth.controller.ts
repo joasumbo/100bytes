@@ -35,6 +35,8 @@ export class AuthController {
       path: '/',
       maxAge: 1000 * 60 * 60 * 24 * 30, // 30 dias
       secure: this.config.get('NODE_ENV') === 'production',
+      // Partilhado entre subdomínios (admin. + loja) p/ preview em manutenção
+      domain: this.config.get<string>('COOKIE_DOMAIN') || undefined,
     });
 
     return { user };
@@ -43,7 +45,10 @@ export class AuthController {
   @Post('logout')
   @HttpCode(200)
   logout(@Res({ passthrough: true }) res: Response) {
-    res.clearCookie('admin_token', { path: '/' });
+    res.clearCookie('admin_token', {
+      path: '/',
+      domain: this.config.get<string>('COOKIE_DOMAIN') || undefined,
+    });
     return { ok: true };
   }
 

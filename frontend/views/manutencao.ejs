@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>100 bytes — Em manutenção</title>
+  <meta name="robots" content="noindex" />
+  <link rel="icon" href="https://cdn.100bytes.co.ao/logo/logo-1752749442.jpg" />
+  <style>
+    :root{
+      --ink:#101418; --muted:#6b7280; --line:#eceef1;
+      --accent:#ff6a00; --accent-2:#ff9142; --bg:#f7f8fa;
+    }
+    *{box-sizing:border-box}
+    html,body{margin:0;height:100%}
+    body{
+      font-family:"Segoe UI",system-ui,-apple-system,Roboto,Helvetica,Arial,sans-serif;
+      background:
+        radial-gradient(1200px 600px at 50% -10%, #fff 0%, var(--bg) 60%);
+      color:var(--ink); min-height:100%;
+      display:flex; align-items:center; justify-content:center; padding:24px;
+    }
+    .card{
+      width:100%; max-width:560px; text-align:center;
+      background:#fff; border:1px solid var(--line); border-radius:20px;
+      padding:48px 40px; box-shadow:0 10px 40px rgba(16,20,24,.06);
+    }
+    .logo{height:64px; width:auto; margin:0 auto 28px; display:block}
+    .badge{
+      display:inline-flex; align-items:center; gap:8px;
+      font-size:12.5px; font-weight:600; letter-spacing:.02em;
+      color:var(--accent); background:#fff4ec; border:1px solid #ffe0cc;
+      padding:6px 12px; border-radius:999px; margin-bottom:22px;
+    }
+    .badge .pulse{width:8px;height:8px;border-radius:999px;background:var(--accent);
+      box-shadow:0 0 0 0 rgba(255,106,0,.5); animation:p 1.8s infinite}
+    @keyframes p{0%{box-shadow:0 0 0 0 rgba(255,106,0,.5)}70%{box-shadow:0 0 0 10px rgba(255,106,0,0)}100%{box-shadow:0 0 0 0 rgba(255,106,0,0)}}
+    h1{font-size:27px; font-weight:700; letter-spacing:-.02em; margin:0 0 12px}
+    p.lead{font-size:15.5px; line-height:1.6; color:var(--muted); margin:0 auto 28px; max-width:420px}
+    .bar{height:8px; background:#f0f2f5; border-radius:999px; overflow:hidden; margin:0 auto 30px; max-width:320px}
+    .bar > i{display:block; height:100%; width:40%; border-radius:999px;
+      background:linear-gradient(90deg,var(--accent),var(--accent-2));
+      animation:slide 1.9s ease-in-out infinite}
+    @keyframes slide{0%{margin-left:-40%}100%{margin-left:100%}}
+    .contact{display:flex; gap:10px; justify-content:center; flex-wrap:wrap}
+    .contact a{
+      text-decoration:none; font-size:14px; font-weight:600;
+      padding:11px 18px; border-radius:10px; border:1px solid var(--line); color:var(--ink);
+      transition:background .15s,border-color .15s;
+    }
+    .contact a:hover{background:#fafafa}
+    .contact a.primary{background:var(--ink); color:#fff; border-color:var(--ink)}
+    .contact a.primary:hover{background:#000}
+    .foot{margin-top:30px; font-size:12.5px; color:#9aa1a9}
+    @media(max-width:480px){ .card{padding:36px 22px} h1{font-size:23px} }
+  </style>
+</head>
+<body>
+  <main class="card">
+    <img class="logo" src="https://cdn.100bytes.co.ao/logo/logo-1752749442.jpg" alt="100 bytes" />
+    <div class="badge"><span class="pulse"></span> Em manutenção</div>
+    <h1>Estamos a preparar algo novo</h1>
+    <p class="lead">
+      A nossa loja está temporariamente em manutenção enquanto melhoramos a sua
+      experiência. Voltamos muito em breve. Obrigado pela paciência.
+    </p>
+    <div class="bar"><i></i></div>
+    <div class="contact">
+      <a class="primary" href="https://wa.me/244928499325" target="_blank" rel="noopener">Falar no WhatsApp</a>
+      <a href="mailto:geral@100bytes.co.ao">geral@100bytes.co.ao</a>
+    </div>
+    <div class="foot">100 Bytes — Soluções Tecnológicas &middot; Luanda, Angola</div>
+  </main>
+</body>
+</html>
