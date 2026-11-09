@@ -470,50 +470,94 @@ const paginas = {
       "Política de Cookies da 100 Bytes: o que são cookies, tipos utilizados, finalidades, consentimento e gestão de preferências.",
     conteudo: `
       <h2>1. Enquadramento</h2>
-      <p>1.1. A presente Política de Cookies estabelece os termos e condições que regulam a utilização de cookies e tecnologias semelhantes no website da <strong>100 Bytes – Soluções Tecnológicas, LDA.</strong> (matrícula 707-20/200817, NIF 5000568651, sede na Rua António Américo Lencastre, n.º 11, Luanda).</p>
-      <p>1.2. A utilização destas tecnologias é efetuada em conformidade com a Lei n.º 22/11, de 17 de junho, e com os princípios da licitude, lealdade, transparência, necessidade e proporcionalidade.</p>
-      <p>1.3. Os cookies têm como finalidade assegurar o funcionamento, a segurança e a integridade do website, otimizar a navegação e permitir a recolha de informação estatística.</p>
-      <p>1.4. A utilização de cookies não estritamente necessários depende do consentimento prévio, livre, específico, informado e inequívoco do utilizador.</p>
+      <p>1.1. A presente Política de Cookies estabelece, com o devido rigor jurídico, os termos e condições que regulam a utilização de cookies e de tecnologias semelhantes no website da <strong>100 Bytes – Soluções Tecnológicas, LDA.</strong>, sociedade comercial constituída ao abrigo da legislação da República de Angola, com o número de matrícula 707-20/200817, com sede na Rua António Américo Lencastre, n.º 11, em Luanda, e titular do número de identificação fiscal 5000568651.</p>
+      <p>1.2. A utilização destas tecnologias é efetuada em estrita conformidade com o regime jurídico aplicável em matéria de proteção de dados pessoais, designadamente a Lei n.º 22/11, de 17 de junho (Lei da Proteção de Dados Pessoais), bem como com os princípios da licitude, lealdade, transparência, necessidade e proporcionalidade que regem o tratamento de dados pessoais.</p>
+      <p>1.3. Os cookies utilizados pela 100 Bytes têm como finalidade assegurar o regular funcionamento, segurança e integridade do website, otimizar a experiência de navegação do utilizador e permitir a recolha de informação estatística e analítica relativa à utilização da plataforma, sempre nos termos e dentro dos limites definidos na <a href="/politica-de-privacidade">Política de Privacidade</a>.</p>
+      <p>1.4. Sempre que aplicável, a utilização de cookies que não sejam estritamente necessários depende do consentimento prévio, livre, específico, informado e inequívoco do utilizador, nos termos legalmente exigidos.</p>
 
       <h2>2. O que são Cookies?</h2>
-      <p>2.1. Cookies são pequenos ficheiros de texto armazenados no dispositivo do utilizador (computador, smartphone ou tablet) aquando do acesso a um website.</p>
-      <p>2.2. Contêm informações limitadas que permitem identificar o dispositivo e, em certos casos, reconhecê-lo em visitas subsequentes.</p>
-      <p>2.3. Desempenham funções essenciais (gestão de sessões, memorização de preferências, desempenho) e permitem a recolha de informação estatística e analítica.</p>
+      <p>2.1. Para efeitos da presente Política, consideram-se cookies pequenos ficheiros de texto que são automaticamente armazenados no dispositivo terminal do utilizador (designadamente computador, smartphone ou tablet) aquando do acesso a um website.</p>
+      <p>2.2. Estes ficheiros contêm um conjunto limitado de informações que permitem identificar o dispositivo do utilizador e, em determinados casos, reconhecer o mesmo em visitas subsequentes, não implicando, por si só, a identificação direta do titular dos dados, salvo quando associados a outros elementos de informação.</p>
+      <p>2.3. Os cookies desempenham funções essenciais ao funcionamento eficiente das plataformas digitais, possibilitando, designadamente, a gestão de sessões, a memorização de preferências, a melhoria do desempenho do website e a otimização da experiência de navegação.</p>
+      <p>2.4. A utilização de cookies pode ainda permitir a recolha de informações estatísticas e analíticas relativas à interação do utilizador com o website, contribuindo para a melhoria contínua dos serviços prestados, sempre em conformidade com a legislação aplicável em matéria de proteção de dados pessoais.</p>
 
       <h2>3. Tipos de Cookies Utilizados</h2>
-      <h3>Cookies estritamente necessários</h3>
-      <p>Indispensáveis ao funcionamento técnico do website e às suas funcionalidades essenciais (acesso a áreas seguras, gestão de sessões). Não dependem de consentimento.</p>
-      <h3>Cookies de desempenho e análise</h3>
-      <p>Recolhem informação estatística sobre a utilização do website (páginas visitadas, tempo de permanência, erros), permitindo monitorizar o desempenho e otimizar a experiência.</p>
-      <h3>Cookies de funcionalidade</h3>
-      <p>Memorizam escolhas e preferências (idioma, localização, configurações). A sua desativação poderá afetar determinadas funcionalidades.</p>
-      <h3>Cookies de marketing e publicidade</h3>
-      <p>Apresentam conteúdos e comunicações comerciais relevantes com base nos interesses do utilizador. Dependem do consentimento prévio, expresso e informado.</p>
+      <p>3.1. No âmbito do funcionamento do seu website, a 100 Bytes – Soluções Tecnológicas, LDA. poderá recorrer à utilização de diferentes categorias de cookies, em função da respetiva finalidade, natureza e necessidade, nos termos da legislação aplicável.</p>
+      <p>3.2. Para efeitos da presente Política, os cookies utilizados classificam-se, designadamente, nas seguintes categorias:</p>
+      <h3>a) Cookies Estritamente Necessários</h3>
+      <p>3.2.1. Correspondem a cookies indispensáveis para assegurar o funcionamento técnico do website e a disponibilização das suas funcionalidades essenciais, nomeadamente o acesso a áreas seguras, gestão de sessões e execução de operações solicitadas pelo utilizador.</p>
+      <p>3.2.2. A utilização destes cookies não depende de consentimento do utilizador, por se revelarem estritamente necessários à prestação do serviço solicitado.</p>
+      <h3>b) Cookies de Desempenho e Análise</h3>
+      <p>3.2.3. Destinam-se à recolha de informações de natureza estatística e analítica sobre a forma como o website é utilizado, incluindo, designadamente, páginas visitadas, tempo de permanência e eventuais erros de navegação.</p>
+      <p>3.2.4. Estes cookies permitem à 100 Bytes monitorizar o desempenho da plataforma, identificar oportunidades de melhoria e otimizar a experiência do utilizador.</p>
+      <h3>c) Cookies de Funcionalidade</h3>
+      <p>3.2.5. Permitem memorizar escolhas e preferências do utilizador, tais como idioma, localização ou configurações personalizadas, com vista a proporcionar uma navegação mais eficiente e adaptada às suas necessidades.</p>
+      <p>3.2.6. A desativação destes cookies poderá afetar determinadas funcionalidades do website, limitando a personalização da experiência de utilização.</p>
+      <h3>d) Cookies de Marketing e Publicidade</h3>
+      <p>3.2.7. Têm como finalidade a apresentação de conteúdos, campanhas e comunicações comerciais mais relevantes para o utilizador, com base nos seus interesses e comportamentos de navegação.</p>
+      <p>3.2.8. A utilização destes cookies depende do consentimento prévio, expresso e informado do utilizador, nos termos da legislação aplicável em matéria de proteção de dados pessoais.</p>
+      <p>3.3. A 100 Bytes compromete-se a utilizar exclusivamente cookies adequados, pertinentes e limitados ao estritamente necessário para as finalidades prosseguidas, em conformidade com os princípios da necessidade, proporcionalidade e minimização de dados.</p>
 
       <h2>4. Finalidades da Utilização de Cookies</h2>
-      <p>4.1. Os cookies destinam-se a: garantir o funcionamento técnico; assegurar a segurança dos sistemas; melhorar a experiência de navegação; analisar o desempenho; apoiar a gestão operacional; e, mediante consentimento, o envio de comunicações comerciais.</p>
-      <p>4.2. O tratamento assenta em fundamentos legítimos (execução de contrato, interesses legítimos e, quando exigido, consentimento), sendo os dados adequados, pertinentes e limitados ao necessário.</p>
+      <p>4.1. Os cookies utilizados pela 100 Bytes – Soluções Tecnológicas, LDA. destinam-se a assegurar o regular funcionamento, a segurança e a eficiência do website, bem como a otimização da experiência de navegação dos utilizadores, no estrito respeito pelas disposições legais aplicáveis.</p>
+      <p>4.2. Em particular, os cookies poderão ser utilizados para as seguintes finalidades:</p>
+      <p>4.2.1. Garantir o correto funcionamento técnico do website, incluindo a gestão de sessões, autenticação de utilizadores e execução de funcionalidades essenciais;</p>
+      <p>4.2.2. Assegurar a proteção, integridade e segurança dos sistemas de informação, incluindo a prevenção de acessos não autorizados, utilização indevida ou atividades ilícitas;</p>
+      <p>4.2.3. Melhorar a experiência de navegação do utilizador, através da adaptação de conteúdos, memorização de preferências e personalização da interação com a plataforma;</p>
+      <p>4.2.4. Proceder à análise estatística e monitorização do desempenho do website, permitindo a avaliação de padrões de utilização, identificação de falhas técnicas e implementação de melhorias contínuas;</p>
+      <p>4.2.5. Apoiar a gestão operacional da atividade da Empresa, incluindo a otimização de processos internos e a melhoria dos serviços disponibilizados;</p>
+      <p>4.2.6. Permitir, quando aplicável e mediante consentimento prévio do utilizador, o envio de comunicações comerciais, promocionais ou institucionais adequadas ao perfil e interesses do utilizador.</p>
+      <p>4.3. O tratamento de dados pessoais realizado através de cookies assenta em fundamentos jurídicos devidamente legitimados, designadamente na execução de contrato ou diligências pré-contratuais, na prossecução de interesses legítimos da Empresa e, quando legalmente exigido, no consentimento prévio, livre, específico, informado e inequívoco do titular dos dados.</p>
+      <p>4.4. Em qualquer circunstância, a 100 Bytes assegura que os dados recolhidos através de cookies são adequados, pertinentes e limitados ao estritamente necessário para as finalidades prosseguidas, em conformidade com os princípios da licitude, necessidade e proporcionalidade consagrados na legislação aplicável.</p>
 
       <h2>5. Consentimento</h2>
-      <p>5.1. A utilização de cookies não estritamente necessários depende do consentimento prévio, solicitado na primeira visita, com possibilidade de aceitar, recusar ou configurar de forma granular. O utilizador poderá retirar ou alterar o consentimento a qualquer momento, sem prejuízo da licitude do tratamento anterior.</p>
+      <p>5.1. A utilização de cookies que não sejam estritamente necessários ao funcionamento do website depende do consentimento prévio, livre, específico, informado e inequívoco do utilizador, nos termos da legislação aplicável em matéria de proteção de dados pessoais.</p>
+      <p>5.2. O consentimento referido no número anterior é solicitado aquando da primeira visita ao website, através de mecanismo adequado que permita ao utilizador aceitar, recusar ou configurar, de forma granular, as categorias de cookies a utilizar.</p>
+      <p>5.3. A ausência de consentimento relativamente a cookies não essenciais não compromete o acesso ao website, podendo, contudo, limitar determinadas funcionalidades ou a personalização da experiência de navegação.</p>
+      <p>5.4. O utilizador poderá, a qualquer momento, retirar, alterar ou renovar o seu consentimento, através das configurações de cookies disponibilizadas no website ou mediante as opções do seu navegador, sem prejuízo da licitude do tratamento efetuado com base no consentimento previamente concedido.</p>
+      <p>5.5. A 100 Bytes assegura o registo e a gestão adequada das preferências de consentimento, garantindo o respeito contínuo pelas escolhas do utilizador, em conformidade com os princípios da transparência, responsabilidade e conformidade legal.</p>
 
       <h2>6. Gestão de Cookies</h2>
-      <p>6.1. O utilizador pode configurar o navegador para permitir, recusar ou eliminar cookies. A desativação de cookies estritamente necessários poderá comprometer o funcionamento do website. A Empresa não é responsável por limitações decorrentes de configurações efetuadas pelo utilizador.</p>
+      <p>6.1. O utilizador dispõe da faculdade de, a qualquer momento, configurar o seu navegador de Internet de forma a permitir, recusar ou eliminar, total ou parcialmente, os cookies armazenados no respetivo dispositivo, nos termos das funcionalidades disponibilizadas pelo fornecedor do navegador.</p>
+      <p>6.2. As configurações referidas no número anterior podem ser ajustadas através das opções de privacidade e segurança do navegador, permitindo ao utilizador exercer um controlo efetivo sobre a utilização de cookies, incluindo a sua desativação ou remoção.</p>
+      <p>6.3. Sem prejuízo do disposto nos números anteriores, a desativação, limitação ou bloqueio de cookies, designadamente daqueles que sejam estritamente necessários, poderá comprometer o correto funcionamento do website, afetar a disponibilidade de determinadas funcionalidades ou prejudicar a qualidade da experiência de navegação.</p>
+      <p>6.4. A 100 Bytes não poderá ser responsabilizada por quaisquer constrangimentos, falhas de desempenho ou limitações de acesso ao website decorrentes da configuração de cookies efetuada pelo utilizador, sempre que tais situações resultem da desativação ou restrição dos mesmos.</p>
+      <p>6.5. Para uma gestão mais granular e informada, o utilizador poderá ainda recorrer às ferramentas de gestão de preferências de cookies disponibilizadas no próprio website, quando aplicável, sem prejuízo das opções adicionais oferecidas pelo navegador utilizado.</p>
 
       <h2>7. Cookies de Terceiros</h2>
-      <p>7.1. O website poderá recorrer a cookies de entidades terceiras (análise, suporte, funcionalidades). Sempre que legalmente exigido, dependerão de consentimento prévio. Recomenda-se a consulta das políticas de privacidade e de cookies dessas entidades.</p>
+      <p>7.1. O website da 100 Bytes – Soluções Tecnológicas, LDA. poderá recorrer à utilização de cookies de entidades terceiras, no âmbito da prestação de serviços tecnológicos, ferramentas de análise, soluções de suporte operacional ou outras funcionalidades necessárias ao regular funcionamento da plataforma.</p>
+      <p>7.2. Para efeitos do disposto no número anterior, consideram-se cookies de terceiros aqueles que são instalados e geridos por entidades distintas da 100 Bytes, podendo implicar a recolha e tratamento de dados por essas entidades, nos termos das respetivas políticas de privacidade e de cookies.</p>
+      <p>7.3. A utilização de cookies de terceiros destina-se, designadamente, à análise de desempenho, monitorização de tráfego, otimização de conteúdos, reforço da segurança e disponibilização de funcionalidades adicionais ao utilizador.</p>
+      <p>7.4. A 100 Bytes assegura que a utilização de tais cookies ocorre no estrito cumprimento das obrigações legais aplicáveis, nomeadamente em matéria de proteção de dados pessoais, garantindo que as entidades terceiras se encontram vinculadas por deveres contratuais de confidencialidade, segurança e tratamento adequado dos dados.</p>
+      <p>7.5. Sempre que legalmente exigido, a instalação de cookies de terceiros dependerá do consentimento prévio, livre, específico, informado e inequívoco do utilizador, nos termos da legislação em vigor.</p>
+      <p>7.6. A 100 Bytes não se responsabiliza pelas práticas de tratamento de dados levadas a cabo por entidades terceiras, recomendando-se ao utilizador a consulta das respetivas políticas de privacidade e de cookies para obtenção de informação detalhada sobre o tratamento dos seus dados pessoais.</p>
 
       <h2>8. Conservação dos Dados</h2>
-      <p>8.1. Os dados recolhidos através de cookies são conservados apenas pelo período necessário, distinguindo-se cookies de sessão (eliminados após a navegação) e persistentes. Findo o prazo, os dados são eliminados de forma segura ou anonimizados.</p>
+      <p>8.1. Os dados pessoais recolhidos através da utilização de cookies serão conservados pela 100 Bytes – Soluções Tecnológicas, LDA. exclusivamente pelo período estritamente necessário à prossecução das finalidades que determinaram a respetiva recolha, em conformidade com os princípios da necessidade, proporcionalidade e limitação da conservação previstos na legislação aplicável.</p>
+      <p>8.2. O período de conservação poderá variar em função da natureza e finalidade específica de cada categoria de cookie, distinguindo-se, designadamente, entre cookies de sessão, que são automaticamente eliminados após o encerramento da sessão de navegação, e cookies persistentes, que permanecem armazenados por um período definido ou até à sua eliminação pelo utilizador.</p>
+      <p>8.3. Sempre que existam obrigações legais ou regulamentares que imponham a conservação dos dados por um período mínimo determinado, a 100 Bytes assegurará o cumprimento integral desses prazos, limitando a conservação ao estritamente necessário para esse efeito.</p>
+      <p>8.4. Decorrido o período de conservação aplicável, os dados pessoais serão objeto de eliminação segura ou, quando adequado, de anonimização irreversível, de modo a garantir que deixam de poder ser associados ao respetivo titular.</p>
+      <p>8.5. A 100 Bytes compromete-se a adotar medidas técnicas e organizativas adequadas para assegurar que os dados não sejam conservados por períodos superiores ao necessário, garantindo o cumprimento rigoroso das obrigações legais em matéria de proteção de dados pessoais na República de Angola.</p>
 
       <h2>9. Alterações à Política de Cookies</h2>
-      <p>9.1. A Empresa poderá rever a presente Política a qualquer momento, publicando as alterações no website. Recomenda-se a consulta periódica desta Política.</p>
+      <p>9.1. A 100 Bytes – Soluções Tecnológicas, LDA. reserva-se o direito de, a todo o tempo e sem necessidade de aviso prévio, proceder à revisão, atualização ou modificação da presente Política de Cookies, sempre que tal se revele necessário em virtude de alterações legais, regulamentares, tecnológicas ou operacionais, ou ainda em função da evolução da sua atividade.</p>
+      <p>9.2. Quaisquer alterações à presente Política serão devidamente publicadas no website oficial da 100 Bytes, produzindo efeitos a partir da data da respetiva divulgação, salvo disposição em contrário.</p>
+      <p>9.3. Sempre que as alterações introduzidas sejam materialmente relevantes e suscetíveis de impactar os direitos dos utilizadores, a 100 Bytes envidará esforços razoáveis para assegurar a sua adequada comunicação, designadamente através dos meios habitualmente utilizados no relacionamento com os utilizadores.</p>
+      <p>9.4. A continuidade da utilização do website após a entrada em vigor das alterações constitui aceitação das mesmas, sem prejuízo dos direitos legalmente conferidos aos utilizadores, nomeadamente no que respeita à gestão de consentimentos e preferências relativas à utilização de cookies.</p>
+      <p>9.5. Recomenda-se ao utilizador a consulta periódica da presente Política de Cookies, de modo a manter-se informado sobre os termos aplicáveis à utilização destas tecnologias.</p>
 
       <h2>10. Contactos</h2>
-      <p>10.1. Para questões relacionadas com cookies ou tratamento de dados, contacte-nos: email <a href="mailto:${EMAIL}">${EMAIL}</a>; telefone <a href="tel:${tel(SEDE_TEL)}">${SEDE_TEL}</a>.</p>
+      <p>10.1. Para quaisquer questões, pedidos de esclarecimento ou exercício de direitos relacionados com a presente Política de Cookies, bem como com o tratamento de dados pessoais efetuado pela 100 Bytes – Soluções Tecnológicas, LDA., o utilizador poderá contactar a Empresa através dos seguintes meios:</p>
+      <p>10.1.1. Endereço de correio eletrónico: <a href="mailto:${EMAIL}">${EMAIL}</a></p>
+      <p>10.1.2. Contacto telefónico: <a href="tel:${tel(SEDE_TEL)}">${SEDE_TEL}</a></p>
+      <p>10.2. A 100 Bytes compromete-se a assegurar o tratamento diligente de todas as comunicações recebidas, bem como a prestar resposta no mais curto prazo possível, em conformidade com os prazos e termos previstos na legislação aplicável.</p>
+      <p>10.3. Sempre que se revele necessário, a Empresa poderá solicitar informações adicionais com vista à verificação da identidade do requerente, garantindo que o exercício de direitos é efetuado de forma segura e em conformidade com as disposições legais aplicáveis.</p>
+      <p>10.4. Sem prejuízo do disposto nos números anteriores, o utilizador poderá ainda recorrer aos meios administrativos ou judiciais legalmente previstos para a defesa dos seus direitos em matéria de proteção de dados pessoais, nos termos da legislação em vigor na República de Angola.</p>
 
       <h2>11. Legislação Aplicável</h2>
-      <p>11.1. A presente Política rege-se pela legislação vigente na República de Angola, designadamente a Lei n.º 22/11, de 17 de junho, competindo aos tribunais competentes de Angola dirimir quaisquer litígios.</p>
+      <p>11.1. A presente Política de Cookies rege-se e é interpretada em conformidade com o ordenamento jurídico vigente na República de Angola, designadamente com a Lei n.º 22/11, de 17 de junho (Lei da Proteção de Dados Pessoais), bem como com as demais disposições legais e regulamentares aplicáveis em matéria de proteção de dados pessoais, privacidade e comunicações eletrónicas.</p>
+      <p>11.2. Em tudo o que não se encontre expressamente previsto na presente Política, aplicar-se-ão subsidiariamente as normas legais em vigor, bem como os princípios gerais de direito, com especial relevância para os princípios da licitude, lealdade, transparência, necessidade e proporcionalidade no tratamento de dados pessoais.</p>
+      <p>11.3. A interpretação, validade e execução da presente Política deverão ser efetuadas à luz do quadro normativo angolano, competindo às entidades e tribunais competentes da República de Angola dirimir quaisquer questões ou litígios emergentes da sua aplicação, sem prejuízo das disposições legais imperativas em contrário.</p>
     `,
   },
 };
