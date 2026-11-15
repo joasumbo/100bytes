@@ -21,8 +21,28 @@ export default function Settings() {
 }
 
 function Firewall() {
-  const [data, setData] = useState<{ active: boolean; rules: Rule[]; fail2ban: string; banned: string } | null>(null);
+  const [data, setData] = useState<{
+    active: boolean;
+    rules: Rule[];
+    fail2ban: string;
+    banned: string;
+    bannedIps?: string[];
+    myIp?: string | null;
+  } | null>(null);
   const [port, setPort] = useState("");
+
+  // Desbloquear um IP no fail2ban (SSH) e deixá-lo como de confiança
+  async function unban(ip: string) {
+    const r = await fetch("/api/firewall", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ action: "unban", ip }),
+    });
+    const j = await r.json().catch(() => ({}));
+    if (r.ok) toast.success(`IP ${ip} desbloqueado`);
+    else toast.error(j.error || "Falhou");
+    load();
+  }
 
   const load = useCallback(async () => {
     const r = await fetch("/api/firewall", { cache: "no-store" });
@@ -63,6 +83,31 @@ function Firewall() {
           <div className="muted" style={{ fontSize: 12.5, marginBottom: 6 }}>IPs banidos (SSH)</div>
           <div style={{ fontSize: 24, fontWeight: 600 }}>{data?.banned ?? "—"}</div>
         </div>
+      </div>
+
+      <div className="card" style={{ padding: 16, marginBottom: 18, maxWidth: 640 }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap" }}>
+          <div style={{ flex: 1, minWidth: 220 }}>
+            <div style={{ fontWeight: 600, fontSize: 14 }}>Acesso SSH</div>
+            <div className="muted" style={{ fontSize: 12.5 }}>
+              O seu IP: <b>{data?.myIp || "desconhecido"}</b>
+              {data?.myIp && data?.bannedIps?.includes(data.myIp) ? " · bloqueado pelo fail2ban" : ""}
+            </div>
+          </div>
+          {data?.myIp && (
+            <button className="btn btn-sm" onClick={() => unban(data.myIp!)}>Desbloquear o meu IP</button>
+          )}
+        </div>
+        {!!data?.bannedIps?.length && (
+          <div style={{ marginTop: 12, display: "flex", flexWrap: "wrap", gap: 8 }}>
+            {data.bannedIps.map((ip) => (
+              <span key={ip} className="badge" style={{ display: "inline-flex", alignItems: "center", gap: 8 }}>
+                {ip}
+                <button className="btn-ghost btn-sm" onClick={() => unban(ip)}>Desbloquear</button>
+              </span>
+            ))}
+          </div>
+        )}
       </div>
 
       <div className="card" style={{ padding: 16, marginBottom: 18, display: "flex", gap: 10, alignItems: "center", maxWidth: 440 }}>

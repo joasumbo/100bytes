@@ -5,7 +5,17 @@ export const dynamic = "force-dynamic";
 
 type Rule = { num: number; text: string };
 
-export async function GET() {
+// IPv4 ou IPv6 (só caracteres válidos; nada que possa ir parar ao shell)
+const IP_RE = /^(?:\d{1,3}(?:\.\d{1,3}){3}|[0-9a-fA-F:]{2,39})$/;
+
+/** IP de quem está a usar o painel (atrás do nginx). */
+function ipDoPedido(req: Request) {
+  const fwd = req.headers.get("x-forwarded-for")?.split(",")[0]?.trim();
+  const ip = fwd || req.headers.get("x-real-ip")?.trim() || "";
+  return IP_RE.test(ip) ? ip : null;
+}
+
+export async function GET(req: Request) {
   const raw = await run("sudo ufw status numbered 2>/dev/null");
   const active = /Status:\s*active/i.test(raw);
   const rules: Rule[] = [];
@@ -14,12 +24,26 @@ export async function GET() {
     if (m) rules.push({ num: Number(m[1]), text: m[2].replace(/\s+/g, " ").trim() });
   }
   const fail2ban = (await run("systemctl is-active fail2ban")).trim();
-  const banned = (await run("sudo fail2ban-client status sshd 2>/dev/null | grep -i 'Currently banned' | grep -oE '[0-9]+' | head -1")).trim() || "0";
-  return NextResponse.json({ active, rules, fail2ban, banned });
+  const estado = await run("sudo fail2ban-client status sshd 2>/dev/null");
+  const banned = estado.match(/Currently banned:\s*(\d+)/i)?.[1] ?? "0";
+  const bannedIps = (estado.match(/Banned IP list:\s*(.*)/i)?.[1] ?? "")
+    .split(/\s+/)
+    .filter((ip) => IP_RE.test(ip));
+  return NextResponse.json({ active, rules, fail2ban, banned, bannedIps, myIp: ipDoPedido(req) });
 }
 
 export async function POST(req: Request) {
-  const { action, port, proto } = await req.json().catch(() => ({}));
+  const { action, port, proto, ip } = await req.json().catch(() => ({}));
+
+  // Desbloquear um IP no fail2ban (SSH) e marcá-lo como de confiança
+  if (action === "unban") {
+    const alvo = String(ip ?? "").trim();
+    if (!IP_RE.test(alvo)) return NextResponse.json({ error: "IP inválido" }, { status: 400 });
+    const out = await run(`sudo fail2ban-client set sshd unbanip ${alvo} 2>&1`);
+    await run(`sudo fail2ban-client set sshd addignoreip ${alvo} 2>&1`);
+    return NextResponse.json({ ok: !/error|not/i.test(out) || /^\s*[01]\s*$/.test(out), output: out.trim() });
+  }
+
   const p = String(port || "").replace(/[^0-9]/g, "");
   const pr = proto === "udp" ? "udp" : "tcp";
   // Proteção: nunca mexer no SSH (22) por aqui
