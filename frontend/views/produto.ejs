@@ -749,9 +749,37 @@
             .pp-sim-price { font-weight:700; font-size:16px; margin-top:4px; }
             .pp-sim-old { color:#9ca3af; font-size:12px; }
 
+            /* Topo ao estilo da referência: painel cinzento encostado à esquerda, fotos a toda a altura */
+            .pp-hero { grid-template-columns:minmax(380px,42%) 1fr; min-height:600px; border-bottom:0; }
+            .pp-hero-info { padding:40px 40px 40px 32px; background:#f4f4f7; }
+            .pp-title { font-size:46px; line-height:1.08; font-weight:600; letter-spacing:-1px; }
+            .pp-brand { font-size:16px; margin-top:6px; }
+            .pp-price-main #priceDisplay { font-size:38px; }
+            .pp-price-sub { font-size:16px; }
+            .pp-hero-actions { flex-wrap:nowrap; gap:16px; margin-top:28px; }
+            .pp-hero-actions .pp-btn { flex:1 1 0; min-width:0; height:58px; white-space:nowrap; font-size:16px; }
+            .pp-hero-actions .pp-btn-ghost { border-color:transparent; }
+            .pp-hero-gallery { background:#fff; padding-left:28px; }
+            .pp .pp-gallery-track { gap:28px; min-height:600px; }
+            .pp .pp-gallery-item { flex:0 0 70%; height:600px; background:#f4f4f7; }
+            .pp .pp-gallery-item img { width:100%; height:100%; max-width:none; max-height:none; object-fit:contain; padding:0; mix-blend-mode:multiply; }
+            .pp-gallery-top { top:28px; left:56px; }
+            .pp-gallery-bottom { bottom:28px; left:56px; }
+            .pp-gallery-nav { bottom:28px; right:28px; }
+            .pp-round { width:52px; height:52px; border-color:transparent; }
+            .pp-chip { height:52px; padding:0 20px; font-size:15px; }
+            .pp-similar-head .pp-round { width:40px; height:40px; border-color:var(--pp-line); }
+            .pp-card { margin-top:0; }
+
             /* Responsivo */
             @media (max-width: 991.98px) {
                 .pp-hero { grid-template-columns:1fr; min-height:0; }
+                .pp-hero-gallery { padding-left:0; }
+                .pp .pp-gallery-track { gap:4px; }
+                .pp-hero-actions { flex-wrap:wrap; }
+                .pp-hero-actions .pp-btn { flex:1 1 200px; height:50px; }
+                .pp-gallery-top { top:16px; left:16px; } .pp-gallery-bottom { bottom:16px; left:16px; } .pp-gallery-nav { bottom:16px; right:16px; }
+                .pp-round { width:42px; height:42px; } .pp-chip { height:40px; padding:0 14px; font-size:13px; }
                 .pp-hero-gallery { order:-1; }
                 .pp .pp-gallery-track, .pp .pp-gallery-item { min-height:0; height:360px; }
                 .pp .pp-gallery-item { flex-basis:88%; }
