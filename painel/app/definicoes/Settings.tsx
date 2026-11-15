@@ -27,6 +27,7 @@ function Firewall() {
     fail2ban: string;
     banned: string;
     bannedIps?: string[];
+    jails?: { name: string; banned: string[] }[];
     myIp?: string | null;
   } | null>(null);
   const [port, setPort] = useState("");
@@ -39,7 +40,7 @@ function Firewall() {
       body: JSON.stringify({ action: "unban", ip }),
     });
     const j = await r.json().catch(() => ({}));
-    if (r.ok) toast.success(`IP ${ip} desbloqueado`);
+    if (r.ok) toast.success(`IP ${ip} desbloqueado em todas as jails`, { description: j.output, duration: 15000 });
     else toast.error(j.error || "Falhou");
     load();
   }
@@ -98,6 +99,11 @@ function Firewall() {
             <button className="btn btn-sm" onClick={() => unban(data.myIp!)}>Desbloquear o meu IP</button>
           )}
         </div>
+        {!!data?.jails?.length && (
+          <div className="muted" style={{ fontSize: 12, marginTop: 10 }}>
+            Jails: {data.jails.map((j) => `${j.name} (${j.banned.length})`).join(" · ")}
+          </div>
+        )}
         {!!data?.bannedIps?.length && (
           <div style={{ marginTop: 12, display: "flex", flexWrap: "wrap", gap: 8 }}>
             {data.bannedIps.map((ip) => (

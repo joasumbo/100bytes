@@ -24,12 +24,18 @@ export async function GET(req: Request) {
     if (m) rules.push({ num: Number(m[1]), text: m[2].replace(/\s+/g, " ").trim() });
   }
   const fail2ban = (await run("systemctl is-active fail2ban")).trim();
-  const estado = await run("sudo fail2ban-client status sshd 2>/dev/null");
-  const banned = estado.match(/Currently banned:\s*(\d+)/i)?.[1] ?? "0";
-  const bannedIps = (estado.match(/Banned IP list:\s*(.*)/i)?.[1] ?? "")
-    .split(/\s+/)
-    .filter((ip) => IP_RE.test(ip));
-  return NextResponse.json({ active, rules, fail2ban, banned, bannedIps, myIp: ipDoPedido(req) });
+  // Todas as jails (sshd, recidive, …): um IP pode estar banido em qualquer uma
+  const listaJails = (await run("sudo fail2ban-client status 2>/dev/null")).match(/Jail list:\s*(.*)/i)?.[1] ?? "sshd";
+  const nomes = listaJails.split(/[,\s]+/).filter((j) => /^[A-Za-z0-9_.-]+$/.test(j));
+  const jails: { name: string; banned: string[] }[] = [];
+  for (const nome of nomes) {
+    const estado = await run(`sudo fail2ban-client status ${nome} 2>/dev/null`);
+    const ips = (estado.match(/Banned IP list:\s*(.*)/i)?.[1] ?? "").split(/\s+/).filter((ip) => IP_RE.test(ip));
+    jails.push({ name: nome, banned: ips });
+  }
+  const bannedIps = [...new Set(jails.flatMap((j) => j.banned))];
+  const banned = String(bannedIps.length);
+  return NextResponse.json({ active, rules, fail2ban, banned, bannedIps, jails, myIp: ipDoPedido(req) });
 }
 
 export async function POST(req: Request) {
@@ -39,9 +45,18 @@ export async function POST(req: Request) {
   if (action === "unban") {
     const alvo = String(ip ?? "").trim();
     if (!IP_RE.test(alvo)) return NextResponse.json({ error: "IP inválido" }, { status: 400 });
-    const out = await run(`sudo fail2ban-client set sshd unbanip ${alvo} 2>&1`);
-    await run(`sudo fail2ban-client set sshd addignoreip ${alvo} 2>&1`);
-    return NextResponse.json({ ok: !/error|not/i.test(out) || /^\s*[01]\s*$/.test(out), output: out.trim() });
+    // Desbanir em todas as jails (sshd, recidive, …) e não voltar a banir
+    const geral = await run(`sudo fail2ban-client unban ${alvo} 2>&1`);
+    const listaJails = (await run("sudo fail2ban-client status 2>/dev/null")).match(/Jail list:\s*(.*)/i)?.[1] ?? "sshd";
+    const saidas: string[] = [`unban: ${geral.trim()}`];
+    for (const nome of listaJails.split(/[,\s]+/).filter((j) => /^[A-Za-z0-9_.-]+$/.test(j))) {
+      const out = await run(`sudo fail2ban-client set ${nome} unbanip ${alvo} 2>&1`);
+      await run(`sudo fail2ban-client set ${nome} addignoreip ${alvo} 2>&1`);
+      saidas.push(`${nome}: ${out.trim()}`);
+    }
+    // Regras "deny" do ufw para este IP, se existirem
+    await run(`sudo ufw delete deny from ${alvo} 2>&1`);
+    return NextResponse.json({ ok: true, output: saidas.join(" | ") });
   }
 
   const p = String(port || "").replace(/[^0-9]/g, "");
