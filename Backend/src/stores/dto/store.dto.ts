@@ -1,4 +1,11 @@
-import { IsString, IsOptional, IsBoolean, IsNumber } from 'class-validator';
+import {
+  IsString,
+  IsOptional,
+  IsBoolean,
+  IsNumber,
+  IsArray,
+  IsInt,
+} from 'class-validator';
 import { Transform } from 'class-transformer';
 
 export class CreateStoreDto {
@@ -8,6 +15,14 @@ export class CreateStoreDto {
   @IsOptional() @IsNumber() lat?: number;
   @IsOptional() @IsNumber() lng?: number;
   @IsOptional() @IsBoolean() active?: boolean;
+  @IsOptional()
+  @IsArray()
+  @IsInt({ each: true })
+  winmaxTerminalCodes?: number[];
+  @IsOptional()
+  @IsArray()
+  @IsInt({ each: true })
+  winmaxWarehouseCodes?: number[];
 }
 
 export class UpdateStoreDto {
@@ -17,6 +32,14 @@ export class UpdateStoreDto {
   @IsOptional() @IsNumber() lat?: number;
   @IsOptional() @IsNumber() lng?: number;
   @IsOptional() @IsBoolean() active?: boolean;
+  @IsOptional()
+  @IsArray()
+  @IsInt({ each: true })
+  winmaxTerminalCodes?: number[];
+  @IsOptional()
+  @IsArray()
+  @IsInt({ each: true })
+  winmaxWarehouseCodes?: number[];
 }
 
 export class UpsertStoreStockDto {

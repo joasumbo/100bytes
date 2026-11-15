@@ -108,11 +108,99 @@ model Store {
   lat         Float?
   lng         Float?
   active      Boolean      @default(true)
+  // Ligação ao Winmax: terminais (POS) da loja e armazéns cujo stock lhe pertence
+  winmaxTerminalCodes  Int[] @default([])
+  winmaxWarehouseCodes Int[] @default([])
   createdAt   DateTime     @default(now())
   updatedAt   DateTime     @updatedAt
   storeStocks StoreStock[]
 
   @@map("stores")
+}
+
+// ─── Winmax (ERP) — cópia sincronizada pelo conector ─────────────────────────
+// Dados lidos dos web services do Winmax. Não são editados no admin: o
+// conector reescreve-os a cada sincronização.
+
+model WinmaxArticle {
+  code                String        @id // ArticleCode no Winmax
+  designation         String
+  familyCode          String?
+  subFamilyCode       String?
+  subSubFamilyCode    String?
+  subSubSubFamilyCode String?
+  sellUnit            String?
+  saftType            String?
+  currency            String?
+  priceWithTax        Float? // SalesPrice1WithTaxesFees
+  priceWithoutTax     Float? // SalesPrice1WithoutTaxesFees
+  costPrice           Float? // NetCostPrice
+  stockTotal          Float         @default(0) // soma dos armazéns (0 = total no Winmax)
+  imageUrl            String?
+  lastSellDate        DateTime?
+  lastPurchaseDate    DateTime?
+  present             Boolean       @default(true) // false se deixou de vir na última sincronização completa
+  syncedAt            DateTime      @default(now())
+  stocks              WinmaxStock[]
+
+  @@index([designation])
+  @@map("winmax_articles")
+}
+
+model WinmaxStock {
+  articleCode   String
+  warehouseCode Int
+  quantity      Float         @default(0)
+  location      String?
+  article       WinmaxArticle @relation(fields: [articleCode], references: [code], onDelete: Cascade)
+
+  @@id([articleCode, warehouseCode])
+  @@index([warehouseCode])
+  @@map("winmax_stocks")
+}
+
+model WinmaxWarehouse {
+  code      Int      @id
+  name      String
+  syncedAt  DateTime @default(now())
+
+  @@map("winmax_warehouses")
+}
+
+model WinmaxTerminal {
+  code      Int      @id
+  name      String
+  syncedAt  DateTime @default(now())
+
+  @@map("winmax_terminals")
+}
+
+// Árvore de famílias (4 níveis). id = caminho de códigos, ex.: "1", "1.10", "1.10.1", "1.10.1.26"
+model WinmaxFamily {
+  id        String   @id
+  level     Int
+  code      String
+  name      String
+  parentId  String?
+  syncedAt  DateTime @default(now())
+
+  @@index([parentId])
+  @@map("winmax_families")
+}
+
+model WinmaxSyncRun {
+  id         String    @id @default(cuid())
+  mode       String // full | incremental
+  status     String    @default("running") // running | ok | error
+  trigger    String    @default("schedule") // schedule | manual
+  articles   Int       @default(0)
+  pages      Int       @default(0)
+  error      String?
+  startedAt  DateTime  @default(now())
+  finishedAt DateTime?
+
+  @@index([startedAt])
+  @@map("winmax_sync_runs")
 }
 
 model StoreStock {

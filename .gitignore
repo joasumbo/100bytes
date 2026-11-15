@@ -35,3 +35,6 @@ Thumbs.db
 .turbo/
 .cache/
 *.tsbuildinfo
+
+# Kit Winmax (manual confidencial da itBase, nao publicar)
+winmax4/

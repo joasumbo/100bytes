@@ -1,6 +1,10 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
-import { CreateStoreDto, UpdateStoreDto, UpsertStoreStockDto } from './dto/store.dto';
+import {
+  CreateStoreDto,
+  UpdateStoreDto,
+  UpsertStoreStockDto,
+} from './dto/store.dto';
 
 @Injectable()
 export class StoresService {
@@ -9,7 +13,9 @@ export class StoresService {
   // ─── Lojas ───────────────────────────────────────────────────────────────
 
   async findAll() {
-    const stores = await this.prisma.store.findMany({ orderBy: { name: 'asc' } });
+    const stores = await this.prisma.store.findMany({
+      orderBy: { name: 'asc' },
+    });
     return { stores };
   }
 
@@ -28,6 +34,8 @@ export class StoresService {
         lat: dto.lat ?? null,
         lng: dto.lng ?? null,
         active: dto.active ?? true,
+        winmaxTerminalCodes: dto.winmaxTerminalCodes ?? [],
+        winmaxWarehouseCodes: dto.winmaxWarehouseCodes ?? [],
       },
     });
     return { store };
@@ -44,6 +52,12 @@ export class StoresService {
         ...(dto.lat !== undefined && { lat: dto.lat }),
         ...(dto.lng !== undefined && { lng: dto.lng }),
         ...(dto.active !== undefined && { active: dto.active }),
+        ...(dto.winmaxTerminalCodes !== undefined && {
+          winmaxTerminalCodes: dto.winmaxTerminalCodes,
+        }),
+        ...(dto.winmaxWarehouseCodes !== undefined && {
+          winmaxWarehouseCodes: dto.winmaxWarehouseCodes,
+        }),
       },
     });
     return { store };
@@ -71,10 +85,23 @@ export class StoresService {
   async getAvailability(productId: string) {
     const stocks = await this.prisma.storeStock.findMany({
       where: { productId, quantity: { gt: 0 } },
-      include: { store: { select: { id: true, name: true, address: true, phone: true, lat: true, lng: true } } },
+      include: {
+        store: {
+          select: {
+            id: true,
+            name: true,
+            address: true,
+            phone: true,
+            lat: true,
+            lng: true,
+          },
+        },
+      },
       orderBy: { store: { name: 'asc' } },
     });
-    return { stores: stocks.map(s => ({ ...s.store, quantity: s.quantity })) };
+    return {
+      stores: stocks.map((s) => ({ ...s.store, quantity: s.quantity })),
+    };
   }
 
   /** Cria ou actualiza o stock de um produto numa loja */

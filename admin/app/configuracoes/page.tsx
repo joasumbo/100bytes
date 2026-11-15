@@ -2,6 +2,8 @@
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { api } from "@/lib/api";
+import WinmaxConector from "@/components/admin/configuracoes/WinmaxConector";
+import LojasWinmax from "@/components/admin/configuracoes/LojasWinmax";
 
 type ShippingData = { freeShippingThreshold: number };
 type ContentEntryResponse = { entry: { key: string; data: ShippingData } | null };
@@ -85,6 +87,10 @@ export default function ConfiguracoesPage() {
             ))}
           </div>
         </div>
+      </div>
+      <div className="grid grid-cols-1 xl:grid-cols-2 gap-6 items-start">
+        <WinmaxConector />
+        <LojasWinmax />
       </div>
     </div>
   );
