@@ -1,5 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
+import { SearchService } from '../search/search.service';
 import { slugify } from '../common/slugify';
 import { marcaDoNome } from './winmax-marcas';
 
@@ -19,7 +20,10 @@ export class WinmaxCatalogService {
   private readonly log = new Logger('WinmaxCatalog');
   private aCorrer: Promise<unknown> | null = null;
 
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly search: SearchService,
+  ) {}
 
   /** Publica todos os artigos (ou só os códigos indicados). Não corre duas vezes em simultâneo. */
   async publicar(codigos?: string[]) {
@@ -137,6 +141,8 @@ export class WinmaxCatalogService {
         `Catálogo: ${criados} criados, ${atualizados} atualizados (${ocultos} ocultos).`,
       );
     }
+    // Pesquisa: refletir logo produtos novos, preços e stock
+    if (criados || atualizados) this.search.reindexar().catch(() => undefined);
     return { created: criados, updated: atualizados, hidden: ocultos };
   }
 

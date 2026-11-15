@@ -5,12 +5,16 @@ import {
 import { FileInterceptor } from '@nestjs/platform-express';
 import { memoryStorage } from 'multer';
 import { ProductsService } from './products.service';
+import { ComplementosService } from './complementos.service';
 import { CreateProductDto, UpdateProductDto } from './dto/product.dto';
 import { AuthGuard } from '../auth/auth.guard';
 
 @Controller('products')
 export class ProductsController {
-  constructor(private products: ProductsService) {}
+  constructor(
+    private products: ProductsService,
+    private complementos: ComplementosService,
+  ) {}
 
   @Get()
   findAll(@Query() query: Record<string, string>) {
@@ -21,6 +25,18 @@ export class ProductsController {
   @Get('bestsellers')
   bestSellers(@Query('limit') limit?: string) {
     return this.products.bestSellers(parseInt(limit ?? '24'));
+  }
+
+  /** Público: semelhantes e substitutos (calculados pela camada Python) */
+  @Get(':id/semelhantes')
+  semelhantesDe(@Param('id') id: string) {
+    return this.complementos.relacionados(id);
+  }
+
+  /** Público: acessórios sugeridos ("Completa a tua compra") */
+  @Get(':id/complementos')
+  complementosDe(@Param('id') id: string) {
+    return this.complementos.sugerir(id);
   }
 
   @Get(':id')

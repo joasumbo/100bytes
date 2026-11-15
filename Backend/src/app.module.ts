@@ -13,6 +13,8 @@ import { ContentModule } from './content/content.module';
 import { CustomersModule } from './customers/customers.module';
 import { OrdersModule } from './orders/orders.module';
 import { WinmaxModule } from './winmax/winmax.module';
+import { EventsModule } from './events/events.module';
+import { SearchModule } from './search/search.module';
 
 @Module({
   imports: [
@@ -30,6 +32,8 @@ import { WinmaxModule } from './winmax/winmax.module';
     CustomersModule,
     OrdersModule,
     WinmaxModule,
+    EventsModule,
+    SearchModule,
   ],
 })
 export class AppModule {}

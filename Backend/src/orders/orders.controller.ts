@@ -2,6 +2,7 @@ import { Body, Controller, Get, Param, Post, Req } from '@nestjs/common';
 import { Request } from 'express';
 import { JwtService } from '@nestjs/jwt';
 import { OrdersService } from './orders.service';
+import { PrismaService } from '../prisma/prisma.service';
 import { CreateOrderDto } from './dto/create-order.dto';
 
 @Controller('orders')
@@ -9,6 +10,7 @@ export class OrdersController {
   constructor(
     private orders: OrdersService,
     private jwt: JwtService,
+    private prisma: PrismaService,
   ) {}
 
   // Criação pública (convidado ou cliente autenticado).
@@ -26,6 +28,23 @@ export class OrdersController {
       }
     }
     const order = await this.orders.create(dto, customerId);
+
+    // Registo de comportamento: uma compra por artigo (base das recomendações)
+    const sessao = String(req.headers['x-session-id'] ?? '');
+    await this.prisma.event
+      .createMany({
+        data: order.items
+          .filter((i) => i.productId)
+          .map((i) => ({
+            type: 'purchase',
+            sessionId: /^[A-Za-z0-9_-]{8,64}$/.test(sessao) ? sessao : 'order-' + order.code,
+            customerId: customerId ?? null,
+            productId: i.productId,
+            meta: { order: order.code, qty: i.qty, price: i.unitPrice },
+          })),
+      })
+      .catch(() => undefined);
+
     return { ok: true, code: order.code, order };
   }
 

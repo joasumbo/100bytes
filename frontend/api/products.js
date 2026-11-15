@@ -141,4 +141,50 @@ async function getProductsPaged({ page = 1, perPage = 24, categoryId, categorySl
   };
 }
 
-module.exports = { getFeatured, getOnSale, getNewest, getProductById, getRelated, getByCategory, getProductsPaged, getBestSellers, NOVIDADE_MS };
+/** Acessórios sugeridos ("Completa a tua compra"). Falha em silêncio: a secção só não aparece. */
+async function getComplementos(id) {
+  try {
+    const data = await apiFetch(`/products/${encodeURIComponent(id)}/complementos`);
+    return (data.items || []).map(mapProduct);
+  } catch (e) {
+    return [];
+  }
+}
+
+/**
+ * Semelhantes e substitutos calculados pela camada Python (recs/).
+ * Falha em silêncio: devolve listas vazias e a página usa o plano B.
+ */
+async function getSemelhantes(id) {
+  try {
+    const data = await apiFetch(`/products/${encodeURIComponent(id)}/semelhantes`);
+    return { similar: (data.similar || []).map(mapProduct), substitute: (data.substitute || []).map(mapProduct) };
+  } catch (e) {
+    return { similar: [], substitute: [] };
+  }
+}
+
+/**
+ * Pesquisa inteligente (Meilisearch no Backend, com Postgres de reserva).
+ * Devolve o mesmo formato que getProductsPaged, para usar o mesmo template.
+ */
+async function searchProducts({ q, page = 1, perPage = 24, categorySlug, brand, sort, minPrice, maxPrice } = {}) {
+  const p = new URLSearchParams({ q: q || '', page: String(page), perPage: String(perPage) });
+  if (categorySlug) p.set('categorySlug', categorySlug);
+  if (brand) p.set('brand', brand);
+  if (sort) p.set('sort', sort);
+  if (minPrice != null && minPrice !== '') p.set('minPrice', String(Number(minPrice)));
+  if (maxPrice != null && maxPrice !== '') p.set('maxPrice', String(Number(maxPrice)));
+  const data = await apiFetch(`/search?${p}`);
+  const total = data.total || 0;
+  return {
+    products: (data.products || []).map(mapProduct),
+    total,
+    page: data.page || page,
+    pages: Math.max(1, Math.ceil(total / perPage)),
+    perPage,
+    engine: data.engine,
+  };
+}
+
+module.exports = { getSemelhantes, searchProducts, getComplementos, getFeatured, getOnSale, getNewest, getProductById, getRelated, getByCategory, getProductsPaged, getBestSellers, NOVIDADE_MS };

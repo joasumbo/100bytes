@@ -160,6 +160,8 @@ const __heading = __pageTitle || (__category ? __category.name : 'Produtos');
             color: #fff !important;
         }
     </style>
+    <link rel="preload" href="/fonts/dm-sans-latin.woff2" as="font" type="font/woff2" crossorigin>
+        <link rel="stylesheet" href="/css/fonte.css">
 </head>
 <body>
 
@@ -382,5 +384,9 @@ $(document).ready(function () {
 });
 </script>
 
+    <script src="/js/precos.js" defer></script>
+    <% if (typeof searchQuery !== 'undefined' && searchQuery) { %><script>window.bbPesquisa = <%- JSON.stringify({ q: searchQuery, total: pagination.total, page: pagination.page }) %>;</script><% } %>
+    <script src="/js/comportamento.js" defer></script>
+    <script src="/js/pesquisa.js" defer></script>
 </body>
 </html>

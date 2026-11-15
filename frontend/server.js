@@ -5,7 +5,7 @@ const cookieParser = require("cookie-parser");
 const jwt = require("jsonwebtoken");
 const { createProxyMiddleware } = require("http-proxy-middleware");
 const { getRootCategories, getAllCategories, findCategoryBySlug, getCategoryBySlug, getTopCategories } = require("./api/categories");
-const { getFeatured, getOnSale, getNewest, getProductById, getRelated, getByCategory, getProductsPaged, getBestSellers, NOVIDADE_MS } = require("./api/products");
+const { getSemelhantes, searchProducts, getComplementos, getFeatured, getOnSale, getNewest, getProductById, getRelated, getByCategory, getProductsPaged, getBestSellers, NOVIDADE_MS } = require("./api/products");
 const { getBrands } = require("./api/brands");
 const { paginas } = require("./data/paginas");
 const { reportError } = require("./api/reporter");
@@ -246,6 +246,7 @@ app.post("/api/orders", async (req, res) => {
       headers: {
         "Content-Type": "application/json",
         ...(req.headers.cookie ? { cookie: req.headers.cookie } : {}),
+        ...(req.headers["x-session-id"] ? { "x-session-id": String(req.headers["x-session-id"]) } : {}),
       },
       body: JSON.stringify(req.body || {}),
     });
@@ -329,6 +330,21 @@ app.use(
     },
   })
 );
+
+// ── COMPORTAMENTO: eventos do site (proxy para o Backend; nunca falha) ──
+app.post("/api/events", express.json({ limit: "20kb" }), async (req, res) => {
+  res.status(204).end();
+  try {
+    await fetch(`${BACKEND_URL}/api/events`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json", cookie: req.headers.cookie || "" },
+      body: JSON.stringify(req.body || {}),
+      signal: AbortSignal.timeout(4000),
+    });
+  } catch (e) {
+    /* ignorar */
+  }
+});
 
 // Proxy /api/* → Backend NestJS
 app.use(
@@ -421,20 +437,35 @@ app.get("/pesquisa", async (req, res, next) => {
   const brandId = req.query.brandId || null;
   const { sortBy, sortOrder } = mapSort(sort);
   try {
-    const paged = await getProductsPaged({
-      page,
-      perPage: 24,
-      search: q || undefined,
-      categorySlug: categoria || undefined,
-      sortBy,
-      sortOrder,
-      minPrice,
-      maxPrice,
-      brandId,
-    });
+    // Com texto: pesquisa inteligente (erros, sinónimos, relevância). Sem texto: listagem normal.
+    const marca = brandId ? (cache.brands || []).find((b) => b.id === brandId) : null;
+    const paged = q
+      ? await searchProducts({
+          q,
+          page,
+          perPage: 24,
+          categorySlug: categoria || undefined,
+          brand: marca ? marca.name : undefined,
+          sort,
+          minPrice,
+          maxPrice,
+        }).catch(() =>
+          getProductsPaged({ page, perPage: 24, search: q, categorySlug: categoria || undefined, sortBy, sortOrder, minPrice, maxPrice, brandId }),
+        )
+      : await getProductsPaged({
+          page,
+          perPage: 24,
+          categorySlug: categoria || undefined,
+          sortBy,
+          sortOrder,
+          minPrice,
+          maxPrice,
+          brandId,
+        });
     res.render("categoria", {
       category: null,
       pageTitle: q ? `Resultados para "${q}"` : "Pesquisa",
+      searchQuery: q,
       categories: cache.categories,
       products: paged.products,
       topProducts: [],
@@ -580,8 +611,11 @@ app.get("/:catSlug/:slugId([a-z0-9][a-z0-9-]*--[a-zA-Z0-9]+)", async (req, res, 
     if (!product) return res.status(404).sendFile(path.join(PUBLIC_DIR, "404.html"), (err) => {
       if (err) res.status(404).send("404 - Produto não encontrado");
     });
-    const related = await getRelated(product.categoryId, product.id, 10);
-    res.render("produto", { product, related, categories: cache.categories, freeShippingThreshold: cache.freeShippingThreshold });
+    const [semelhantes, complementos] = await Promise.all([getSemelhantes(product.id), getComplementos(product.id)]);
+    // Semelhantes da camada Python; sem cálculo ainda, usa a mesma categoria
+    const related = semelhantes.similar.length ? semelhantes.similar : await getRelated(product.categoryId, product.id, 10);
+    const alternativas = semelhantes.substitute;
+    res.render("produto", { product, related, alternativas, complementos, categories: cache.categories, freeShippingThreshold: cache.freeShippingThreshold });
   } catch (e) {
     next(e);
   }

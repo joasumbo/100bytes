@@ -361,3 +361,37 @@ model OrderItem {
 
   @@map("order_items")
 }
+
+// ─── Comportamento (base para pesquisa e recomendações) ──────────────────────
+// Um registo por ação no site. type: view | search | search_click |
+// add_to_cart | remove_from_cart | purchase.
+model Event {
+  id         String   @id @default(cuid())
+  type       String
+  sessionId  String
+  customerId String?
+  productId  String?
+  query      String?
+  meta       Json?
+  createdAt  DateTime @default(now())
+
+  @@index([type, createdAt])
+  @@index([sessionId])
+  @@index([productId, type])
+  @@index([customerId])
+  @@map("events")
+}
+
+// Produtos semelhantes / substitutos calculados pela camada Python (recs/).
+// kind: similar | substitute. Reescrito a cada execução.
+model ProductRelation {
+  productId String
+  relatedId String
+  kind      String
+  score     Float
+  updatedAt DateTime @default(now())
+
+  @@id([productId, relatedId, kind])
+  @@index([productId, kind, score])
+  @@map("product_relations")
+}
