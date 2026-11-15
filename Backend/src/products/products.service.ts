@@ -320,7 +320,8 @@ export class ProductsService {
     }
 
     const keyToDelete = oldKey || currentKeys[slot];
-    if (keyToDelete) await this.r2.delete(keyToDelete);
+    // Fotos do Winmax (winmax/...) são partilhadas com a página Stock: não apagar do R2
+    if (keyToDelete && !keyToDelete.startsWith('winmax/')) await this.r2.delete(keyToDelete);
 
     const ext = path.extname(file.originalname).replace('.', '') || 'jpg';
     const newKey = `products/${id}/${Date.now()}-${slot}.${ext}`;
@@ -339,7 +340,7 @@ export class ProductsService {
     const product = await this.prisma.product.findUnique({ where: { id }, select: { imageKeys: true } });
     if (!product) throw new NotFoundException('Produto não encontrado.');
 
-    await this.r2.delete(key);
+    if (!key.startsWith('winmax/')) await this.r2.delete(key);
     const imageKeys = (product.imageKeys ?? []).filter((k) => k !== key);
     await this.prisma.product.update({ where: { id }, data: { imageKeys } });
 

@@ -21,6 +21,7 @@ import { PrismaService } from '../prisma/prisma.service';
 import { WinmaxClient, WinmaxError } from './winmax.client';
 import { WinmaxSyncService } from './winmax-sync.service';
 import { WinmaxImagesService } from './winmax-images.service';
+import { WinmaxCatalogService } from './winmax-catalog.service';
 
 /** Admin: estado do conector, sincronização manual e consulta dos dados do Winmax. */
 @Controller('admin/winmax')
@@ -31,6 +32,7 @@ export class WinmaxController {
     private readonly winmax: WinmaxClient,
     private readonly sync: WinmaxSyncService,
     private readonly imagens: WinmaxImagesService,
+    private readonly catalogo: WinmaxCatalogService,
   ) {}
 
   /** Resumo: configuração, execução em curso, últimas execuções e contagens. */
@@ -220,30 +222,54 @@ export class WinmaxController {
     return { started: true, ...r };
   }
 
+  // Depois de mexer nas fotos, o produto do site é atualizado logo
+  // (um artigo com stock que ganha foto passa a aparecer na loja).
+
   /** Procura fotos para um artigo (ignora procuras anteriores). */
   @Post('articles/:code/lookup')
   async lookup(@Param('code') code: string) {
     const adicionadas = await this.imagens.procurar(code);
+    await this.catalogo.publicar([code]);
     return { added: adicionadas };
   }
 
   @Post('articles/:code/images')
   @UseInterceptors(FileInterceptor('file', { storage: memoryStorage() }))
-  upload(
+  async upload(
     @Param('code') code: string,
     @UploadedFile() file: Express.Multer.File,
   ) {
     if (!file) throw new BadRequestException('Ficheiro obrigatório.');
-    return this.imagens.upload(code, file);
+    const r = await this.imagens.upload(code, file);
+    await this.catalogo.publicar([code]);
+    return r;
   }
 
   @Delete('articles/:code/images/:id')
-  removeImage(@Param('code') code: string, @Param('id') id: string) {
-    return this.imagens.remover(code, id);
+  async removeImage(@Param('code') code: string, @Param('id') id: string) {
+    const r = await this.imagens.remover(code, id);
+    await this.catalogo.publicar([code]);
+    return r;
   }
 
   @Post('articles/:code/images/:id/main')
-  mainImage(@Param('code') code: string, @Param('id') id: string) {
-    return this.imagens.principal(code, id);
+  async mainImage(@Param('code') code: string, @Param('id') id: string) {
+    const r = await this.imagens.principal(code, id);
+    await this.catalogo.publicar([code]);
+    return r;
+  }
+
+  // ─── Produtos do site ────────────────────────────────────────────────────
+
+  /** Quantos produtos vêm do Winmax e quantos estão visíveis na loja. */
+  @Get('catalog/status')
+  catalogStatus() {
+    return this.catalogo.resumo();
+  }
+
+  /** Publica/atualiza já todos os produtos do Winmax no site. */
+  @Post('catalog/publish')
+  catalogPublish() {
+    return this.catalogo.publicar();
   }
 }

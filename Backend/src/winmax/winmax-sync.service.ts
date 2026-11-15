@@ -7,6 +7,7 @@ import {
 import { ConfigService } from '@nestjs/config';
 import { PrismaService } from '../prisma/prisma.service';
 import { WinmaxClient } from './winmax.client';
+import { WinmaxCatalogService } from './winmax-catalog.service';
 
 type Modo = 'full' | 'incremental';
 type Origem = 'schedule' | 'manual';
@@ -19,7 +20,8 @@ type Origem = 'schedule' | 'manual';
  * - Incremental: só artigos alterados desde a última sincronização bem
  *   sucedida (filtro LastChangeDateAfter), com margem de segurança.
  *
- * Não toca nos produtos do site (tabela products): escreve só nas tabelas winmax_*.
+ * Escreve nas tabelas winmax_*; no fim de cada execução bem sucedida, o
+ * WinmaxCatalogService atualiza os produtos do site (preço, stock, visibilidade).
  *
  * Agenda (variáveis de ambiente, em minutos):
  *   WINMAX_SYNC_ENABLED=false            desliga a agenda (a manual continua)
@@ -38,6 +40,7 @@ export class WinmaxSyncService
     private readonly prisma: PrismaService,
     private readonly winmax: WinmaxClient,
     private readonly config: ConfigService,
+    private readonly catalogo: WinmaxCatalogService,
   ) {}
 
   get running() {
@@ -153,6 +156,15 @@ export class WinmaxSyncService
         );
       }
       await this.limparHistorico();
+      // Produtos do site: preço, stock e visibilidade. Na incremental só se
+      // houve alterações; na completa sempre (apanha artigos que saíram).
+      if (modo === 'full' || artigos > 0) {
+        await this.catalogo
+          .publicar()
+          .catch((e) =>
+            this.log.error(`Publicação do catálogo falhou: ${e?.message ?? e}`),
+          );
+      }
     } catch (e: any) {
       this.log.error(`Sincronização ${modo} falhou: ${e?.message ?? e}`);
       await this.prisma.winmaxSyncRun.update({

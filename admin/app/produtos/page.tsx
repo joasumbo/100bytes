@@ -23,6 +23,8 @@ interface Product {
   stockAlert: number;
   active: boolean;
   featured: boolean;
+  /** Código do artigo no Winmax (produto sincronizado automaticamente) */
+  winmaxCode?: string | null;
   category: { id: string; name: string; slug: string } | null;
   brand: { id: string; name: string; logoKey: string | null } | null;
   _count: { bundleItems: number };
@@ -345,6 +347,11 @@ function StatsModal({ product, onClose }: { product: Product; onClose: () => voi
             <div>
               <h3 className="font-bold text-gray-900 text-sm leading-tight">{product.name}</h3>
               <p className="text-xs text-gray-400">{product.reference}</p>
+              {product.winmaxCode && (
+                <p className="text-[11px] text-blue-600 mt-0.5">
+                  Sincronizado do Winmax: nome, preço, stock e fotos são atualizados automaticamente.
+                </p>
+              )}
             </div>
           </div>
           <button type="button" onClick={onClose} className="w-8 h-8 rounded-full bg-gray-100 hover:bg-gray-200 flex items-center justify-center transition flex-shrink-0">
@@ -631,7 +638,17 @@ export default function ProdutosPage() {
                         <div className="min-w-0">
                           <p className="font-semibold text-gray-800 truncate max-w-[200px]">{p.name}</p>
                           {p.brand && <p className="text-xs text-gray-400 truncate">{p.brand.name}</p>}
-                          {p.featured && <span className="text-[10px] font-bold text-orange-500">★ DESTAQUE</span>}
+                          <div className="flex gap-2">
+                            {p.winmaxCode && (
+                              <span
+                                className="text-[10px] font-bold text-blue-600"
+                                title="Preço, stock e fotos vêm do Winmax e são atualizados automaticamente"
+                              >
+                                WINMAX
+                              </span>
+                            )}
+                            {p.featured && <span className="text-[10px] font-bold text-orange-500">★ DESTAQUE</span>}
+                          </div>
                         </div>
                       </div>
                     </td>

@@ -9,6 +9,7 @@ const IVA_RATE = 14;
 interface Product {
   id: string;
   reference: string;
+  winmaxCode?: string | null;
   name: string;
   slug: string;
   description: string | null;
@@ -159,7 +160,13 @@ export default function VisualizarProdutoPage() {
             </span>
             {product.featured && <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-semibold bg-orange-50 text-orange-600">★ Destaque</span>}
             <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-mono bg-gray-100 text-gray-500">{product.reference}</span>
+            {product.winmaxCode && <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-blue-50 text-blue-700">Winmax</span>}
           </div>
+          {product.winmaxCode && (
+            <p className="text-xs text-blue-700 bg-blue-50 rounded-xl px-3 py-2">
+              Produto sincronizado do Winmax: nome, preço, stock, fotos e visibilidade são atualizados automaticamente. Pode editar a descrição, a categoria, a marca e o destaque. As fotos gerem-se na página Stock.
+            </p>
+          )}
 
           {/* Nome */}
           <div>

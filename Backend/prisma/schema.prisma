@@ -43,6 +43,8 @@ model Category {
   parentId    String?
   active      Boolean    @default(true)
   sortOrder   Int        @default(0)
+  // Família do Winmax de onde a categoria foi criada (ex.: "1" ou "1.2")
+  winmaxFamilyId String?   @unique
   createdAt   DateTime   @default(now())
   updatedAt   DateTime   @updatedAt
   parent      Category?  @relation("SubCategories", fields: [parentId], references: [id])
@@ -74,6 +76,9 @@ model Product {
   brandId        String?
   active         Boolean      @default(true)
   featured       Boolean      @default(false)
+  // Produto publicado a partir do Winmax (código do artigo). Nome, preço, stock,
+  // fotos e visibilidade vêm do Winmax; descrição, categoria e marca editam-se no admin.
+  winmaxCode     String?      @unique
   createdAt      DateTime     @default(now())
   updatedAt      DateTime     @updatedAt
   linkedInBundle BundleItem[] @relation("BundleLinked")

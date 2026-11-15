@@ -383,6 +383,7 @@ export default function EditarProdutoPage() {
 
   const [loading, setLoading] = useState(true);
   const [notFound, setNotFound] = useState(false);
+  const [winmaxCode, setWinmaxCode] = useState<string | null>(null);
   const [categories, setCategories] = useState<Category[]>([]);
   const [brands, setBrands] = useState<Brand[]>([]);
   const [allZones, setAllZones] = useState<DeliveryZone[]>([]);
@@ -447,6 +448,7 @@ export default function EditarProdutoPage() {
         const p = data.product;
         setName(p.name ?? "");
         setReference(p.reference ?? "");
+        setWinmaxCode(p.winmaxCode ?? null);
         setDescription(p.description ?? "");
         setCategoryId(p.category?.id ?? "");
         setBrandId(p.brand?.id ?? "");
@@ -592,6 +594,11 @@ export default function EditarProdutoPage() {
           <div>
             <h1 className="text-xl font-bold text-gray-900">Editar produto</h1>
             <p className="text-xs text-gray-400 mt-0.5 truncate max-w-[280px]">{name}</p>
+            {winmaxCode && (
+              <p className="text-xs text-blue-700 mt-1 max-w-[520px]">
+                Sincronizado do Winmax: nome, preço, stock, fotos e visibilidade são substituídos na próxima sincronização. Edite aqui só a descrição, a categoria, a marca e o destaque.
+              </p>
+            )}
           </div>
         </div>
         <div className="flex gap-3">
