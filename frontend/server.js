@@ -580,8 +580,8 @@ app.get("/:catSlug/:slugId([a-z0-9][a-z0-9-]*--[a-zA-Z0-9]+)", async (req, res, 
     if (!product) return res.status(404).sendFile(path.join(PUBLIC_DIR, "404.html"), (err) => {
       if (err) res.status(404).send("404 - Produto não encontrado");
     });
-    const related = await getRelated(product.categoryId, product.id);
-    res.render("produto", { product, related, categories: cache.categories });
+    const related = await getRelated(product.categoryId, product.id, 10);
+    res.render("produto", { product, related, categories: cache.categories, freeShippingThreshold: cache.freeShippingThreshold });
   } catch (e) {
     next(e);
   }

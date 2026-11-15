@@ -106,6 +106,9 @@ async function getProductById(id) {
     salePrice: p.salePrice ? formatPrice(p.salePrice) : null,
     stock: p.stock ?? null,
     trackStock: p.trackStock ?? false,
+    // Produtos do Winmax: código do fabricante e especificações (Icecat), por grupo
+    mpn: p.mpn || null,
+    specs: p.specs && typeof p.specs === "object" ? p.specs : null,
   };
 }
 

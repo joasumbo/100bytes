@@ -186,7 +186,15 @@ export class ProductsService {
       },
     });
     if (!product) throw new NotFoundException('Produto não encontrado.');
-    return { product };
+
+    // Produtos do Winmax: especificações e código do fabricante vindos do Icecat
+    const info = product.winmaxCode
+      ? await this.prisma.winmaxArticleInfo.findUnique({
+          where: { articleCode: product.winmaxCode },
+          select: { specs: true, mpn: true },
+        })
+      : null;
+    return { product: { ...product, specs: info?.specs ?? null, mpn: info?.mpn ?? null } };
   }
 
   // ─── CREATE ───────────────────────────────────────────────────────────────────
