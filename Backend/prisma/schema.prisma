@@ -141,10 +141,62 @@ model WinmaxArticle {
   lastPurchaseDate    DateTime?
   present             Boolean       @default(true) // false se deixou de vir na última sincronização completa
   syncedAt            DateTime      @default(now())
+  // A API do Winmax não devolve o código de barras: vem de exportações do
+  // Winmax (CSV) e não é tocado pela sincronização.
+  barcode             String?
   stocks              WinmaxStock[]
+  images              WinmaxArticleImage[]
+  info                WinmaxArticleInfo?
 
   @@index([designation])
   @@map("winmax_articles")
+}
+
+// Fotos de um artigo, guardadas no R2 (CDN). position 0 = foto principal.
+model WinmaxArticleImage {
+  id          String        @id @default(cuid())
+  articleCode String
+  key         String // chave no R2
+  source      String // icecat | winmax | upload
+  sourceUrl   String?
+  position    Int           @default(0)
+  createdAt   DateTime      @default(now())
+  article     WinmaxArticle @relation(fields: [articleCode], references: [code], onDelete: Cascade)
+
+  @@index([articleCode, position])
+  @@map("winmax_article_images")
+}
+
+// Resultado da procura no catálogo Icecat (fotos, título, especificações).
+model WinmaxArticleInfo {
+  articleCode String        @id
+  status      String // found | not_found | error
+  matchedBy   String? // ean | model
+  brand       String?
+  mpn         String? // código do fabricante
+  icecatId    Int?
+  title       String?
+  description String?
+  specs       Json?
+  error       String?
+  lookedUpAt  DateTime      @default(now())
+  article     WinmaxArticle @relation(fields: [articleCode], references: [code], onDelete: Cascade)
+
+  @@map("winmax_article_info")
+}
+
+// Procura automática de fotos (uma de cada vez).
+model WinmaxImageJob {
+  id         String    @id @default(cuid())
+  status     String    @default("running") // running | ok | error
+  total      Int       @default(0)
+  processed  Int       @default(0)
+  found      Int       @default(0)
+  error      String?
+  startedAt  DateTime  @default(now())
+  finishedAt DateTime?
+
+  @@map("winmax_image_jobs")
 }
 
 model WinmaxStock {

@@ -1,6 +1,8 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { api } from "@/lib/api";
+import FotosResumo from "@/components/admin/stock/FotosResumo";
+import ArtigoFotos from "@/components/admin/stock/ArtigoFotos";
 
 type Stock = { warehouseCode: number; quantity: number };
 type Artigo = {
@@ -9,23 +11,30 @@ type Artigo = {
   priceWithTax: number | null;
   stockTotal: number;
   stocks: Stock[];
+  imageCount: number;
+  mainImage: string | null;
 };
 type Pagina = { total: number; page: number; perPage: number; items: Artigo[] };
 type Armazem = { code: number; name: string };
+type FiltroFoto = "" | "without" | "with";
 
 const kz = (v: number | null) =>
   v === null ? "—" : v.toLocaleString("pt-PT", { maximumFractionDigits: 0 }) + " Kz";
 const qt = (v: number) => v.toLocaleString("pt-PT", { maximumFractionDigits: 2 });
 
-/** Stock: todos os artigos sincronizados do Winmax, com quantidades por armazém. */
+/** Stock: artigos do Winmax com quantidades por armazém e gestão de fotos. */
 export default function StockPage() {
   const [q, setQ] = useState("");
   const [busca, setBusca] = useState("");
-  const [soComStock, setSoComStock] = useState(false);
+  const [soComStock, setSoComStock] = useState(true);
+  const [foto, setFoto] = useState<FiltroFoto>("");
   const [pagina, setPagina] = useState(1);
   const [dados, setDados] = useState<Pagina | null>(null);
   const [armazens, setArmazens] = useState<Armazem[]>([]);
   const [erro, setErro] = useState(false);
+  const [aberto, setAberto] = useState<string | null>(null);
+  const [versao, setVersao] = useState(0);
+  const refrescar = useCallback(() => setVersao((v) => v + 1), []);
 
   useEffect(() => {
     api
@@ -47,6 +56,7 @@ export default function StockPage() {
     const p = new URLSearchParams({ page: String(pagina), perPage: "50" });
     if (busca) p.set("q", busca);
     if (soComStock) p.set("inStock", "1");
+    if (foto) p.set("photo", foto);
     api
       .get<Pagina>(`/admin/winmax/articles?${p}`)
       .then((r) => {
@@ -54,9 +64,10 @@ export default function StockPage() {
         setErro(false);
       })
       .catch(() => setErro(true));
-  }, [busca, soComStock, pagina]);
+  }, [busca, soComStock, foto, pagina, versao]);
 
   const paginas = dados ? Math.max(1, Math.ceil(dados.total / dados.perPage)) : 1;
+  const colunas = 5 + armazens.length;
 
   return (
     <div className="space-y-6">
@@ -67,13 +78,15 @@ export default function StockPage() {
         </p>
       </div>
 
+      <FotosResumo aoMudar={refrescar} />
+
       <div className="bg-white rounded-2xl border border-gray-100 shadow-sm">
-        <div className="flex flex-col sm:flex-row sm:items-center gap-3 p-4 border-b border-gray-100">
+        <div className="flex flex-col lg:flex-row lg:items-center gap-3 p-4 border-b border-gray-100">
           <input
             value={q}
             onChange={(e) => setQ(e.target.value)}
             placeholder="Pesquisar por nome ou código"
-            className="w-full sm:max-w-sm border border-gray-200 rounded-xl px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400"
+            className="w-full lg:max-w-sm border border-gray-200 rounded-xl px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400"
           />
           <label className="flex items-center gap-2 text-sm text-gray-700 cursor-pointer whitespace-nowrap">
             <input
@@ -87,7 +100,27 @@ export default function StockPage() {
             />
             Só com stock
           </label>
-          <span className="sm:ml-auto text-sm text-gray-500">
+          <div className="flex rounded-xl border border-gray-200 overflow-hidden text-sm">
+            {(
+              [
+                ["", "Todos"],
+                ["without", "Sem foto"],
+                ["with", "Com foto"],
+              ] as [FiltroFoto, string][]
+            ).map(([v, rotulo]) => (
+              <button
+                key={v}
+                onClick={() => {
+                  setFoto(v);
+                  setPagina(1);
+                }}
+                className={`px-3 py-1.5 ${foto === v ? "bg-orange-500 text-white" : "text-gray-600 hover:bg-gray-50"}`}
+              >
+                {rotulo}
+              </button>
+            ))}
+          </div>
+          <span className="lg:ml-auto text-sm text-gray-500">
             {dados ? `${dados.total.toLocaleString("pt-PT")} artigos` : ""}
           </span>
         </div>
@@ -98,6 +131,7 @@ export default function StockPage() {
           <table className="w-full text-sm">
             <thead className="bg-gray-50 text-gray-500 text-xs">
               <tr>
+                <th className="text-left font-medium px-4 py-3 w-16">Foto</th>
                 <th className="text-left font-medium px-4 py-3">Código</th>
                 <th className="text-left font-medium px-4 py-3">Artigo</th>
                 <th className="text-right font-medium px-4 py-3">Preço</th>
@@ -111,9 +145,22 @@ export default function StockPage() {
             </thead>
             <tbody className="divide-y divide-gray-50">
               {dados?.items.map((a) => (
-                <tr key={a.code} className="hover:bg-gray-50/60">
+                <tr key={a.code} onClick={() => setAberto(a.code)} className="hover:bg-gray-50/60 cursor-pointer">
+                  <td className="px-4 py-2">
+                    <div className="w-10 h-10 rounded-lg border border-gray-100 bg-white flex items-center justify-center overflow-hidden">
+                      {a.mainImage ? (
+                        // eslint-disable-next-line @next/next/no-img-element
+                        <img src={a.mainImage} alt="" className="max-w-full max-h-full object-contain" loading="lazy" />
+                      ) : (
+                        <span className="text-[10px] text-gray-300">sem</span>
+                      )}
+                    </div>
+                  </td>
                   <td className="px-4 py-2.5 text-gray-500 font-mono text-xs whitespace-nowrap">{a.code}</td>
-                  <td className="px-4 py-2.5 text-gray-800">{a.designation}</td>
+                  <td className="px-4 py-2.5 text-gray-800">
+                    {a.designation}
+                    {a.imageCount > 1 && <span className="ml-2 text-xs text-gray-400">{a.imageCount} fotos</span>}
+                  </td>
                   <td className="px-4 py-2.5 text-right text-gray-700 whitespace-nowrap">{kz(a.priceWithTax)}</td>
                   {armazens.map((w) => {
                     const v = a.stocks.find((s) => s.warehouseCode === w.code)?.quantity ?? 0;
@@ -135,14 +182,14 @@ export default function StockPage() {
               ))}
               {dados?.items.length === 0 && (
                 <tr>
-                  <td colSpan={4 + armazens.length} className="px-4 py-8 text-center text-gray-400">
+                  <td colSpan={colunas} className="px-4 py-8 text-center text-gray-400">
                     Nenhum artigo encontrado.
                   </td>
                 </tr>
               )}
               {!dados && !erro && (
                 <tr>
-                  <td colSpan={4 + armazens.length} className="px-4 py-8 text-center text-gray-400">
+                  <td colSpan={colunas} className="px-4 py-8 text-center text-gray-400">
                     A carregar...
                   </td>
                 </tr>
@@ -173,6 +220,8 @@ export default function StockPage() {
           </div>
         </div>
       </div>
+
+      {aberto && <ArtigoFotos code={aberto} aoFechar={() => setAberto(null)} aoMudar={refrescar} />}
     </div>
   );
 }
