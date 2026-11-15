@@ -75,7 +75,9 @@
             .contact-form .form-control:focus { border-color: var(--brand); box-shadow: 0 0 0 .15rem rgba(245,124,0,.12); }
             .contact-form textarea.form-control { min-height: 130px; }
         </style>
-    </head>
+        <link rel="preload" href="/fonts/dm-sans-latin.woff2" as="font" type="font/woff2" crossorigin>
+        <link rel="stylesheet" href="/css/fonte.css">
+</head>
 
     <body>
         <%- include('partials/_header') %>
@@ -165,5 +167,8 @@
                 }
             });
         </script>
-    </body>
+        <script src="/js/precos.js" defer></script>
+    <script src="/js/comportamento.js" defer></script>
+    <script src="/js/pesquisa.js" defer></script>
+</body>
 </html>

@@ -795,8 +795,186 @@
                 .pp-hero-actions .pp-btn { flex-basis:100%; }
                 .pp-acc-body { padding-left:0; }
             }
+            /* Zona do produto ao estilo da referência */
+            @media (min-width: 992px) { #ncrStickyBar { display:none !important; } }
+            #ncrStickyBar { z-index:1100; }
+            .pp-body { padding-top:36px; }
+            .pp-crumbs { font-size:15px; gap:14px; color:#1a1a2e; margin-bottom:22px; }
+            .pp-crumbs a, .pp-crumbs span { color:#4b5563; }
+            .pp-crumbs strong { font-weight:500; color:#1a1a2e; }
+            .pp-crumbs i { font-size:12px; color:#1a1a2e; }
+            .pp-store-map { position:relative; padding:20px 30px; margin-bottom:36px; border-radius:6px; overflow:hidden;
+                background:
+                    linear-gradient(115deg, transparent 47%, #fff 47%, #fff 51%, transparent 51%) ,
+                    linear-gradient(28deg, transparent 58%, #fff 58%, #fff 61%, transparent 61%),
+                    linear-gradient(160deg, transparent 30%, #fff 30%, #fff 33%, transparent 33%),
+                    radial-gradient(circle at 18% 95%, #cfe8cf 0 9%, transparent 9.5%),
+                    radial-gradient(circle at 74% 100%, #f6e7b8 0 5%, transparent 5.5%),
+                    #e9e9ee; }
+            .pp-store-map .pp-store-card { margin:0; background:#fff; border:1px solid #e3e3e8; border-radius:16px; padding:28px 30px; box-shadow:0 2px 10px rgba(0,0,0,.05); }
+            .pp-store-title { font-size:22px; font-weight:500; letter-spacing:-.2px; }
+            .pp-store-sub { font-size:14px; font-weight:600; color:#1a1a2e; margin-top:4px; }
+            .pp-store-card > i { font-size:22px; }
+            .pp-facts { grid-template-columns:repeat(4, 1fr); gap:34px 24px; padding-bottom:0; border-bottom:0; }
+            .pp-fact { font-size:18px; font-weight:400; gap:16px; align-items:flex-start; }
+            .pp-fact i { font-size:20px; width:24px; margin-top:3px; color:#1a1a2e; }
+            .pp-fact small { display:block; font-size:16px; color:#6b7280; margin-top:2px; }
+            .pp-chips { display:flex; flex-wrap:wrap; align-items:center; gap:14px; margin:30px 0 28px; }
+            .pp-chip-ref { background:#f1f2f4; border-radius:8px; padding:6px 10px; font-size:14px; font-weight:600; }
+            .pp-chip-meta { font-size:14px; color:#4b5563; display:inline-flex; align-items:center; gap:6px; }
+            .pp-desc { font-size:18px; line-height:1.7; color:#1a1a2e; max-height:6.8em; }
+            .pp-more { font-size:18px; font-weight:500; padding-top:14px; }
+            .pp-items { display:grid; grid-template-columns:1fr 1fr; gap:32px; padding:44px 0 28px; border-bottom:1px solid var(--pp-line); }
+            .pp-items .pp-h2 { font-size:24px; font-weight:600; margin-bottom:18px; }
+            .pp-items-off .pp-h2 { color:#9ca3af; }
+            .pp-items-list { list-style:none; padding:0; margin:0; }
+            .pp-items-list li { display:flex; align-items:center; gap:14px; font-size:18px; padding:5px 0; }
+            .pp-items-list li i { font-size:14px; color:#1a1a2e; width:16px; }
+            .pp-items-off .pp-items-list li { color:#9ca3af; }
+            .pp-items-off .pp-items-list li i { color:#9ca3af; }
+            .pp-specs { columns:2; }
+            .pp-specs li { display:block; font-size:16px; padding:8px 0; }
+            .pp-specs li span { display:block; font-size:13px; color:#6b7280; }
+
+            /* Cartão de compra */
+            .pp-card { margin-top:-12px; top:110px; padding:30px; border-radius:16px; border-color:#ececf0; box-shadow:0 10px 30px rgba(16,24,40,.10); }
+            .pp-row { font-size:18px; padding:6px 0; color:#4b5563; }
+            .pp-row i { font-size:15px; margin-left:4px; color:#6b7280; }
+            .pp-qty-line { font-size:18px; color:#4b5563; padding-top:12px; }
+            .pp-total { font-size:24px; margin-top:18px; padding-top:20px; }
+            .pp-total #totalPrice { font-size:26px; }
+            .pp-underline { display:inline-flex; align-items:center; gap:8px; font-size:17px; color:#1a1a2e !important; border-bottom:1px solid #1a1a2e; padding-bottom:2px; margin-top:6px; text-decoration:none !important; }
+            .pp-underline i { font-size:11px; }
+            .pp-card .pp-btn { height:62px; font-size:18px; margin-top:26px; }
+            .pp-card .pp-btn + .pp-btn, .pp-card #cartRemoveSlot + .pp-btn { margin-top:16px; }
+            .pp-btn-soft { background:#efeff2; }
+            .pp-link { font-size:18px; font-weight:600; margin-top:30px; }
+            .pp-link i { font-size:12px; }
+            .pp-card-text { font-size:17px; line-height:1.6; color:#1a1a2e; margin:8px 0 0; }
+            .pp-card-foot { border-top:0; gap:16px; margin-top:22px; padding-top:0; font-size:18px; font-weight:500; }
+            .pp-mini { width:46px; height:46px; border-radius:50%; background:#f1f2f4; display:inline-flex; align-items:center; justify-content:center; font-size:18px; }
+
+            @media (max-width: 1199.98px) { .pp-facts { grid-template-columns:repeat(3, 1fr); } }
+            @media (max-width: 991.98px) {
+                .pp-store-map { padding:14px; }
+                .pp-store-title { font-size:18px; }
+                .pp-facts { grid-template-columns:repeat(2, 1fr); gap:20px; }
+                .pp-fact, .pp-desc, .pp-items-list li, .pp-row, .pp-qty-line { font-size:16px; }
+                .pp-items { grid-template-columns:1fr; gap:20px; }
+                .pp-specs { columns:1; }
+                .pp-card { margin-top:24px; padding:22px; }
+            }
+
+            /* Escala reduzida (mais compacto) */
+            @media (min-width: 992px) {
+                .pp-hero { min-height:470px; grid-template-columns:minmax(340px,40%) 1fr; }
+                .pp-hero-info { padding:30px 32px 30px 28px; }
+                .pp-tags { margin-bottom:12px; }
+                .pp-tag { font-size:11px; padding:3px 9px; }
+                .pp-title { font-size:34px; letter-spacing:-.6px; }
+                .pp-brand { font-size:14px; }
+                .pp-price-main #priceDisplay { font-size:28px; }
+                .pp-price-main del { font-size:15px; }
+                .pp-price-sub { font-size:14px; }
+                .pp-hero-actions { margin-top:20px; gap:12px; }
+                .pp-hero-actions .pp-btn { height:46px; font-size:15px; }
+                .pp-hero-gallery { padding-left:20px; }
+                .pp .pp-gallery-track { gap:20px; min-height:470px; }
+                .pp .pp-gallery-item { height:470px; }
+                .pp-gallery-top { top:20px; left:40px; }
+                .pp-gallery-bottom { bottom:20px; left:40px; }
+                .pp-gallery-nav { bottom:20px; right:20px; }
+                .pp-round { width:42px; height:42px; }
+                .pp-chip { height:40px; padding:0 16px; font-size:13px; }
+            }
+            .pp-body { padding-top:24px; }
+            .pp-crumbs { font-size:13px; gap:10px; margin-bottom:16px; }
+            .pp-crumbs i { font-size:10px; }
+            .pp-store-map { padding:14px 22px; margin-bottom:26px; }
+            .pp-store-map .pp-store-card { padding:18px 22px; border-radius:12px; }
+            .pp-store-title { font-size:17px; }
+            .pp-store-sub { font-size:12px; }
+            .pp-store-card > i { font-size:17px; }
+            .pp-facts { gap:22px 20px; }
+            .pp-fact { font-size:15px; gap:12px; }
+            .pp-fact i { font-size:16px; width:20px; margin-top:2px; }
+            .pp-fact small { font-size:13px; }
+            .pp-chips { margin:22px 0 20px; gap:10px; }
+            .pp-chip-ref, .pp-chip-meta { font-size:12px; }
+            .pp-desc { font-size:15px; }
+            .pp-more { font-size:15px; padding-top:10px; }
+            .pp-items { padding:32px 0 22px; }
+            .pp-items .pp-h2 { font-size:19px; margin-bottom:12px; }
+            .pp-items-list li { font-size:15px; padding:3px 0; gap:10px; }
+            .pp-items-list li i { font-size:12px; }
+            .pp-h2 { font-size:18px; }
+            .pp-specs li { font-size:14px; padding:6px 0; }
+            .pp-specs li span { font-size:12px; }
+            .pp-acc summary { padding:16px 0; gap:14px; }
+            .pp-acc summary strong { font-size:15px; }
+            .pp-acc summary span { font-size:12px; }
+            .pp-acc summary > i:first-child { font-size:16px; }
+            .pp-acc-body { font-size:14px; }
+
+            .pp-card { padding:22px; top:84px; border-radius:14px; }
+            @media (min-width: 992px) { .pp .pp-card.ncr-product-box { position:sticky !important; margin-top:0 !important; } }
+            .pp .pp-body.container { max-width:1240px; width:100%; margin-left:auto; margin-right:auto; padding-left:24px; padding-right:24px; }
+            @media (min-width: 992px) { .pp .pp-body > .row > .col-lg-8 { padding-right:40px; } }
+            .pp-row { font-size:15px; padding:4px 0; }
+            .pp-row i { font-size:12px; }
+            .pp-qty-line { font-size:15px; padding-top:8px; }
+            .pp-total { font-size:18px; margin-top:12px; padding-top:14px; }
+            .pp-total #totalPrice { font-size:20px; }
+            .pp-underline { font-size:14px; }
+            .pp-card .pp-btn { height:48px; font-size:15px; margin-top:18px; }
+            .pp-card .pp-btn + .pp-btn, .pp-card #cartRemoveSlot + .pp-btn { margin-top:10px; }
+            .pp-link { font-size:15px; margin-top:20px; }
+            .pp-card-text { font-size:14px; line-height:1.55; }
+            .pp-card-foot { font-size:14px; margin-top:16px; gap:12px; }
+            .pp-mini { width:36px; height:36px; font-size:14px; }
+            .pp-sim-card { flex-basis:190px; }
+            .pp-sim-img { height:160px; }
+
+            .pp-title { font-weight:600; letter-spacing:-1px; }
+            .pp-h2, .pp-items .pp-h2, .pp-acc summary strong, .pp-total { font-weight:600; }
+            /* Galeria: setas leves, alinhadas com os botões do topo; sem WhatsApp flutuante */
+            .pp-arrow { width:46px; height:46px; border-radius:50%; background:#fff; border:1px solid #e5e7eb; color:#374151; display:inline-flex; align-items:center; justify-content:center; font-size:20px; cursor:pointer; transition:opacity .2s, background .15s; box-shadow:none; }
+            .pp-arrow:hover:not(:disabled) { background:#f5f6f8; }
+            .pp-arrow:disabled { opacity:0; pointer-events:none; }
+            .pp-gallery-nav { gap:10px; }
+            .pp-gallery-bottom .pp-chip { height:46px; box-shadow:none; border:1px solid #e5e7eb; font-weight:500; }
+            @media (min-width: 992px) {
+                .pp-gallery-bottom { bottom:30px; left:40px; }
+                .pp-gallery-nav { bottom:30px; right:30px; }
+            }
+            .wa-float { display:none !important; }
+            /* Produto já no carrinho: o botão passa a seletor e a quantidade/total somem */
+            .pp-qty-line:has(#qtyWidget[style*="none"]) { display:none; }
+            /* Completa a tua compra */
+            .pp-combo { border:1px solid #e5e7eb; border-left:4px solid var(--pp-brand); border-radius:10px; padding:20px 22px; margin:28px 0 8px; background:#fff; }
+            .pp-combo-imgs { display:flex; align-items:center; gap:10px; flex-wrap:wrap; }
+            .pp-combo-img { width:96px; height:84px; display:flex; align-items:center; justify-content:center; border-radius:8px; }
+            .pp-combo-img img { max-width:100%; max-height:100%; object-fit:contain; mix-blend-mode:multiply; }
+            .pp-combo-plus { width:22px; height:22px; border:1.5px solid #6b7280; border-radius:50%; display:inline-flex; align-items:center; justify-content:center; font-size:15px; line-height:1; color:#374151; flex:0 0 auto; }
+            .pp-combo-img { transition:opacity .2s; } .pp-combo-off { opacity:.25; }
+            .pp-combo-title { font-size:16px; font-weight:600; margin:16px 0 10px; color:#1a1a2e; }
+            .pp-combo-list { list-style:none; padding:0; margin:0; }
+            .pp-combo-list li { display:flex; align-items:center; justify-content:space-between; gap:12px; padding:6px 0; font-size:14px; }
+            .pp-combo-list label { display:flex; align-items:center; gap:10px; margin:0; cursor:pointer; min-width:0; }
+            .pp-combo-list input { width:16px; height:16px; accent-color:var(--pp-brand); flex:0 0 auto; }
+            .pp-combo-list a { color:#1a1a2e; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+            .pp-combo-list a:hover { color:var(--pp-brand); }
+            .pp-combo-price { color:#4b5563; white-space:nowrap; }
+            .pp-combo-foot { display:flex; align-items:center; justify-content:space-between; gap:16px; flex-wrap:wrap; margin-top:14px; padding-top:14px; border-top:1px solid #eef0f2; }
+            .pp-combo-label { display:block; font-size:12px; color:#6b7280; }
+            .pp-combo-total { font-size:20px; font-weight:600; }
+            .pp-combo .pp-btn { height:44px; font-size:14px; padding:0 20px; }
+            @media (max-width: 575.98px) { .pp-combo-img { width:70px; height:62px; } .pp-combo .pp-btn { width:100%; } }
+            .pp-alt-sub { font-size:14px; color:#6b7280; margin:-6px 0 14px; }
         </style>
-    </head>
+        <link rel="preload" href="/fonts/dm-sans-latin.woff2" as="font" type="font/woff2" crossorigin>
+        <link rel="stylesheet" href="/css/fonte.css">
+</head>
 
     <body>
 
@@ -828,7 +1006,7 @@
             </div>
         </div>
 
-        <%- include('partials/_header') %>
+        <%- include('partials/_header-compacto') %>
 
         <!-- ========== MAIN CONTENT ========== -->
         <%
@@ -842,10 +1020,14 @@
             var waTexto = encodeURIComponent('Olá! Tenho interesse no produto: ' + product.name + (product.reference ? ' (ref. ' + product.reference + ')' : ''));
             // Especificações do Icecat: { grupo: { nome: valor } }
             var gruposSpecs = product.specs ? Object.keys(product.specs) : [];
-            var principais = [];
+            // "Sim" → itens disponíveis, "Não" → indisponíveis, o resto → características
+            var principais = [], disponiveis = [], indisponiveis = [];
             gruposSpecs.forEach(function (g) {
                 Object.keys(product.specs[g]).forEach(function (n) {
-                    if (principais.length < 12) principais.push({ nome: n, valor: product.specs[g][n] });
+                    var v = String(product.specs[g][n]).trim();
+                    if (/^sim$/i.test(v)) { if (disponiveis.length < 10) disponiveis.push(n); }
+                    else if (/^n[ãa]o$/i.test(v)) { if (indisponiveis.length < 10) indisponiveis.push(n); }
+                    else if (principais.length < 12) principais.push({ nome: n, valor: v });
                 });
             });
             var dataAttrs = 'data-id="' + product.id + '" data-name="' + String(product.name).replace(/"/g, '&quot;') + '" data-price="' + precoValor + '" data-price-formatted="' + preco + '" data-image="' + (product.image || '') + '" data-url="' + urlProduto + '"';
@@ -892,10 +1074,6 @@
                         <div class="product-gallery-item pp-gallery-item pp-gallery-empty"><span>Sem imagem</span></div>
                         <% } %>
                     </div>
-                    <div class="pp-gallery-top">
-                        <a href="#" class="pp-round" title="Partilhar" id="btnNativeShare" onclick="nativeShare(event)"><i class="fas fa-share-alt"></i></a>
-                        <a href="#" class="pp-round js-favorite-toggle" data-product-id="<%= product.id %>" title="Adicionar aos favoritos"><i class="far fa-heart"></i></a>
-                    </div>
                     <% if (product.images.length > 0) { %>
                     <div class="pp-gallery-bottom">
                         <button type="button" class="pp-chip" id="ppVerFotos"><i class="far fa-images"></i> <%= product.images.length %> <%= product.images.length === 1 ? 'foto' : 'fotos' %></button>
@@ -904,8 +1082,8 @@
                     <% } %>
                     <% if (product.images.length > 1) { %>
                     <div class="pp-gallery-nav">
-                        <button type="button" class="pp-round" id="ppGalPrev" aria-label="Anterior"><i class="fas fa-chevron-left"></i></button>
-                        <button type="button" class="pp-round" id="ppGalNext" aria-label="Seguinte"><i class="fas fa-chevron-right"></i></button>
+                        <button type="button" class="pp-arrow" id="ppGalPrev" aria-label="Foto anterior" disabled><i class="fas fa-angle-left"></i></button>
+                        <button type="button" class="pp-arrow" id="ppGalNext" aria-label="Foto seguinte"><i class="fas fa-angle-right"></i></button>
                     </div>
                     <% } %>
                 </div>
@@ -918,39 +1096,114 @@
                         <nav aria-label="breadcrumb" class="pp-crumbs">
                             <a href="/">Início</a><i class="fas fa-chevron-right"></i>
                             <% if (product.category) { %><a href="/<%= product.categorySlug %>"><%= product.category %></a><i class="fas fa-chevron-right"></i><% } %>
-                            <span><%= product.reference ? 'Ref. ' + product.reference : product.name %></span>
+                            <% if (product.brand) { %><span><%= product.brand %></span><i class="fas fa-chevron-right"></i><% } %>
+                            <strong><%= product.reference ? 'Produto ' + product.reference : product.name %></strong>
                         </nav>
 
-                        <a href="#" class="pp-store-card" onclick="abrirModalLoja(event)">
-                            <div>
-                                <div class="pp-store-title">Levantamento grátis na loja</div>
-                                <div class="pp-store-sub">Rua da Liga Africana, n.º 81 &middot; Luanda &middot; ver disponibilidade</div>
-                            </div>
-                            <i class="fas fa-arrow-right"></i>
-                        </a>
+                        <div class="pp-store-map">
+                            <a href="#" class="pp-store-card" onclick="abrirModalLoja(event)">
+                                <div>
+                                    <div class="pp-store-title">Rua da Liga Africana, n.º 81</div>
+                                    <div class="pp-store-sub">Levantamento grátis na Loja 1, Luanda</div>
+                                </div>
+                                <i class="fas fa-arrow-right"></i>
+                            </a>
+                        </div>
 
                         <!-- Dados principais -->
                         <div class="pp-facts">
                             <% if (product.brand) { %>
-                            <div class="pp-fact"><i class="far fa-copyright"></i><div><span>Marca</span><%= product.brand %></div></div>
+                            <div class="pp-fact"><i class="far fa-copyright"></i><div><%= product.brand %></div></div>
                             <% } %>
-                            <% if (product.reference) { %>
-                            <div class="pp-fact"><i class="fas fa-barcode"></i><div><span>Referência</span><%= product.reference %></div></div>
-                            <% } %>
-                            <% if (product.mpn) { %>
-                            <div class="pp-fact"><i class="fas fa-hashtag"></i><div><span>Código do fabricante</span><%= product.mpn %></div></div>
-                            <% } %>
-                            <div class="pp-fact"><i class="fas fa-boxes"></i><div><span>Stock</span><%= inStock ? (product.trackStock && product.stock != null ? product.stock + (product.stock === 1 ? ' unidade' : ' unidades') : 'Disponível') : 'Esgotado' %></div></div>
-                            <div class="pp-fact"><i class="fas fa-store"></i><div><span>Levantamento</span>Grátis na loja</div></div>
-                            <div class="pp-fact"><i class="fas fa-truck"></i><div><span>Entrega</span><%= portesGratis ? 'Portes grátis' : 'Em todo o país' %></div></div>
+                            <div class="pp-fact"><i class="fas fa-boxes"></i><div><%= inStock ? (product.trackStock && product.stock != null ? product.stock + (product.stock === 1 ? ' unidade' : ' unidades') : 'Disponível') : 'Esgotado' %><% if (inStock) { %><small>em stock</small><% } %></div></div>
+                            <div class="pp-fact"><i class="fas fa-shield-alt"></i><div>Com garantia</div></div>
+                            <div class="pp-fact"><i class="fas fa-receipt"></i><div>IVA incluído</div></div>
+                            <div class="pp-fact"><i class="fas fa-store"></i><div>Levantamento grátis</div></div>
+                            <div class="pp-fact"><i class="fas fa-truck"></i><div><%= portesGratis ? 'Portes grátis' : 'Entrega em todo o país' %></div></div>
+                            <div class="pp-fact"><i class="far fa-credit-card"></i><div>Multicaixa e transferência</div></div>
+                            <div class="pp-fact"><i class="fas fa-headset"></i><div>Apoio técnico</div></div>
+                        </div>
+
+                        <div class="pp-chips">
+                            <% if (product.reference) { %><span class="pp-chip-ref">Produto <%= product.reference %></span><% } %>
+                            <% if (product.mpn) { %><span class="pp-chip-meta"><i class="fas fa-hashtag"></i> Código do fabricante <%= product.mpn %></span><% } %>
                         </div>
 
                         <!-- Descrição -->
                         <% if (product.description) { %>
-                        <div class="pp-section">
-                            <h2 class="pp-h2">Sobre este produto</h2>
-                            <div class="pp-desc" id="ppDesc"><%= product.description %></div>
-                            <button type="button" class="pp-more" id="ppDescMore"><i class="fas fa-chevron-down"></i> Ver mais</button>
+                        <div class="pp-desc" id="ppDesc"><%= product.description %></div>
+                        <button type="button" class="pp-more" id="ppDescMore"><i class="fas fa-chevron-down"></i> Ver mais</button>
+                        <% } %>
+
+                        <!-- Completa a tua compra (acessórios sugeridos) -->
+                        <% if (typeof complementos !== 'undefined' && complementos && complementos.length > 0) { %>
+                        <%
+                            var baseCompra = product.salePriceValue != null ? product.salePriceValue : product.basePriceValue;
+                            var totalCompra = baseCompra + complementos.reduce(function (t, c) { return t + (c.salePriceValue != null ? c.salePriceValue : c.basePriceValue); }, 0);
+                        %>
+                        <div class="pp-combo" id="ppCombo" data-base="<%= baseCompra %>">
+                            <div class="pp-combo-imgs">
+                                <div class="pp-combo-img pp-combo-main">
+                                    <% if (product.image) { %><img src="<%= product.image %>" alt="<%= product.name %>"><% } %>
+                                </div>
+                                <% complementos.forEach(function (c) { %>
+                                <span class="pp-combo-plus" aria-hidden="true">+</span>
+                                <a class="pp-combo-img" href="/<%= c.categorySlug || 'produto' %>/<%= c.urlKey %>" title="<%= c.name %>">
+                                    <% if (c.image) { %><img src="<%= c.image %>" alt="<%= c.name %>" loading="lazy"><% } %>
+                                </a>
+                                <% }) %>
+                            </div>
+                            <h2 class="pp-combo-title">Completa a tua compra:</h2>
+                            <ul class="pp-combo-list">
+                                <% complementos.forEach(function (c) { var pv = c.salePriceValue != null ? c.salePriceValue : c.basePriceValue; %>
+                                <li>
+                                    <label>
+                                        <input type="checkbox" class="pp-combo-check" checked
+                                            data-id="<%= c.id %>"
+                                            data-name="<%= c.name %>"
+                                            data-price="<%= pv %>"
+                                            data-price-formatted="<%= c.salePrice || c.basePrice %>"
+                                            data-image="<%= c.image || '' %>"
+                                            data-url="/<%= c.categorySlug || 'produto' %>/<%= c.urlKey %>">
+                                        <a href="/<%= c.categorySlug || 'produto' %>/<%= c.urlKey %>"><%= c.name %></a>
+                                    </label>
+                                    <span class="pp-combo-price"><%= c.salePrice || c.basePrice %></span>
+                                </li>
+                                <% }) %>
+                            </ul>
+                            <div class="pp-combo-foot">
+                                <div>
+                                    <span class="pp-combo-label" id="ppComboLabel">Total dos <%= complementos.length + 1 %> artigos</span>
+                                    <strong class="pp-combo-total" id="ppComboTotal"><%= fmtKz(totalCompra) %></strong>
+                                </div>
+                                <button type="button" class="pp-btn pp-btn-primary" id="ppComboAdd" <%= inStock ? '' : 'disabled' %>
+                                    data-id="<%= product.id %>"
+                                    data-name="<%= product.name %>"
+                                    data-price="<%= baseCompra %>"
+                                    data-price-formatted="<%= preco %>"
+                                    data-image="<%= product.image || '' %>"
+                                    data-url="<%= urlProduto %>">Adicionar tudo ao carrinho</button>
+                            </div>
+                        </div>
+                        <% } %>
+
+                        <!-- Itens disponíveis / indisponíveis (Icecat: Sim / Não) -->
+                        <% if (disponiveis.length || indisponiveis.length) { %>
+                        <div class="pp-items">
+                            <div>
+                                <h2 class="pp-h2">Itens disponíveis</h2>
+                                <ul class="pp-items-list">
+                                    <% disponiveis.forEach(function (n) { %><li><i class="fas fa-check"></i><%= n %></li><% }); %>
+                                    <% if (!disponiveis.length) { %><li class="pp-off">Sem informação</li><% } %>
+                                </ul>
+                            </div>
+                            <div class="pp-items-off">
+                                <h2 class="pp-h2">Itens indisponíveis</h2>
+                                <ul class="pp-items-list">
+                                    <% indisponiveis.forEach(function (n) { %><li><i class="fas fa-ban"></i><%= n %></li><% }); %>
+                                    <% if (!indisponiveis.length) { %><li>Nenhum</li><% } %>
+                                </ul>
+                            </div>
                         </div>
                         <% } %>
 
@@ -960,7 +1213,7 @@
                             <h2 class="pp-h2">Principais características</h2>
                             <ul class="pp-specs">
                                 <% principais.forEach(function (s) { %>
-                                <li><i class="fas fa-check"></i><span><%= s.nome %>:</span> <%= s.valor %></li>
+                                <li><span><%= s.nome %></span><%= s.valor %></li>
                                 <% }); %>
                             </ul>
                             <% if (gruposSpecs.length > 0) { %>
@@ -1015,9 +1268,9 @@
                             <% if (product.salePrice) { %>
                             <div class="pp-row pp-row-sale"><span>Desconto</span><span>- <%= product.saving %></span></div>
                             <% } %>
-                            <div class="pp-row"><span>IVA</span><span>Incluído</span></div>
-                            <div class="pp-row"><span>Portes</span><span><%= portesGratis ? 'Grátis' : (limitePortes ? 'Calculados no checkout' : 'A confirmar') %></span></div>
-
+                            <div class="pp-row"><span>IVA <i class="far fa-question-circle" title="O preço já inclui IVA (14%)"></i></span><span>Incluído</span></div>
+                            <div class="pp-row"><span>Portes <i class="far fa-question-circle" title="<%= limitePortes ? 'Grátis a partir de ' + fmtKz(limitePortes) : 'Confirmados após a encomenda' %>"></i></span><span><%= portesGratis ? 'Grátis' : (limitePortes ? 'No checkout' : 'A confirmar') %></span></div>
+                            <div class="pp-row"><span>Levantamento</span><span>Grátis</span></div>
                             <div class="pp-qty-line">
                                 <span>Quantidade</span>
                                 <div class="ncr-qty" id="qtyWidget">
@@ -1031,24 +1284,42 @@
                                 <span>Total</span>
                                 <span id="totalPrice"><%= preco %></span>
                             </div>
-                            <% if (!portesGratis && limitePortes) { %>
-                            <div class="pp-hint">Portes grátis a partir de <%= fmtKz(limitePortes) %></div>
-                            <% } %>
+                            <a href="/formas-de-pagamento" class="pp-underline">Ver formas de pagamento <i class="fas fa-chevron-right"></i></a>
 
                             <button type="button" class="pp-btn pp-btn-primary pp-btn-block js-add-to-cart" id="btnAddToCart" data-cart-style="full" <%- dataAttrs %> <%= inStock ? '' : 'disabled' %>>Adicionar ao carrinho</button>
                             <!-- Preenchido por cart.js quando o produto está no carrinho -->
                             <div id="cartRemoveSlot"></div>
                             <button type="button" class="pp-btn pp-btn-soft pp-btn-block js-buy-now" <%- dataAttrs %> <%= inStock ? '' : 'disabled' %>>Finalizar compra</button>
 
-                            <a class="pp-link" href="https://wa.me/244928499325?text=<%= waTexto %>" target="_blank" rel="noopener">Tem dúvidas? Fale connosco <i class="fas fa-chevron-right"></i></a>
+                            <a class="pp-link" href="https://wa.me/244928499325?text=<%= waTexto %>" target="_blank" rel="noopener">Precisa de ajuda a escolher? <i class="fas fa-chevron-right"></i></a>
+                            <p class="pp-card-text">Fale connosco pelo WhatsApp e confirme a compatibilidade antes de comprar.</p>
 
                             <div class="pp-card-foot">
-                                <a href="#" class="js-favorite-toggle" data-product-id="<%= product.id %>"><i class="far fa-heart"></i> Favoritar</a>
-                                <a href="#" onclick="nativeShare(event)"><i class="fas fa-share-alt"></i> Partilhar</a>
+                                <a href="#" class="js-favorite-toggle" data-product-id="<%= product.id %>"><span class="pp-mini"><i class="far fa-heart"></i></span> Favoritar</a>
+                                <a href="#" onclick="nativeShare(event)"><span class="pp-mini"><i class="fas fa-share-alt"></i></span> Partilhar</a>
                             </div>
                         </aside>
                     </div>
                 </div>
+
+                <!-- Alternativas (substitutos) quando o produto está esgotado -->
+                <% if (!inStock && typeof alternativas !== 'undefined' && alternativas && alternativas.length > 0) { %>
+                <div class="pp-similar pp-alternativas">
+                    <div class="pp-similar-head">
+                        <h2 class="pp-h2">Alternativas disponíveis</h2>
+                    </div>
+                    <p class="pp-alt-sub">Este produto está esgotado. Estas opções são parecidas, têm preço próximo e estão em stock.</p>
+                    <div class="pp-similar-track">
+                        <% alternativas.forEach(function(r) { %>
+                        <a href="/<%= r.categorySlug %>/<%= r.urlKey %>" class="pp-sim-card">
+                            <div class="pp-sim-img"><% if (r.image) { %><img src="<%= r.image %>" alt="<%= r.name %>" loading="lazy"><% } %></div>
+                            <div class="pp-sim-name"><%= r.name %></div>
+                            <div class="pp-sim-price"><%= r.salePrice || r.basePrice %></div>
+                        </a>
+                        <% }) %>
+                    </div>
+                </div>
+                <% } %>
 
                 <!-- Semelhantes -->
                 <% if (related && related.length > 0) { %>
@@ -1952,7 +2223,65 @@
                     if (b) b.addEventListener('click', function () { rolar(id, dir); });
                 }
                 liga('ppGalPrev', 'ppGallery', -1); liga('ppGalNext', 'ppGallery', 1);
+                (function estadoSetas() {
+                    var g = document.getElementById('ppGallery');
+                    var ant = document.getElementById('ppGalPrev');
+                    var seg = document.getElementById('ppGalNext');
+                    if (!g || !ant || !seg) return;
+                    function estado() {
+                        ant.disabled = g.scrollLeft <= 4;
+                        seg.disabled = g.scrollLeft >= g.scrollWidth - g.clientWidth - 4;
+                    }
+                    g.addEventListener('scroll', estado, { passive: true });
+                    window.addEventListener('resize', estado);
+                    estado();
+                })();
                 liga('ppSimPrev', 'ppSimTrack', -1); liga('ppSimNext', 'ppSimTrack', 1);
+                // Completa a tua compra: total conforme os acessórios marcados e "adicionar tudo"
+                (function () {
+                    var box = document.getElementById('ppCombo');
+                    if (!box) return;
+                    var base = parseFloat(box.dataset.base) || 0;
+                    var checks = Array.prototype.slice.call(box.querySelectorAll('.pp-combo-check'));
+                    var totalEl = document.getElementById('ppComboTotal');
+                    var labelEl = document.getElementById('ppComboLabel');
+                    var addBtn = document.getElementById('ppComboAdd');
+                    function fmt(v) { return v.toLocaleString('pt-PT', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' Kz'; }
+                    function atualizar() {
+                        var marcados = checks.filter(function (c) { return c.checked; });
+                        var total = marcados.reduce(function (t, c) { return t + (parseFloat(c.dataset.price) || 0); }, base);
+                        totalEl.textContent = fmt(total);
+                        var n = marcados.length + 1;
+                        labelEl.textContent = n === 1 ? 'Só este artigo' : 'Total dos ' + n + ' artigos';
+                        addBtn.textContent = n === 1 ? 'Adicionar ao carrinho' : 'Adicionar os ' + n + ' ao carrinho';
+                    }
+                    var fotos = Array.prototype.slice.call(box.querySelectorAll('.pp-combo-img:not(.pp-combo-main)'));
+                    checks.forEach(function (c, i) {
+                        c.addEventListener('change', function () {
+                            if (fotos[i]) fotos[i].classList.toggle('pp-combo-off', !c.checked);
+                            atualizar();
+                        });
+                    });
+                    addBtn.addEventListener('click', function () {
+                        if (!window.cart) return;
+                        var itens = [addBtn].concat(checks.filter(function (c) { return c.checked; }));
+                        itens.forEach(function (el) {
+                            window.cart.addItem({
+                                id: el.dataset.id,
+                                name: el.dataset.name,
+                                price: parseFloat(el.dataset.price) || 0,
+                                priceFormatted: el.dataset.priceFormatted,
+                                image: el.dataset.image || '',
+                                url: el.dataset.url || '/'
+                            }, 1);
+                        });
+                        addBtn.textContent = 'Adicionado ao carrinho';
+                        addBtn.disabled = true;
+                        setTimeout(function () { addBtn.disabled = false; atualizar(); }, 2500);
+                        if (window.cart.openDrawer) window.cart.openDrawer();
+                    });
+                    atualizar();
+                })();
 
                 var verFotos = document.getElementById('ppVerFotos');
                 if (verFotos) verFotos.addEventListener('click', function () {
@@ -1971,7 +2300,11 @@
                 }
             })();
         </script>
-    </body>
+        <script src="/js/precos.js" defer></script>
+    <script>window.bbProduto = <%- JSON.stringify(product.id) %>;</script>
+    <script src="/js/comportamento.js" defer></script>
+    <script src="/js/pesquisa.js" defer></script>
+</body>
 </html>
 
 
