@@ -1,16 +1,14 @@
 <!DOCTYPE html>
-<html lang="pt-PT">
+<html lang="pt-AO">
     <head>
         <!-- Title -->
-        <title>Bem-vindo à 100 bytes</title>
+        <%- include('partials/_seo') %>
 
         <!-- Required Meta Tags Always Come First -->
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
         <!-- Favicon -->
-        <link rel="shortcut icon" href="https://cdn.100bytes.co.ao/logo/100byte_fav.png">
-        <link rel="icon" type="image/png" href="https://cdn.100bytes.co.ao/logo/100byte_fav.png">
 
         <!-- Google Fonts -->
         <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
@@ -380,6 +378,7 @@
                     if (destaques.procurado) cartoes.push({ etiqueta: 'Mais procurado', p: destaques.procurado });
                 }
             %>
+            <h1 class="sr-only">100 bytes, loja de informática em Luanda: computadores, redes, câmaras de segurança e acessórios</h1>
             <section class="hh <%= cartoes.length ? '' : 'hh-solo' %>" aria-label="Destaques">
                 <div class="hh-slider" id="hhSlider" aria-roledescription="carrossel">
                     <div class="hh-track" id="hhTrack">

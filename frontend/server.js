@@ -15,6 +15,7 @@ const { getCategoriasDestaque, getRootCategories, getAllCategories, findCategory
 const { getDestaques, getSemelhantes, searchProducts, getComplementos, getFeatured, getOnSale, getNewest, getProductById, getRelated, getByCategory, getProductsPaged, getBestSellers, NOVIDADE_MS } = require("./api/products");
 const { getBrands } = require("./api/brands");
 const { paginas } = require("./data/paginas");
+const seo = require("./seo");
 const { reportError } = require("./api/reporter");
 
 const app = express();
@@ -30,7 +31,9 @@ app.set("views", path.join(__dirname, "views"));
 
 // Middleware
 app.use(express.json());
+app.use(seo.dominioUnico);
 app.use(express.static(PUBLIC_DIR, { index: false }));
+app.use(seo.padrao);
 
 // Cor do cabeçalho: escuro por omissão; ?tema=laranja | branco só para comparar.
 app.use((req, res, next) => {
@@ -440,6 +443,11 @@ app.use(async (req, res, next) => {
 // Página inicial
 app.get(["/", "/index.html"], async (req, res, next) => {
   try {
+    seo.definirSeo(res, {
+      titulo: "100 bytes | Loja de informática em Luanda: computadores, redes e acessórios",
+      descricao: seo.DESCRICAO_PADRAO,
+      jsonld: [seo.organizacao(), seo.siteComPesquisa(), ...seo.lojas()],
+    });
     res.render("index", {
       categories: cache.categories,
       featured: cache.featured,
@@ -530,6 +538,7 @@ app.get("/pesquisa", async (req, res, next) => {
     const universo = q
       ? await searchProducts({ q, page: 1, perPage: 100 }).then((r) => r.products).catch(() => paged.products)
       : paged.products;
+    seo.definirSeo(res, { titulo: q ? `Pesquisa: ${q} | 100 bytes` : "Pesquisar produtos | 100 bytes" });
     res.render("categoria", {
       category: null,
       universo,
@@ -549,7 +558,7 @@ app.get("/pesquisa", async (req, res, next) => {
 
 // ── LISTAGENS DE MONTRA ──
 // Renderiza uma listagem paginada com o mesmo template da categoria.
-function montra({ pageTitle, defaultSort, filter }) {
+function montra({ pageTitle, defaultSort, filter, descricao }) {
   return async (req, res, next) => {
     try {
       const page = Math.max(1, parseInt(req.query.page) || 1);
@@ -581,6 +590,11 @@ function montra({ pageTitle, defaultSort, filter }) {
         pagination = { page: safePage, pages, total: todos.length, perPage };
       }
 
+      seo.definirSeo(res, {
+        titulo: pageTitle + " | 100 bytes Luanda",
+        descricao: descricao || pageTitle + " na 100 bytes: equipamento informático, redes e acessórios com preço em kwanzas e entrega em todo o país.",
+        robots: req.query.page || req.query.sort || req.query.minPrice || req.query.maxPrice || req.query.brandId ? "noindex, follow" : res.locals.seo.robots,
+      });
       res.render("categoria", {
         category: null,
         pageTitle,
@@ -607,6 +621,7 @@ app.get("/promocoes", montra({
 // Novidades — artigos adicionados nos últimos 7 dias (critério acordado com o cliente)
 app.get("/novidades", montra({
   pageTitle: "Novidades",
+  descricao: "Os artigos que acabaram de chegar à 100 bytes, em Luanda: computadores, redes, periféricos e acessórios com stock e preço em kwanzas.",
   defaultSort: "newest",
   filter: (p) => p.createdAt && (Date.now() - new Date(p.createdAt).getTime()) < NOVIDADE_MS,
 }));
@@ -629,6 +644,10 @@ app.get("/mais-vendidos", async (req, res, next) => {
     const safePage = Math.min(page, pages);
     const pageProducts = products.slice((safePage - 1) * perPage, safePage * perPage);
 
+    seo.definirSeo(res, {
+      titulo: "Mais vendidos | 100 bytes Luanda",
+      descricao: "Os produtos mais vendidos na 100 bytes, loja de informática em Luanda, com preço em kwanzas e entrega em todo o país.",
+    });
     res.render("categoria", {
       category: null,
       pageTitle: "Mais vendidos",
@@ -654,12 +673,20 @@ app.get("/tendencias", (req, res) => {
   res.redirect(301, `/mais-vendidos${q ? `?${q}` : ""}`);
 });
 
+// ── SEO: robots.txt e sitemap.xml ──
+seo.registarRotas(app, { obterCache: () => cache, getProductsPaged, paginas });
+
 // ── PÁGINAS INSTITUCIONAIS (coluna "Empresa" do footer) ──
 // Registadas antes das rotas dinâmicas de produto/categoria. Se o slug não
 // corresponder a uma página institucional, passa para as rotas seguintes.
 app.get("/:slug([a-z0-9][a-z0-9-]*)", (req, res, next) => {
   const pagina = paginas[req.params.slug];
   if (!pagina) return next();
+  seo.definirSeo(res, {
+    titulo: pagina.titulo + " | 100 bytes",
+    descricao: pagina.metaDescription || pagina.subtitulo || seo.DESCRICAO_PADRAO,
+    jsonld: [seo.caminho([{ nome: "Início", url: "/" }, { nome: pagina.titulo, url: "/" + req.params.slug }])],
+  });
   res.render("pagina-info", {
     titulo: pagina.titulo,
     subtitulo: pagina.subtitulo,
@@ -686,6 +713,21 @@ app.get("/:catSlug/:slugId([a-z0-9][a-z0-9-]*--[a-zA-Z0-9]+)", async (req, res, 
     // Semelhantes da camada Python; sem cálculo ainda, usa a mesma categoria
     const related = semelhantes.similar.length ? semelhantes.similar : await getRelated(product.categoryId, product.id, 10);
     const alternativas = semelhantes.substitute;
+    const urlProduto = "/" + (product.categorySlug || "produto") + "/" + product.urlKey;
+    const precoTxt = product.salePrice || product.basePrice;
+    seo.definirSeo(res, {
+      url: seo.SITE + urlProduto,
+      titulo: product.name + " | 100 bytes Luanda",
+      descricao: product.description
+        ? seo.limitar(product.description, 150)
+        : seo.limitar(`Compre ${product.name}${product.brand ? " (" + product.brand + ")" : ""} na 100 bytes, em Luanda, por ${precoTxt}. Entrega em todo o país e assistência técnica própria.`, 160),
+      imagem: product.image || undefined,
+      tipo: "product",
+      jsonld: [
+        seo.produto(product, urlProduto),
+        seo.caminho([{ nome: "Início", url: "/" }].concat(product.categorySlug ? [{ nome: product.category, url: "/" + product.categorySlug }] : []).concat([{ nome: product.name, url: urlProduto }])),
+      ],
+    });
     res.render("produto", { product, related, alternativas, complementos, categories: cache.categories, freeShippingThreshold: cache.freeShippingThreshold });
   } catch (e) {
     next(e);
@@ -806,9 +848,27 @@ app.get("/:slug([a-z0-9][a-z0-9-]*)", async (req, res, next) => {
       };
     }
 
+    const universoCat = await universoP;
+    const filtrada = !!(req.query.sort || req.query.minPrice || req.query.maxPrice || req.query.brandId);
+    const marcasCat = Array.from(new Set(universoCat.map((p) => p.brand && p.brand.name).filter(Boolean))).slice(0, 4);
+    const nCat = paged.total || universoCat.length;
+    seo.definirSeo(res, {
+      url: seo.SITE + "/" + category.slug + (page > 1 && !filtrada ? "?page=" + page : ""),
+      titulo: category.name + " em Luanda | 100 bytes",
+      descricao: seo.limitar(
+        `${nCat} ${nCat === 1 ? "produto" : "produtos"} de ${category.name}${marcasCat.length ? " (" + marcasCat.join(", ") + ")" : ""} com preço em kwanzas, entrega em todo o país e lojas em Luanda.`,
+        160,
+      ),
+      imagem: (universoCat.find((p) => p.image) || {}).image,
+      robots: filtrada ? "noindex, follow" : res.locals.seo.robots,
+      jsonld: [
+        seo.caminho([{ nome: "Início", url: "/" }].concat(category.parent ? [{ nome: category.parent.name, url: "/" + category.parent.slug }] : []).concat([{ nome: category.name, url: "/" + category.slug }])),
+        seo.listaProdutos(paged.products || []),
+      ],
+    });
     res.render("categoria", {
       category,
-      universo: await universoP,
+      universo: universoCat,
       categories: cache.categories,
       products: paged.products,
       topProducts: topProducts.products,

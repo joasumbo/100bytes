@@ -1,16 +1,14 @@
 ﻿<!DOCTYPE html>
-<html lang="pt-PT">
+<html lang="pt-AO">
     <head>
         <!-- Title -->
-        <title><%= product.name %> | 100bytes</title>
+        <%- include('partials/_seo', { tituloPadrao: product.name + ' | 100 bytes' }) %>
 
         <!-- Required Meta Tags Always Come First -->
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
         <!-- Favicon -->
-        <link rel="shortcut icon" href="https://cdn.100bytes.co.ao/logo/100byte_fav.png">
-        <link rel="icon" type="image/png" href="https://cdn.100bytes.co.ao/logo/100byte_fav.png">
 
         <!-- Google Fonts -->
         <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">

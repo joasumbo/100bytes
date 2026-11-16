@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="pt-PT">
+<html lang="pt-AO">
 <%
 const __pageTitle = (typeof pageTitle !== 'undefined') ? pageTitle : '';
 const __category = (typeof category !== 'undefined') ? category : null;
@@ -12,12 +12,10 @@ const __topProducts = (typeof topProducts !== 'undefined' && topProducts) ? topP
 const __heading = __pageTitle || (__category ? __category.name : 'Produtos');
 %>
 <head>
-    <title><%= __heading %> | 100bytes</title>
+    <%- include('partials/_seo', { tituloPadrao: __heading + ' | 100 bytes' }) %>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
-    <link rel="shortcut icon" href="https://cdn.100bytes.co.ao/logo/100byte_fav.png">
-    <link rel="icon" type="image/png" href="https://cdn.100bytes.co.ao/logo/100byte_fav.png">
 
     <link rel="stylesheet" href="/assets/vendor/font-awesome/css/fontawesome-all.min.css">
     <link rel="stylesheet" href="/assets/css/font-electro.css">

@@ -1,0 +1,30 @@
+<%#
+  Etiquetas de SEO e partilha. Os valores vêm de res.locals.seo (ver seo.js);
+  tituloPadrao é usado quando a rota não definiu um título.
+%>
+<%
+var sx = typeof seo !== 'undefined' && seo ? seo : {};
+var sxTitulo = sx.titulo || (typeof tituloPadrao !== 'undefined' && tituloPadrao) || '100 bytes | Loja de informática em Luanda';
+var sxImagem = sx.imagem || '';
+%>
+<title><%= sxTitulo %></title>
+<meta name="description" content="<%= sx.descricao %>">
+<meta name="robots" content="<%= sx.robots || 'index, follow' %>">
+<link rel="canonical" href="<%= sx.url %>">
+<meta name="theme-color" content="#16161d">
+<meta property="og:site_name" content="100 bytes">
+<meta property="og:locale" content="pt_AO">
+<meta property="og:type" content="<%= sx.tipo || 'website' %>">
+<meta property="og:title" content="<%= sxTitulo %>">
+<meta property="og:description" content="<%= sx.descricao %>">
+<meta property="og:url" content="<%= sx.url %>">
+<% if (sxImagem) { %><meta property="og:image" content="<%= sxImagem %>">
+<meta property="og:image:alt" content="<%= sxTitulo %>"><% } %>
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="<%= sxTitulo %>">
+<meta name="twitter:description" content="<%= sx.descricao %>">
+<% if (sxImagem) { %><meta name="twitter:image" content="<%= sxImagem %>"><% } %>
+<link rel="icon" type="image/png" href="https://cdn.100bytes.co.ao/logo/100byte_fav.png">
+<link rel="apple-touch-icon" href="/img/logo-icone.png">
+<% (sx.jsonld || []).forEach(function (j) { %><script type="application/ld+json"><%- JSON.stringify(j).replace(/</g, '\\u003c') %></script>
+<% }) %>
