@@ -6,7 +6,7 @@ import { AuthGuard } from '../auth/auth.guard';
 import { PrismaService } from '../prisma/prisma.service';
 
 /** Tipos aceites. Tudo o resto é ignorado. */
-const TIPOS = new Set(['view', 'search', 'search_click', 'add_to_cart', 'remove_from_cart', 'purchase', 'skin_click', 'newsletter']);
+const TIPOS = new Set(['view', 'search', 'search_click', 'add_to_cart', 'remove_from_cart', 'purchase', 'skin_click', 'newsletter', 'push_prompt']);
 const MAX_LOTE = 25;
 
 type EventoIn = { type?: string; productId?: string; query?: string; meta?: Record<string, unknown> };

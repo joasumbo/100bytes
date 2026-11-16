@@ -1,6 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { SearchService } from '../search/search.service';
+import { PushService } from '../push/push.service';
 import { slugify } from '../common/slugify';
 import { marcaDoNome } from './winmax-marcas';
 
@@ -23,6 +24,7 @@ export class WinmaxCatalogService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly search: SearchService,
+    private readonly push: PushService,
   ) {}
 
   /** Publica todos os artigos (ou só os códigos indicados). Não corre duas vezes em simultâneo. */
@@ -46,8 +48,13 @@ export class WinmaxCatalogService {
         categoryId: true,
         brandId: true,
         description: true,
+        basePrice: true,
+        stock: true,
+        active: true,
       },
     });
+    // mudanças a avisar a quem tem o produto nos favoritos
+    const mudancas: { productId: string; tipo: 'preco' | 'stock'; antes?: number; agora?: number }[] = [];
     const porCodigo = new Map(jaPublicados.map((p) => [p.winmaxCode!, p]));
 
     const artigos = await this.prisma.winmaxArticle.findMany({
@@ -98,6 +105,11 @@ export class WinmaxCatalogService {
       };
 
       const existente = porCodigo.get(a.code);
+      if (existente && visivel) {
+        const antes = Number(existente.basePrice);
+        if (preco > 0 && antes > 0 && preco < antes * 0.995) mudancas.push({ productId: existente.id, tipo: 'preco', antes, agora: preco });
+        else if ((!existente.active || Number(existente.stock) <= 0) && dados.stock > 0) mudancas.push({ productId: existente.id, tipo: 'stock' });
+      }
       if (existente) {
         await this.prisma.product.update({
           where: { id: existente.id },
@@ -143,6 +155,7 @@ export class WinmaxCatalogService {
     }
     // Pesquisa: refletir logo produtos novos, preços e stock
     if (criados || atualizados) this.search.reindexar().catch(() => undefined);
+    if (mudancas.length) this.push.avisarFavoritos(mudancas).catch(() => undefined);
     return { created: criados, updated: atualizados, hidden: ocultos };
   }
 

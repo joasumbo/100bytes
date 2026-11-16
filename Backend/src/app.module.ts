@@ -15,6 +15,7 @@ import { OrdersModule } from './orders/orders.module';
 import { WinmaxModule } from './winmax/winmax.module';
 import { EventsModule } from './events/events.module';
 import { SearchModule } from './search/search.module';
+import { PushModule } from './push/push.module';
 
 @Module({
   imports: [
@@ -34,6 +35,7 @@ import { SearchModule } from './search/search.module';
     WinmaxModule,
     EventsModule,
     SearchModule,
+    PushModule,
   ],
 })
 export class AppModule {}

@@ -403,3 +403,72 @@ model ProductRelation {
   @@index([productId, kind, score])
   @@map("product_relations")
 }
+
+// ── Notificações push (Web Push / VAPID) ──
+// Aparelho que aceitou receber notificações (endpoint do serviço de push do navegador)
+model PushSubscription {
+  id         String     @id @default(cuid())
+  endpoint   String     @unique
+  p256dh     String
+  auth       String
+  sessionId  String?
+  customerId String?
+  userAgent  String?
+  origem     String? // onde aceitou: banner, encomenda, favorito, conta
+  active     Boolean    @default(true)
+  createdAt  DateTime   @default(now())
+  lastSeenAt DateTime   @default(now())
+  revokedAt  DateTime?
+  sends      PushSend[]
+
+  @@index([customerId])
+  @@index([sessionId])
+  @@index([active, createdAt])
+  @@map("push_subscriptions")
+}
+
+// Cada notificação enviada (para estatísticas, cliques e para não repetir avisos)
+model PushSend {
+  id             String           @id @default(cuid())
+  subscriptionId String
+  subscription   PushSubscription @relation(fields: [subscriptionId], references: [id], onDelete: Cascade)
+  kind           String // encomenda | favorito_preco | favorito_stock | carrinho | interesse | diario | feriado | campanha | teste
+  campaignId     String?
+  ref            String? // código da encomenda, id do produto ou da categoria (evita repetições)
+  title          String
+  body           String
+  url            String
+  status         String           @default("enviada") // enviada | falhou | expirada
+  error          String?
+  sentAt         DateTime         @default(now())
+  clickedAt      DateTime?
+
+  @@index([kind, sentAt])
+  @@index([subscriptionId, sentAt])
+  @@index([campaignId])
+  @@map("push_sends")
+}
+
+model PushCampaign {
+  id          String    @id @default(cuid())
+  title       String
+  body        String
+  url         String
+  image       String?
+  segment     String    @default("todos") // todos | clientes | categoria:<slug>
+  status      String    @default("rascunho") // rascunho | agendada | a_enviar | enviada
+  scheduledAt DateTime?
+  sentAt      DateTime?
+  createdAt   DateTime  @default(now())
+
+  @@map("push_campaigns")
+}
+
+// Definições das automações e registo de tarefas diárias já feitas
+model PushSetting {
+  key       String   @id
+  value     Json
+  updatedAt DateTime @updatedAt
+
+  @@map("push_settings")
+}

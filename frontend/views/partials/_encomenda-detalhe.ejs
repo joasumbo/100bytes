@@ -69,6 +69,24 @@ var ejItens = (order.items || []).reduce(function (s, i) { return s + (Number(i.
                 <span><strong>Dúvidas sobre a encomenda?</strong>Ligue para <a href="tel:+244928499325" style="color:inherit;text-decoration:underline;">928 499 325</a> ou fale connosco no <a href="https://wa.me/244928499325?text=<%= encodeURIComponent('Olá! Tenho uma dúvida sobre a encomenda ' + order.code) %>" target="_blank" rel="noopener" style="color:inherit;text-decoration:underline;">WhatsApp</a>, com o código <%= order.code %>.</span>
             </div>
         </section>
+        <% if (order.status !== 'delivered' && order.status !== 'cancelled') { %>
+        <section class="lj-card ej-push" data-push-bloco hidden>
+            <div class="lj-nota">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg>
+                <span><strong>Avisos desta encomenda</strong>
+                    <span class="ej-push-on">Vai receber uma notificação sempre que o estado mudar.</span>
+                    <span class="ej-push-off">Receba uma notificação quando for confirmada, sair para entrega e for entregue.</span>
+                </span>
+            </div>
+            <button type="button" class="lj-btn lj-btn-escuro lj-btn-bloco" data-push-ativar="encomenda" style="margin-top:14px;height:44px;font-size:14px;">Avisar-me</button>
+        </section>
+        <style>
+            .ej-push .ej-push-on { display:none; }
+            .ej-push[data-estado="ativo"] .ej-push-on { display:inline; }
+            .ej-push[data-estado="ativo"] .ej-push-off { display:none; }
+            .ej-push[data-estado="bloqueado"] { display:none; }
+        </style>
+        <% } %>
         <%- typeof ejAcoes !== 'undefined' ? ejAcoes : '' %>
     </aside>
 </div>

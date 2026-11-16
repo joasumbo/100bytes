@@ -1,5 +1,6 @@
 import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
+import { PushService } from '../push/push.service';
 import { CreateOrderDto } from './dto/create-order.dto';
 
 const VALID_STATUS = [
@@ -16,7 +17,15 @@ const CODE_CHARS = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
 
 @Injectable()
 export class OrdersService {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+    private push: PushService,
+  ) {}
+
+  /** Aviso push em cada estado da encomenda (não bloqueia nem falha a operação) */
+  private avisar(o: { code: string; status: string; customerId: string | null; customerEmail: string }) {
+    this.push.avisarEncomenda(o).catch(() => undefined);
+  }
 
   private generateCode(): string {
     let code = '100B-';
@@ -106,6 +115,7 @@ export class OrdersService {
       return created;
     });
 
+    this.avisar(order);
     return order;
   }
 
@@ -154,11 +164,13 @@ export class OrdersService {
       where: { code: (code || '').toUpperCase() },
     });
     if (!existing) throw new NotFoundException('Encomenda não encontrada.');
-    return this.prisma.order.update({
+    const atualizada = await this.prisma.order.update({
       where: { code: existing.code },
       data: { status },
       include: { items: true },
     });
+    if (existing.status !== status) this.avisar(atualizada);
+    return atualizada;
   }
 
   async remove(code: string) {

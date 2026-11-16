@@ -25,6 +25,7 @@ var sxImagem = sx.imagem || '';
 <meta name="twitter:description" content="<%= sx.descricao %>">
 <% if (sxImagem) { %><meta name="twitter:image" content="<%= sxImagem %>"><% } %>
 <link rel="icon" type="image/png" href="https://cdn.100bytes.co.ao/logo/100byte_fav.png">
-<link rel="apple-touch-icon" href="/img/logo-icone.png">
+<link rel="apple-touch-icon" href="/img/push-icone.png">
+<link rel="manifest" href="/manifest.webmanifest">
 <% (sx.jsonld || []).forEach(function (j) { %><script type="application/ld+json"><%- JSON.stringify(j).replace(/</g, '\\u003c') %></script>
 <% }) %>
