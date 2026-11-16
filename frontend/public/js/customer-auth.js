@@ -457,7 +457,9 @@
         currentUser = user;
         // Vindo de uma página que pede sessão: abre a janela só se ainda não entrou
         if (posLogin.abrir) {
-          if (!user) showLoginModal();
+          // O cabeçalho (gerado no servidor) já mostra a conta: há sessão, mesmo que /me tenha falhado
+          var comSessao = !!user || !!document.querySelector('.hc-enter[href="/perfil"]');
+          if (!comSessao) showLoginModal();
           else if (posLogin.next) window.location.href = posLogin.next;
         }
         bindRequireLoginLinks();

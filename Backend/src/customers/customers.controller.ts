@@ -7,6 +7,8 @@ import {
   UploadedFile,
   UseInterceptors,
   BadRequestException,
+  UnauthorizedException,
+  ServiceUnavailableException,
   Body,
   Param,
   Req,
@@ -76,13 +78,20 @@ export class CustomersController {
   async me(@Req() req: Request) {
     const token = req.cookies?.['customer_token'];
     if (!token) return { customer: null };
+    let payload: { type?: string; sub?: string };
     try {
-      const payload = this.jwt.verify(token);
-      if (payload.type !== 'customer') return { customer: null };
+      payload = this.jwt.verify(token);
+    } catch {
+      return { customer: null }; // token inválido ou expirado: sem sessão
+    }
+    if (payload.type !== 'customer' || !payload.sub) return { customer: null };
+    try {
       const customer = await this.svc.me(payload.sub);
       return { customer };
-    } catch {
-      return { customer: null };
+    } catch (e) {
+      // Conta desativada/apagada: sem sessão. Outra falha (ex.: base de dados) não é "sem sessão".
+      if (e instanceof UnauthorizedException) return { customer: null };
+      throw new ServiceUnavailableException('Não foi possível confirmar a sessão. Tente novamente.');
     }
   }
 

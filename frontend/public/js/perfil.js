@@ -263,10 +263,20 @@
   }
 
   // ── Início ──
-  (async function () {
+  async function iniciar() {
+    var d;
     try {
-      var d = await api('/api/customers/me');
-      if (!d.customer) { location.href = '/?openLogin=1&next=' + encodeURIComponent('/perfil' + location.hash); return; }
+      d = await api('/api/customers/me');
+    } catch (e) {
+      // Falha momentânea (rede/servidor): não é "sem sessão" — permitir tentar de novo
+      var c = $('pfCarregar');
+      c.hidden = false;
+      c.innerHTML = 'Não foi possível carregar a sua conta. <button type="button" class="lj-btn lj-btn-escuro" style="margin-left:10px;height:40px;" id="pfTentar">Tentar novamente</button>';
+      $('pfTentar').addEventListener('click', function () { c.textContent = 'A carregar a sua conta…'; iniciar(); });
+      return;
+    }
+    try {
+      if (!d.customer) { location.href = '/?openLogin=1&next=' + encodeURIComponent('/perfil' + location.search + location.hash); return; }
       pintar(d.customer);
       $('pfCarregar').hidden = true;
       if (q.get('completar') === '1' && !d.customer.completo) {
@@ -276,7 +286,8 @@
         abrir(location.hash.slice(1));
       }
     } catch (e) {
-      location.href = '/?openLogin=1&next=' + encodeURIComponent('/perfil' + location.hash);
+      console.error(e);
     }
-  })();
+  }
+  iniciar();
 })();
