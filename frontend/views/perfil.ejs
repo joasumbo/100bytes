@@ -1,11 +1,10 @@
 <!DOCTYPE html>
 <html lang="pt-PT">
 <head>
-    <title>Minha Conta | 100bytes</title>
+    <title>A minha conta | 100bytes</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <link rel="shortcut icon" href="https://cdn.100bytes.co.ao/logo/100byte_fav.png">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="/assets/vendor/font-awesome/css/fontawesome-all.min.css">
     <link rel="stylesheet" href="/assets/css/font-electro.css">
     <link rel="stylesheet" href="/assets/vendor/animate.css/animate.min.css">
@@ -13,150 +12,209 @@
     <link rel="stylesheet" href="/assets/vendor/malihu-custom-scrollbar-plugin/jquery.mCustomScrollbar.css">
     <link rel="stylesheet" href="/assets/vendor/bootstrap-select/dist/css/bootstrap-select.min.css">
     <link rel="stylesheet" href="/assets/css/theme.css">
-    <style>
-        :root { --brand-primary: #F57C00; --brand-secondary: #D96A00; }
-
-        .btn-primary,
-        .btn-primary:hover,
-        .btn-primary:focus,
-        .btn-primary:active,
-        .btn-primary:not(:disabled):not(.disabled):active,
-        .btn-primary:not(:disabled):not(.disabled).active {
-            background-color: var(--brand-primary) !important;
-            border-color: var(--brand-primary) !important;
-        }
-        .btn-primary:hover, .btn-primary:focus {
-            background-color: var(--brand-secondary) !important;
-            border-color: var(--brand-secondary) !important;
-        }
-        .text-primary { color: var(--brand-primary) !important; }
-        .badge-primary, .bg-primary { background-color: var(--brand-primary) !important; border-color: var(--brand-primary) !important; }
-        .spinner-border.text-primary { color: var(--brand-primary) !important; }
-
-        .profile-tab-content { display: none; }
-        .profile-tab-content.is-active { display: block; }
-        .profile-nav .list-group-item { border-left: 3px solid transparent; padding: 12px 20px; font-size: 14px; color: #555; }
-        .profile-nav .list-group-item.is-active { color: #F57C00; background: #fff8f2; border-left-color: #F57C00; font-weight: 600; }
-        .profile-nav .list-group-item:hover { background: #fafafa; }
-        .p-avatar { width: 68px; height: 68px; border-radius: 50%; background: #F57C00; color: #fff; font-size: 28px; font-weight: 700; display: flex; align-items: center; justify-content: center; margin: 0 auto 10px; }
-        .fav-card { border-radius: 10px; overflow: hidden; transition: box-shadow .2s; }
-        .fav-card:hover { box-shadow: 0 4px 16px rgba(0,0,0,.1); }
-        .order-pill { display: inline-block; padding: 2px 10px; border-radius: 20px; font-size: 11px; font-weight: 600; }
-    </style>
+    <link rel="stylesheet" href="/css/loja.css">
     <link rel="preload" href="/fonts/dm-sans-latin.woff2" as="font" type="font/woff2" crossorigin>
         <link rel="stylesheet" href="/css/fonte.css">
 </head>
-<body>
-    <%- include('partials/_header') %>
+<body class="lj">
+    <%- include('partials/_header-compacto') %>
 
-    <main id="content" role="main" class="bg-gray-7 py-5">
+    <% var pfProvincias = ["Bengo","Benguela","Bié","Cabinda","Cuando Cubango","Cuanza Norte","Cuanza Sul","Cunene","Huambo","Huíla","Luanda","Lunda Norte","Lunda Sul","Malanje","Moxico","Namibe","Uíge","Zaire"]; %>
+
+    <main id="content" role="main" class="lj-main">
         <div class="container">
-            <div class="row">
 
-                <!-- ── Sidebar ── -->
-                <div class="col-lg-3 mb-4">
-                    <div class="card border-0 shadow-sm" style="border-radius:12px;overflow:hidden;">
-                        <div class="card-body text-center pt-4 pb-3">
-                            <div class="p-avatar" id="profileAvatar">?</div>
-                            <h6 class="mb-0 font-weight-bold" id="sidebarName">---</h6>
-                            <p class="text-gray-5 font-size-12 mb-0" id="sidebarEmail">---</p>
-                        </div>
-                        <div class="list-group list-group-flush profile-nav border-top">
-                            <a href="#dados" class="list-group-item list-group-item-action profile-tab-link is-active" data-tab="dados">
-                                <i class="ec ec-user mr-2"></i> Dados Pessoais
-                            </a>
-                            <a href="#encomendas" class="list-group-item list-group-item-action profile-tab-link" data-tab="encomendas">
-                                <i class="ec ec-transport mr-2"></i> Encomendas
-                            </a>
-                            <a href="#favoritos" class="list-group-item list-group-item-action profile-tab-link" data-tab="favoritos">
-                                <i class="ec ec-favorites mr-2"></i> Favoritos
-                            </a>
-                        </div>
-                        <div class="card-footer border-0 bg-white text-center py-3">
-                            <a href="#" data-customer-logout class="text-danger font-size-13">
-                                <i class="ec ec-power-switch mr-1"></i> Terminar sessão
-                            </a>
+            <div class="pf-carregar" id="pfCarregar">A carregar a sua conta…</div>
+
+            <!-- ── Completar a conta (depois de entrar com Google) ── -->
+            <div id="pfCompletar" class="pf-completar" hidden>
+                <div class="lj-card pf-completar-card">
+                    <div class="pf-completar-topo">
+                        <span class="pf-avatar pf-avatar-g" data-pf-avatar></span>
+                        <div>
+                            <h1 class="lj-titulo" style="font-size:24px;">Falta pouco, <span data-pf-primeiro></span></h1>
+                            <p class="lj-sub">Complete a sua conta para comprar mais depressa. Só precisamos disto uma vez.</p>
                         </div>
                     </div>
+                    <form id="pfCompletarForm" novalidate>
+                        <h2 class="lj-sec"><span class="lj-num">1</span>Contacto</h2>
+                        <div class="lj-grelha">
+                            <div class="lj-campo">
+                                <label for="cpPhone">Telefone</label>
+                                <input id="cpPhone" class="lj-input" type="tel" placeholder="+244 9xx xxx xxx" autocomplete="tel" inputmode="tel">
+                            </div>
+                            <div class="lj-campo">
+                                <label>Email</label>
+                                <input class="lj-input" type="email" data-pf-email disabled>
+                            </div>
+                        </div>
+                        <h2 class="lj-sec" style="margin-top:26px;"><span class="lj-num">2</span>Morada de entrega</h2>
+                        <div class="lj-grelha">
+                            <div class="lj-campo">
+                                <label for="cpProvince">Província</label>
+                                <select id="cpProvince" class="lj-input">
+                                    <option value="">Selecionar</option>
+                                    <% pfProvincias.forEach(function (p) { %><option value="<%= p %>"><%= p %></option><% }) %>
+                                </select>
+                            </div>
+                            <div class="lj-campo">
+                                <label for="cpCity">Município</label>
+                                <input id="cpCity" class="lj-input" type="text" placeholder="Ex: Luanda, Viana, Talatona" autocomplete="address-level2">
+                            </div>
+                            <div class="lj-campo lj-larga">
+                                <label for="cpAddress">Morada</label>
+                                <input id="cpAddress" class="lj-input" type="text" placeholder="Rua, número, bairro e um ponto de referência" autocomplete="street-address">
+                            </div>
+                        </div>
+                        <div id="cpPassBloco">
+                            <h2 class="lj-sec" style="margin-top:26px;"><span class="lj-num">3</span>Palavra-passe</h2>
+                            <div class="lj-campo">
+                                <label for="cpPassword">Escolha uma palavra-passe <span class="opc">(para entrar também sem o Google)</span></label>
+                                <div class="pf-pass">
+                                    <input id="cpPassword" class="lj-input" type="password" placeholder="Pelo menos 8 caracteres" autocomplete="new-password">
+                                    <button type="button" class="pf-olho" data-olho="cpPassword" aria-label="Mostrar palavra-passe"><i class="far fa-eye"></i></button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="pf-msg" id="cpMsg" role="alert"></div>
+                        <div class="pf-acoes">
+                            <button type="submit" class="lj-btn lj-btn-marca" id="cpGuardar">Guardar e continuar</button>
+                            <a href="#" class="pf-depois" id="cpDepois">Fazer depois</a>
+                        </div>
+                    </form>
                 </div>
+            </div>
 
-                <!-- ── Content ── -->
-                <div class="col-lg-9">
-
-                    <!-- Tab: Dados Pessoais -->
-                    <div id="tab-dados" class="profile-tab-content is-active">
-                        <div class="card border-0 shadow-sm" style="border-radius:12px;">
-                            <div class="card-header bg-white border-0 py-3 px-4">
-                                <h5 class="mb-0 font-weight-bold">Dados Pessoais</h5>
-                            </div>
-                            <div class="card-body px-4 pb-4">
-                                <div id="profileMsg" class="alert d-none mb-3" role="alert"></div>
-                                <form id="profileForm">
-                                    <div class="row">
-                                        <div class="col-md-6 form-group">
-                                            <label class="font-weight-medium font-size-13">Nome completo</label>
-                                            <input type="text" id="pfName" class="form-control" placeholder="O seu nome">
-                                        </div>
-                                        <div class="col-md-6 form-group">
-                                            <label class="font-weight-medium font-size-13">Telefone</label>
-                                            <input type="tel" id="pfPhone" class="form-control" placeholder="+244 9xx xxx xxx">
-                                        </div>
-                                    </div>
-                                    <div class="form-group">
-                                        <label class="font-weight-medium font-size-13">Email</label>
-                                        <input type="email" id="pfEmail" class="form-control">
-                                    </div>
-                                    <hr class="my-3">
-                                    <h6 class="font-weight-bold mb-3 font-size-14">Alterar password</h6>
-                                    <div class="row">
-                                        <div class="col-md-6 form-group">
-                                            <label class="font-weight-medium font-size-13">Nova password</label>
-                                            <input type="password" id="pfPassword" class="form-control" placeholder="Deixar em branco para não alterar">
-                                        </div>
-                                        <div class="col-md-6 form-group">
-                                            <label class="font-weight-medium font-size-13">Confirmar password</label>
-                                            <input type="password" id="pfPasswordConfirm" class="form-control">
-                                        </div>
-                                    </div>
-                                    <button type="submit" class="btn btn-primary px-5" id="pfSaveBtn">Guardar alterações</button>
-                                </form>
-                            </div>
+            <!-- ── Conta ── -->
+            <div id="pfConta" class="pf-conta" hidden>
+                <aside class="pf-lado">
+                    <div class="lj-card pf-cartao">
+                        <div class="pf-foto-wrap">
+                            <span class="pf-avatar" data-pf-avatar></span>
+                            <label class="pf-foto-btn" title="Alterar foto">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3z"/><circle cx="12" cy="13" r="3"/></svg>
+                                <input type="file" id="pfFotoInput" accept="image/jpeg,image/png,image/webp" hidden>
+                            </label>
                         </div>
+                        <div class="pf-nome" data-pf-nome></div>
+                        <div class="pf-email" data-pf-email-txt></div>
+                        <div class="pf-desde" id="pfDesde"></div>
                     </div>
+                    <nav class="lj-card pf-nav" aria-label="Conta">
+                        <a href="#dados" data-tab="dados"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg>Dados pessoais</a>
+                        <a href="#morada" data-tab="morada"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12S4 16 4 10a8 8 0 0 1 16 0z"/><circle cx="12" cy="10" r="3"/></svg>Morada</a>
+                        <a href="#seguranca" data-tab="seguranca"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>Segurança</a>
+                        <a href="#encomendas" data-tab="encomendas"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>Encomendas</a>
+                        <a href="#favoritos" data-tab="favoritos"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M19 14c1.5-1.5 3-3.2 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.8 0-3 .5-4.5 2-1.5-1.5-2.7-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4 3 5.5l7 7z"/></svg>Favoritos</a>
+                        <button type="button" class="pf-sair" data-customer-logout><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="m16 17 5-5-5-5"/><path d="M21 12H9"/></svg>Terminar sessão</button>
+                    </nav>
+                </aside>
 
-                    <!-- Tab: Encomendas -->
-                    <div id="tab-encomendas" class="profile-tab-content">
-                        <div class="card border-0 shadow-sm" style="border-radius:12px;overflow:hidden;">
-                            <div class="card-header bg-white border-0 py-3 px-4">
-                                <h5 class="mb-0 font-weight-bold">Encomendas</h5>
-                            </div>
-                            <div class="card-body p-0">
-                                <div id="ordersList" class="text-center py-5 text-muted">
-                                    <div class="spinner-border spinner-border-sm text-primary" role="status"></div>
-                                    <p class="mt-2 mb-0 font-size-13">A carregar...</p>
+                <div class="pf-conteudo">
+                    <!-- Dados pessoais -->
+                    <section class="pf-sec" id="tab-dados">
+                        <div class="lj-topo" style="margin-bottom:16px;">
+                            <h1 class="lj-titulo">Dados pessoais</h1>
+                            <p class="lj-sub">O seu nome e contacto para as encomendas.</p>
+                        </div>
+                        <form class="lj-card" id="pfDadosForm" novalidate>
+                            <div class="lj-grelha">
+                                <div class="lj-campo">
+                                    <label for="pfName">Nome</label>
+                                    <input id="pfName" class="lj-input" type="text" autocomplete="name">
+                                </div>
+                                <div class="lj-campo">
+                                    <label for="pfPhone">Telefone</label>
+                                    <input id="pfPhone" class="lj-input" type="tel" placeholder="+244 9xx xxx xxx" autocomplete="tel" inputmode="tel">
+                                </div>
+                                <div class="lj-campo lj-larga">
+                                    <label>Email <span class="opc" id="pfEmailNota"></span></label>
+                                    <input class="lj-input" type="email" data-pf-email disabled>
                                 </div>
                             </div>
-                        </div>
-                    </div>
+                            <div class="pf-msg" id="pfDadosMsg" role="status"></div>
+                            <div class="pf-acoes"><button type="submit" class="lj-btn lj-btn-escuro">Guardar alterações</button></div>
+                        </form>
+                    </section>
 
-                    <!-- Tab: Favoritos -->
-                    <div id="tab-favoritos" class="profile-tab-content">
-                        <div class="card border-0 shadow-sm" style="border-radius:12px;">
-                            <div class="card-header bg-white border-0 py-3 px-4 d-flex align-items-center justify-content-between">
-                                <h5 class="mb-0 font-weight-bold">Favoritos</h5>
-                                <span id="favCount" class="badge badge-light font-size-12 border">0 produtos</span>
+                    <!-- Morada -->
+                    <section class="pf-sec" id="tab-morada" hidden>
+                        <div class="lj-topo" style="margin-bottom:16px;">
+                            <h1 class="lj-titulo">Morada de entrega</h1>
+                            <p class="lj-sub">Usamos esta morada para preencher o checkout automaticamente.</p>
+                        </div>
+                        <form class="lj-card" id="pfMoradaForm" novalidate>
+                            <div class="lj-grelha">
+                                <div class="lj-campo">
+                                    <label for="pfProvince">Província</label>
+                                    <select id="pfProvince" class="lj-input">
+                                        <option value="">Selecionar</option>
+                                        <% pfProvincias.forEach(function (p) { %><option value="<%= p %>"><%= p %></option><% }) %>
+                                    </select>
+                                </div>
+                                <div class="lj-campo">
+                                    <label for="pfCity">Município</label>
+                                    <input id="pfCity" class="lj-input" type="text" placeholder="Ex: Luanda, Viana, Talatona" autocomplete="address-level2">
+                                </div>
+                                <div class="lj-campo lj-larga">
+                                    <label for="pfAddress">Morada</label>
+                                    <input id="pfAddress" class="lj-input" type="text" placeholder="Rua, número, bairro e um ponto de referência" autocomplete="street-address">
+                                </div>
                             </div>
-                            <div class="card-body">
-                                <div id="favGrid" class="row">
-                                    <div class="col-12 text-center py-5 text-muted">
-                                        <div class="spinner-border spinner-border-sm text-primary" role="status"></div>
-                                        <p class="mt-2 mb-0 font-size-13">A carregar...</p>
+                            <div class="pf-msg" id="pfMoradaMsg" role="status"></div>
+                            <div class="pf-acoes"><button type="submit" class="lj-btn lj-btn-escuro">Guardar morada</button></div>
+                        </form>
+                    </section>
+
+                    <!-- Segurança -->
+                    <section class="pf-sec" id="tab-seguranca" hidden>
+                        <div class="lj-topo" style="margin-bottom:16px;">
+                            <h1 class="lj-titulo">Segurança</h1>
+                            <p class="lj-sub" id="pfSegSub">Altere a palavra-passe da sua conta.</p>
+                        </div>
+                        <form class="lj-card" id="pfPassForm" novalidate>
+                            <div class="lj-grelha">
+                                <div class="lj-campo lj-larga" id="pfAtualBloco">
+                                    <label for="pfPassAtual">Palavra-passe atual</label>
+                                    <div class="pf-pass">
+                                        <input id="pfPassAtual" class="lj-input" type="password" autocomplete="current-password">
+                                        <button type="button" class="pf-olho" data-olho="pfPassAtual" aria-label="Mostrar palavra-passe"><i class="far fa-eye"></i></button>
+                                    </div>
+                                </div>
+                                <div class="lj-campo lj-larga">
+                                    <label for="pfPassNova">Nova palavra-passe</label>
+                                    <div class="pf-pass">
+                                        <input id="pfPassNova" class="lj-input" type="password" placeholder="Pelo menos 8 caracteres" autocomplete="new-password">
+                                        <button type="button" class="pf-olho" data-olho="pfPassNova" aria-label="Mostrar palavra-passe"><i class="far fa-eye"></i></button>
                                     </div>
                                 </div>
                             </div>
+                            <div class="pf-msg" id="pfPassMsg" role="status"></div>
+                            <div class="pf-acoes"><button type="submit" class="lj-btn lj-btn-escuro" id="pfPassBtn">Mudar palavra-passe</button></div>
+                        </form>
+                        <div class="lj-card pf-google" id="pfGoogleCard" hidden>
+                            <svg viewBox="0 0 48 48" aria-hidden="true"><path fill="#FFC107" d="M43.6 20.5H42V20H24v8h11.3C33.7 32.7 29.2 36 24 36c-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.8 1.2 7.9 3.1l5.7-5.7C34 6.1 29.3 4 24 4 12.9 4 4 12.9 4 24s8.9 20 20 20 20-8.9 20-20c0-1.3-.1-2.4-.4-3.5z"/><path fill="#FF3D00" d="m6.3 14.7 6.6 4.8C14.7 15.1 19 12 24 12c3.1 0 5.8 1.2 7.9 3.1l5.7-5.7C34 6.1 29.3 4 24 4 16.3 4 9.7 8.3 6.3 14.7z"/><path fill="#4CAF50" d="M24 44c5.2 0 9.9-2 13.4-5.2l-6.2-5.2C29.2 35.1 26.7 36 24 36c-5.2 0-9.6-3.3-11.3-7.9l-6.5 5C9.5 39.6 16.2 44 24 44z"/><path fill="#1976D2" d="M43.6 20.5H42V20H24v8h11.3c-.8 2.2-2.2 4.2-4.1 5.6l6.2 5.2C37 39.2 44 34 44 24c0-1.3-.1-2.4-.4-3.5z"/></svg>
+                            <div><strong>Conta Google ligada</strong><span>Pode entrar com o botão "Continuar com Google".</span></div>
                         </div>
-                    </div>
+                    </section>
 
+                    <!-- Encomendas -->
+                    <section class="pf-sec" id="tab-encomendas" hidden>
+                        <div class="lj-topo" style="margin-bottom:16px;">
+                            <h1 class="lj-titulo">Encomendas</h1>
+                            <p class="lj-sub">Acompanhe o estado das suas encomendas.</p>
+                        </div>
+                        <div id="ordersList"><div class="lj-card pf-vazio">A carregar…</div></div>
+                    </section>
+
+                    <!-- Favoritos -->
+                    <section class="pf-sec" id="tab-favoritos" hidden>
+                        <div class="lj-topo" style="margin-bottom:16px;">
+                            <h1 class="lj-titulo">Favoritos</h1>
+                            <p class="lj-sub" id="favCount">Os produtos que guardou.</p>
+                        </div>
+                        <div id="favGrid" class="pf-favs"><div class="lj-card pf-vazio">A carregar…</div></div>
+                    </section>
                 </div>
             </div>
         </div>
@@ -182,222 +240,13 @@
     <script src="/assets/js/components/hs.svg-injector.js"></script>
     <script src="/assets/js/components/hs.go-to.js"></script>
     <script src="/assets/js/components/hs.selectpicker.js"></script>
-    <script src="/assets/js/customer-auth.js"></script>
 
     <script>
     $(window).on('load', function () {
-        $('.js-mega-menu').HSMegaMenu({ event: 'hover', direction: 'horizontal', pageContainer: $('.container'), breakpoint: 767.98, hideTimeOut: 0 });
-        $.HSCore.components.HSSVGIngector && $.HSCore.components.HSSVGIngector.init('.js-svg-injector');
-        $.HSCore.components.HSHeader.init($('#header'));
-        $.HSCore.components.HSUnfold.init($('[data-unfold-target]'), { beforeOpen: function () { this.css('visibility', 'visible'); } });
-        $.HSCore.components.HSMalihuScrollBar.init($('.js-scrollbar'));
-        $.HSCore.components.HSFocusState.init();
-        $.HSCore.components.HSGoTo.init('.js-go-to');
-        $.HSCore.components.HSHamburgers.init('#hamburgerTrigger');
-        $.HSCore.components.HSSelectPicker.init('.js-select');
+        $.HSCore.components.HSHeader && $.HSCore.components.HSHeader.init($('#header'));
     });
-
-    // ── Tab switching ──
-    function switchTab(name) {
-        document.querySelectorAll('.profile-tab-content').forEach(el => el.classList.remove('is-active'));
-        document.querySelectorAll('.profile-tab-link').forEach(el => el.classList.remove('is-active'));
-        const content = document.getElementById('tab-' + name);
-        const link = document.querySelector('.profile-tab-link[data-tab="' + name + '"]');
-        if (content) content.classList.add('is-active');
-        if (link) link.classList.add('is-active');
-        if (name === 'encomendas') loadOrders();
-        if (name === 'favoritos') loadFavorites();
-    }
-
-    document.querySelectorAll('.profile-tab-link').forEach(link => {
-        link.addEventListener('click', (e) => {
-            e.preventDefault();
-            const tab = link.getAttribute('data-tab');
-            history.replaceState(null, '', '#' + tab);
-            switchTab(tab);
-        });
-    });
-
-    const initialHash = location.hash.slice(1);
-    if (['dados', 'encomendas', 'favoritos'].includes(initialHash)) switchTab(initialHash);
-
-    // ── Load profile ──
-    async function initProfile() {
-        try {
-            const res = await fetch('/api/customers/me', { credentials: 'include' });
-            if (!res.ok) { window.location.href = '/?openLogin=1'; return; }
-            const { customer } = await res.json();
-            if (!customer) { window.location.href = '/?openLogin=1'; return; }
-            document.getElementById('profileAvatar').textContent = (customer.name || '?')[0].toUpperCase();
-            document.getElementById('sidebarName').textContent = customer.name || '';
-            document.getElementById('sidebarEmail').textContent = customer.email || '';
-            document.getElementById('pfName').value = customer.name || '';
-            document.getElementById('pfEmail').value = customer.email || '';
-            document.getElementById('pfPhone').value = customer.phone || '';
-        } catch { window.location.href = '/?openLogin=1'; }
-    }
-
-    // ── Save profile ──
-    document.getElementById('profileForm').addEventListener('submit', async (e) => {
-        e.preventDefault();
-        const btn = document.getElementById('pfSaveBtn');
-        const msgEl = document.getElementById('profileMsg');
-        const name = document.getElementById('pfName').value.trim();
-        const email = document.getElementById('pfEmail').value.trim();
-        const phone = document.getElementById('pfPhone').value.trim();
-        const password = document.getElementById('pfPassword').value;
-        const passwordConfirm = document.getElementById('pfPasswordConfirm').value;
-
-        msgEl.className = 'alert d-none';
-        if (password && password !== passwordConfirm) {
-            msgEl.textContent = 'As passwords não coincidem.';
-            msgEl.className = 'alert alert-danger';
-            return;
-        }
-        btn.disabled = true; btn.textContent = 'A guardar...';
-        try {
-            const body = { name, email, phone };
-            if (password) body.password = password;
-            const res = await fetch('/api/customers/me', {
-                method: 'PATCH',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(body),
-                credentials: 'include',
-            });
-            if (!res.ok) { const err = await res.json(); throw new Error(err.message || 'Erro ao guardar'); }
-            document.getElementById('sidebarName').textContent = name;
-            document.getElementById('profileAvatar').textContent = (name[0] || '?').toUpperCase();
-            document.getElementById('pfPassword').value = '';
-            document.getElementById('pfPasswordConfirm').value = '';
-            msgEl.textContent = 'Dados guardados com sucesso!';
-            msgEl.className = 'alert alert-success';
-        } catch (err) {
-            msgEl.textContent = err.message || 'Não foi possível guardar os dados.';
-            msgEl.className = 'alert alert-danger';
-        } finally { btn.disabled = false; btn.textContent = 'Guardar alterações'; }
-    });
-
-    // ── Orders ──
-    let ordersLoaded = false;
-    async function loadOrders() {
-        if (ordersLoaded) return; ordersLoaded = true;
-        const container = document.getElementById('ordersList');
-        try {
-            const res = await fetch('/api/customers/orders', { credentials: 'include' });
-            if (!res.ok) {
-                container.innerHTML = '<div class="p-4 text-center text-muted"><i class="ec ec-transport font-size-40 d-block mb-2 text-gray-5"></i><p class="mb-0">Nenhuma encomenda encontrada.</p></div>';
-                return;
-            }
-            const data = await res.json();
-            const orders = data.orders || [];
-            if (!orders.length) {
-                container.innerHTML = '<div class="p-4 text-center text-muted"><i class="ec ec-transport font-size-40 d-block mb-2 text-gray-5"></i><p class="mb-0">Ainda não fez nenhuma encomenda.</p></div>';
-                return;
-            }
-            container.innerHTML = '<div class="p-3">' + orders.map(o => `
-                <div style="background:#fff;border:1px solid #eee;border-radius:10px;padding:16px 20px;margin-bottom:10px;display:flex;align-items:center;gap:16px;flex-wrap:wrap;">
-                    <div style="flex:1;min-width:0;">
-                        <div style="display:flex;align-items:center;gap:10px;margin-bottom:6px;flex-wrap:wrap;">
-                            <span style="font-family:'Courier New',monospace;font-weight:700;font-size:14px;color:#1a1a2e;">${o.reference || o.code || '---'}</span>
-                            <span class="order-pill ${pillClass(o.status)}" style="border-radius:20px;padding:3px 10px;">${pillLabel(o.status)}</span>
-                        </div>
-                        <div style="font-size:12px;color:#aaa;">
-                            <i class="fas fa-calendar-alt mr-1"></i>${o.createdAt ? new Date(o.createdAt).toLocaleDateString('pt-PT') : ''}
-                            &nbsp;&middot;&nbsp;
-                            <i class="ec ec-shopping-bag mr-1"></i>${o.items?.length || 0} produto(s)
-                        </div>
-                    </div>
-                    <div style="text-align:right;flex-shrink:0;">
-                        <div style="font-size:16px;font-weight:800;color:#F57C00;white-space:nowrap;">${fmtKz(o.total)}</div>
-                        <a href="/encomenda/${o.reference || o.code}" style="font-size:12px;color:#F57C00;text-decoration:none;font-weight:600;display:inline-flex;align-items:center;gap:4px;margin-top:6px;">
-                            Ver detalhe <i class="fas fa-arrow-right" style="font-size:10px;"></i>
-                        </a>
-                    </div>
-                </div>
-            `).join('') + '</div>';
-        } catch {
-            container.innerHTML = '<div class="p-4 text-center text-muted">Erro ao carregar encomendas.</div>';
-        }
-    }
-    function pillLabel(s) { return ({ pending:'Pendente', processing:'Em processamento', shipped:'Enviado', delivered:'Entregue', cancelled:'Cancelado' })[s] || s || '---'; }
-    function pillClass(s) { return ({ pending:'bg-warning text-dark', processing:'bg-info text-white', shipped:'bg-primary text-white', delivered:'bg-success text-white', cancelled:'bg-danger text-white' })[s] || 'bg-secondary text-white'; }
-    function fmtKz(v) { return v != null ? Number(v).toLocaleString('pt-PT', { minimumFractionDigits: 2 }) + ' Kz' : '---'; }
-
-    // ── Favorites ──
-    let favsLoaded = false;
-    async function loadFavorites() {
-        if (favsLoaded) return; favsLoaded = true;
-        const grid = document.getElementById('favGrid');
-        const badge = document.getElementById('favCount');
-        try {
-            const res = await fetch('/api/customers/favorites', { credentials: 'include' });
-            if (!res.ok) throw new Error();
-            const { favorites: ids } = await res.json();
-            badge.textContent = (ids.length) + ' produto' + (ids.length !== 1 ? 's' : '');
-
-            if (!ids.length) {
-                grid.innerHTML = '<div class="col-12 text-center py-5 text-muted"><i class="ec ec-favorites font-size-40 d-block mb-2 text-gray-5"></i><p class="mb-0">Nenhum produto nos favoritos.</p></div>';
-                return;
-            }
-
-            // Build product map from localStorage first
-            const localMap = new Map((window.customerAuth?.getLocalFavs() || []).map(f => [f.id, f]));
-
-            // Fetch missing products
-            const missing = ids.filter(id => !localMap.has(id));
-            await Promise.all(missing.map(id =>
-                fetch('/api/products/' + id)
-                    .then(r => r.ok ? r.json() : null)
-                    .then(d => {
-                        if (!d?.product) return;
-                        const p = d.product;
-                        const img = p.imageKeys?.[0] ? 'https://cdn.100bytes.co.ao/' + p.imageKeys[0] : '';
-                        const priceVal = p.salePrice || p.basePrice;
-                        const price = priceVal ? Number(priceVal).toLocaleString('pt-PT', { minimumFractionDigits: 2 }) + ' Kz' : '';
-                        const slug = p.category?.slug || 'produto';
-                        localMap.set(id, { id, name: p.name, image: img, price, url: '/' + slug + '/' + p.slug + '--' + p.id });
-                    })
-                    .catch(() => null)
-            ));
-
-            grid.innerHTML = ids.map(id => {
-                const p = localMap.get(id);
-                if (!p) return '';
-                return `<div class="col-6 col-md-4 col-lg-3 mb-3">
-                    <div class="fav-card card border shadow-none h-100">
-                        <a href="${p.url}">
-                            <img src="${p.image}" alt="${p.name}" style="width:100%;height:120px;object-fit:contain;padding:8px;" onerror="this.style.display='none'">
-                        </a>
-                        <div class="card-body p-2 pt-0">
-                            <a href="${p.url}" class="d-block font-size-12 font-weight-500 text-dark" style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${p.name}</a>
-                            <div class="font-size-13 font-weight-bold mt-1" style="color:#F57C00;">${p.price}</div>
-                        </div>
-                        <div class="card-footer p-2 bg-white border-top-0">
-                            <button class="btn btn-sm btn-outline-danger w-100 font-size-12 js-unfav" data-id="${id}">
-                                <i class="fas fa-heart mr-1"></i> Remover
-                            </button>
-                        </div>
-                    </div>
-                </div>`;
-            }).filter(Boolean).join('') || '<div class="col-12 text-center py-4 text-muted">Nenhum produto nos favoritos.</div>';
-
-            grid.querySelectorAll('.js-unfav').forEach(btn => {
-                btn.addEventListener('click', async () => {
-                    const id = btn.getAttribute('data-id');
-                    btn.disabled = true;
-                    await fetch('/api/customers/favorites/' + id, { method: 'DELETE', credentials: 'include' }).catch(() => null);
-                    window.customerAuth?.removeLocalFav(id);
-                    favsLoaded = false;
-                    loadFavorites();
-                });
-            });
-        } catch {
-            grid.innerHTML = '<div class="col-12 text-center py-4 text-muted">Erro ao carregar favoritos.</div>';
-        }
-    }
-
-    initProfile();
     </script>
+    <script src="/js/perfil.js"></script>
     <script src="/js/precos.js" defer></script>
     <script src="/js/comportamento.js" defer></script>
     <script src="/js/pesquisa.js" defer></script>

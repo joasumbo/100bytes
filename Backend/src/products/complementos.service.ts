@@ -143,6 +143,61 @@ export class ComplementosService {
   }
 
   /**
+   * Destaques do topo da página inicial, sempre atualizados:
+   *  - novidade: o produto mais recente com foto e stock;
+   *  - procurado: o mais visto/adicionado ao carrinho nos últimos 14 dias
+   *    (eventos); sem dados, o de maior valor em stock.
+   */
+  async destaques() {
+    const { produtos } = await this.dados();
+    if (!produtos.length) return { novidade: null, procurado: null };
+    // "Chegou agora": última compra ao fornecedor no Winmax (senão, data de criação)
+    const datas = await this.prisma.product.findMany({
+      where: { id: { in: produtos.map((p) => p.id) } },
+      select: { id: true, createdAt: true, winmaxCode: true },
+    });
+    const codigos = datas.map((d) => d.winmaxCode).filter((c): c is string => !!c);
+    const compras = codigos.length
+      ? await this.prisma.winmaxArticle.findMany({ where: { code: { in: codigos } }, select: { code: true, lastPurchaseDate: true } })
+      : [];
+    const compraPorCodigo = new Map(compras.map((c) => [c.code, c.lastPurchaseDate?.getTime() ?? 0]));
+    const chegada = new Map(datas.map((d) => [d.id, (d.winmaxCode && compraPorCodigo.get(d.winmaxCode)) || d.createdAt.getTime()]));
+    const limpar = (p: Candidato | undefined) => {
+      if (!p) return null;
+      const { texto: _t, ...resto } = p;
+      return resto;
+    };
+
+    // Só produtos acima do preço mediano: o topo da página pede artigos apelativos
+    const precos = produtos.map((p) => p.salePrice ?? p.basePrice).sort((a, b) => a - b);
+    const mediana = precos[Math.floor(precos.length / 2)] ?? 0;
+    const apelativos = produtos.filter((p) => (p.salePrice ?? p.basePrice) >= mediana);
+    const novidade = [...apelativos].sort(
+      (a, b) => (chegada.get(b.id) ?? 0) - (chegada.get(a.id) ?? 0) || (b.salePrice ?? b.basePrice) - (a.salePrice ?? a.basePrice),
+    )[0];
+
+    const desde = new Date(Date.now() - 14 * 24 * 3600 * 1000);
+    const ev = await this.prisma.event
+      .groupBy({
+        by: ['productId', 'type'],
+        where: { productId: { not: null }, createdAt: { gte: desde }, type: { in: ['view', 'add_to_cart', 'purchase'] } },
+        _count: true,
+      })
+      .catch(() => []);
+    const pesos: Record<string, number> = { view: 1, add_to_cart: 4, purchase: 10 };
+    const pontos = new Map<string, number>();
+    for (const e of ev) {
+      if (e.productId) pontos.set(e.productId, (pontos.get(e.productId) ?? 0) + e._count * (pesos[e.type] ?? 0));
+    }
+    const candidatos = produtos.filter((p) => p.id !== novidade.id);
+    const procurado =
+      [...candidatos].sort((a, b) => (pontos.get(b.id) ?? 0) - (pontos.get(a.id) ?? 0)).find((p) => (pontos.get(p.id) ?? 0) > 0) ??
+      [...candidatos].sort((a, b) => (b.salePrice ?? b.basePrice) * b.stock - (a.salePrice ?? a.basePrice) * a.stock)[0];
+
+    return { novidade: limpar(novidade), procurado: limpar(procurado) };
+  }
+
+  /**
    * Semelhantes e substitutos calculados pela camada Python (recs/similares.py),
    * só com produtos ativos, com foto e (substitutos) com stock.
    */

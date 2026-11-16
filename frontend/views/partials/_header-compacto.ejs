@@ -1,8 +1,15 @@
-<!-- Cabeçalho compacto (uma linha): usado na página de produto -->
-<header id="header" class="hc">
+<!-- Cabeçalho compacto (uma linha). Opção: include(..., { logoCompleto: true }) mostra o logótipo inteiro -->
+<% var hcLogoCompleto = typeof logoCompleto === "undefined" ? true : !!logoCompleto; %>
+<% var hcTema = typeof headerTema !== "undefined" ? headerTema : "escuro"; %>
+<header id="header" class="hc<%= hcTema ? ' hc-tema hc-tema-' + hcTema : '' %>">
     <div class="hc-row">
-        <a href="/" class="hc-logo" aria-label="100 bytes — página inicial">
+        <a href="/" class="hc-logo<%= hcLogoCompleto ? ' hc-logo-completo' : '' %>" aria-label="100 bytes — página inicial">
+            <% if (hcLogoCompleto) { %>
+            <img class="hc-l-full" src="/img/logo-completo.png" alt="100 bytes" width="66" height="48">
+            <img class="hc-l-ico" src="/img/logo-icone.png" alt="100 bytes" width="44" height="48">
+            <% } else { %>
             <img src="/img/logo-icone.png" alt="100 bytes" width="44" height="48">
+            <% } %>
         </a>
 
         <form class="hc-search" action="/pesquisa" method="GET" role="search">
@@ -11,18 +18,10 @@
         </form>
 
         <nav class="hc-nav" aria-label="Navegação principal">
-            <a href="/promocoes" class="hc-sale">Promoções</a>
+            <button type="button" class="hc-cat-btn" data-abrir-categorias aria-haspopup="dialog"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>Categorias</button>
             <a href="/novidades">Novidades</a>
             <a href="/mais-vendidos">Mais vendidos</a>
-            <div class="hc-drop">
-                <button type="button" class="hc-drop-btn" aria-haspopup="true" aria-expanded="false">Categorias <i class="fas fa-chevron-down"></i></button>
-                <div class="hc-drop-menu">
-                    <% (typeof categories !== 'undefined' && categories ? categories : []).forEach(function (cat) { %>
-                    <a href="/<%= cat.slug %>"><%= cat.name %></a>
-                    <% }) %>
-                </div>
-            </div>
-            <a href="/apoio-ao-cliente">Ajuda</a>
+            <a href="/apoio-ao-cliente" class="hc-ajuda"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M9.1 9a3 3 0 0 1 5.8 1c0 2-3 3-3 3"/><path d="M12 17h.01"/></svg>Ajuda</a>
         </nav>
 
         <div class="hc-actions">
@@ -57,30 +56,70 @@
 
     <!-- Menu do telemóvel -->
     <div class="hc-mobile" hidden>
-        <a href="/promocoes" class="hc-sale">Promoções</a>
+        <button type="button" class="hc-mobile-cat" data-abrir-categorias><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>Ver todas as categorias</button>
         <a href="/novidades">Novidades</a>
         <a href="/mais-vendidos">Mais vendidos</a>
-        <a href="/apoio-ao-cliente">Apoio ao cliente</a>
-        <a href="/rastreio">Acompanhar encomenda</a>
-        <div class="hc-mobile-title">Categorias</div>
-        <% (typeof categories !== 'undefined' && categories ? categories : []).forEach(function (cat) { %>
-        <a href="/<%= cat.slug %>"><%= cat.name %></a>
-        <% }) %>
+        <a href="/rastreio">Seguir encomenda</a>
+        <a href="/apoio-ao-cliente">Ajuda</a>
     </div>
 </header>
+
+<% var hcCatalogo = typeof catalogo !== 'undefined' && catalogo ? catalogo : []; %>
+<!-- Janela de categorias (ecrã inteiro, com pesquisa) -->
+<div class="ct" id="catalogo" role="dialog" aria-modal="true" aria-labelledby="ctTitulo" hidden>
+    <div class="ct-topo">
+        <div class="ct-topo-in">
+            <h2 class="ct-titulo" id="ctTitulo">Categorias</h2>
+            <label class="ct-procura">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+                <input type="search" id="ctProcura" placeholder="Procurar categoria (ex: rato, switch, câmara)" autocomplete="off" aria-label="Procurar categoria">
+                <kbd>Esc</kbd>
+            </label>
+            <button type="button" class="ct-fechar" data-fechar-categorias aria-label="Fechar">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg>
+            </button>
+        </div>
+    </div>
+    <div class="ct-corpo">
+        <div class="ct-grelha" id="ctGrelha">
+            <% hcCatalogo.forEach(function (r, i) { %>
+            <section class="ct-grupo" style="--i:<%= i %>" data-ct-grupo data-txt="<%= (r.name + ' ' + r.children.map(function (c) { return c.name; }).join(' ')).toLowerCase() %>">
+                <a href="/<%= r.slug %>" class="ct-raiz" data-ct-item data-txt="<%= r.name.toLowerCase() %>">
+                    <span class="ct-raiz-img"><% if (r.image) { %><img src="<%= r.image %>" alt="" loading="lazy"><% } %></span>
+                    <span class="ct-raiz-txt"><b><%= r.name %></b><small><%= r.count %> <%= r.count === 1 ? 'produto' : 'produtos' %></small></span>
+                    <svg class="ct-seta" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+                </a>
+                <% if (r.children.length) { %>
+                <ul class="ct-subs">
+                    <% r.children.forEach(function (c) { %>
+                    <li data-ct-item data-txt="<%= c.name.toLowerCase() %>"><a href="/<%= c.slug %>"><span><%= c.name %></span><em><%= c.count %></em></a></li>
+                    <% }) %>
+                </ul>
+                <% } %>
+            </section>
+            <% }) %>
+        </div>
+        <div class="ct-vazio" id="ctVazio" hidden>
+            <strong>Nenhuma categoria com "<span id="ctVazioTermo"></span>"</strong>
+            <span>Experimente procurar nos produtos.</span>
+            <a href="/pesquisa" id="ctVazioLink" class="ct-vazio-btn">Pesquisar produtos</a>
+        </div>
+    </div>
+</div>
 
 <style>
     .hc { position:sticky; top:0; z-index:1000; background:#fff; border-bottom:1px solid #e6e6ea; }
     .hc-row { display:flex; align-items:center; gap:28px; height:86px; padding:0 32px; max-width:1920px; margin:0 auto; }
     .hc-logo { flex:0 0 auto; display:flex; align-items:center; }
     .hc-logo img { height:46px; width:auto; display:block; }
+    .hc-logo-completo img { height:56px; mix-blend-mode:multiply; }
     .hc-search { flex:0 1 560px; min-width:200px; position:relative; }
     .hc-search i { position:absolute; left:18px; top:50%; transform:translateY(-50%); font-size:19px; color:#555; pointer-events:none; }
     .hc-search input { width:100%; height:52px; border:1px solid #d9d9df; border-radius:999px; padding:0 20px 0 50px; font-size:16px; color:#1a1a2e; background:#fff; outline:none; transition:border-color .15s, box-shadow .15s; }
     .hc-search input:focus { border-color:#F57C00; box-shadow:0 0 0 3px rgba(245,124,0,.15); }
     .hc-search input::-webkit-search-cancel-button { -webkit-appearance:none; }
     .hc-nav { flex:1 1 auto; display:flex; align-items:center; justify-content:flex-end; gap:30px; white-space:nowrap; }
-    .hc-nav > a, .hc-drop-btn { font-size:17px; font-weight:500; color:#1a1a2e; text-decoration:none; background:none; border:0; padding:0; cursor:pointer; display:inline-flex; align-items:center; gap:6px; }
+    .hc-nav > a, .hc-drop-btn, .hc-cat-btn { font-size:17px; font-weight:500; color:#1a1a2e; text-decoration:none; background:none; border:0; padding:0; cursor:pointer; display:inline-flex; align-items:center; gap:6px; }
     .hc-nav > a:hover, .hc-drop-btn:hover { color:#F57C00; text-decoration:none; }
     .hc-sale { color:#e53935 !important; }
     .hc-drop { position:relative; }
@@ -104,7 +143,7 @@
     @media (max-width: 1399.98px) {
         .hc-row { gap:20px; padding:0 20px; }
         .hc-nav { gap:20px; }
-        .hc-nav > a, .hc-drop-btn { font-size:15px; }
+        .hc-nav > a, .hc-drop-btn, .hc-cat-btn { font-size:15px; }
     }
     @media (max-width: 1199.98px) {
         .hc-nav { display:none; }
@@ -131,13 +170,95 @@
         .hc-search input { height:42px; font-size:14px; padding-left:42px; }
         .hc-search i { left:16px; font-size:16px; }
         .hc-nav { gap:22px; }
-        .hc-nav > a, .hc-drop-btn { font-size:14px; }
+        .hc-nav > a, .hc-drop-btn, .hc-cat-btn { font-size:14px; }
         .hc-actions { gap:12px; }
         .hc-icon { width:34px; height:34px; font-size:19px; }
         .hc-enter { height:40px; padding:0 18px; font-size:14px; }
         .hc-enter i { font-size:15px; }
         .hc-drop-menu { top:calc(100% + 14px); }
     }
+    /* Logótipo completo (página inicial) */
+    .hc .hc-logo-completo img { height:50px; mix-blend-mode:normal; }
+    .hc .hc-logo-completo .hc-l-ico { display:none; }
+
+    /* Botões do menu com ícone */
+    /* Itens do menu: todos iguais (texto); "Categorias" com ícone pequeno de grelha */
+    .hc-cat-btn { display:inline-flex; align-items:center; gap:7px; height:auto; padding:0; border:0; background:none; color:inherit; font-family:inherit; font-weight:500; cursor:pointer; line-height:inherit; letter-spacing:inherit; }
+    .hc.hc-tema .hc-cat-btn { color:#fff; }
+    .hc-cat-btn:hover { opacity:.8; }
+    .hc-cat-btn svg { width:.9em; height:.9em; flex:0 0 .9em; position:relative; top:-.3em; }
+    .hc-ajuda svg { display:none; }
+    .hc-mobile-cat { display:flex; align-items:center; gap:10px; width:100%; height:46px; margin:6px 0; padding:0 14px; border:0; border-radius:12px; background:#16161d; color:#fff; font-size:15px; font-weight:600; font-family:inherit; cursor:pointer; }
+    .hc-mobile-cat svg { width:18px; height:18px; }
+
+    /* Janela de categorias */
+    .ct { position:fixed; inset:0; z-index:10050; background:#f6f6f8; display:flex; flex-direction:column; animation:ctEntra .22s ease-out; }
+    .ct[hidden] { display:none; }
+    @keyframes ctEntra { from { opacity:0; transform:translateY(12px); } to { opacity:1; transform:none; } }
+    .ct-topo { background:#16161d; padding:18px 0; flex:0 0 auto; }
+    .ct-topo-in { max-width:1200px; margin:0 auto; padding:0 24px; display:flex; align-items:center; gap:20px; }
+    .ct-titulo { color:#fff; font-size:20px; font-weight:600; margin:0; flex:0 0 auto; }
+    .ct-procura { flex:1; position:relative; margin:0; display:flex; align-items:center; }
+    .ct-procura svg { position:absolute; left:18px; width:20px; height:20px; color:#71717a; pointer-events:none; }
+    .ct-procura input { width:100%; height:52px; border:0; border-radius:999px; padding:0 64px 0 50px; font-size:16px; color:#1a1a2e; background:#fff; outline:none; font-family:inherit; box-shadow:0 0 0 0 rgba(245,124,0,0); transition:box-shadow .15s; }
+    .ct-procura input:focus { box-shadow:0 0 0 3px rgba(245,124,0,.45); }
+    .ct-procura input::-webkit-search-cancel-button { -webkit-appearance:none; }
+    .ct-procura kbd { position:absolute; right:16px; font-size:11px; font-family:inherit; color:#71717a; background:#f4f4f7; border-radius:6px; padding:3px 7px; }
+    .ct-fechar { flex:0 0 44px; width:44px; height:44px; border-radius:50%; border:0; background:rgba(255,255,255,.1); color:#fff; display:flex; align-items:center; justify-content:center; cursor:pointer; transition:background .15s; }
+    .ct-fechar:hover { background:rgba(255,255,255,.2); }
+    .ct-fechar svg { width:20px; height:20px; }
+    .ct-corpo { flex:1; overflow-y:auto; overscroll-behavior:contain; }
+    .ct-grelha { max-width:1200px; margin:0 auto; padding:28px 24px 48px; columns:3 300px; column-gap:16px; }
+    .ct-grupo { break-inside:avoid; background:#fff; border:1px solid #ececf0; border-radius:16px; padding:8px; margin-bottom:16px; animation:ctGrupo .35s ease-out both; animation-delay:calc(var(--i) * 40ms); }
+    @keyframes ctGrupo { from { opacity:0; transform:translateY(10px); } to { opacity:1; transform:none; } }
+    .ct-raiz { display:flex; align-items:center; gap:14px; padding:10px; border-radius:12px; color:#1a1a2e !important; text-decoration:none !important; transition:background .15s; }
+    .ct-raiz:hover { background:#f4f4f7; }
+    .ct-raiz-img { width:52px; height:52px; flex:0 0 52px; border-radius:50%; background:#f4f4f7; display:flex; align-items:center; justify-content:center; overflow:hidden; }
+    .ct-raiz-img img { width:70%; height:70%; object-fit:contain; mix-blend-mode:multiply; }
+    .ct-raiz-txt { flex:1; min-width:0; display:flex; flex-direction:column; }
+    .ct-raiz-txt b { font-size:16px; font-weight:600; }
+    .ct-raiz-txt small { font-size:13px; color:#6b7280; }
+    .ct-seta { width:18px; height:18px; color:#a1a1aa; transition:transform .2s, color .2s; }
+    .ct-raiz:hover .ct-seta { transform:translateX(3px); color:#F57C00; }
+    .ct-subs { list-style:none; margin:2px 0 0; padding:6px 0 0; border-top:1px solid #f0f0f3; }
+    .ct-subs a { display:flex; justify-content:space-between; align-items:center; gap:10px; padding:9px 12px; border-radius:10px; font-size:14px; color:#3f3f46 !important; text-decoration:none !important; transition:background .15s, color .15s; }
+    .ct-subs a:hover { background:#f4f4f7; color:#1a1a2e !important; }
+    .ct-subs em { font-style:normal; font-size:12px; color:#a1a1aa; background:#f4f4f7; border-radius:999px; padding:1px 8px; }
+    .ct-subs a:hover em { background:#fff; }
+    .ct mark { background:rgba(245,124,0,.2); color:inherit; border-radius:3px; padding:0 1px; }
+    .ct-vazio { max-width:520px; margin:60px auto; padding:0 24px; text-align:center; display:flex; flex-direction:column; align-items:center; gap:6px; color:#6b7280; }
+    .ct-vazio strong { color:#1a1a2e; font-size:17px; font-weight:600; }
+    .ct-vazio-btn { margin-top:12px; height:46px; padding:0 22px; border-radius:999px; background:#16161d; color:#fff !important; font-weight:600; display:inline-flex; align-items:center; text-decoration:none !important; }
+    @media (max-width: 767.98px) {
+        .ct-topo-in { padding:0 14px; gap:10px; flex-wrap:wrap; }
+        .ct-titulo { flex:1; font-size:18px; }
+        .ct-procura { order:3; flex:1 1 100%; }
+        .ct-procura input { height:48px; }
+        .ct-procura kbd { display:none; }
+        .ct-grelha { padding:18px 14px 40px; columns:1; }
+    }
+    @media (prefers-reduced-motion: reduce) { .ct, .ct-grupo { animation:none; } }
+    @media (max-width: 767.98px) {
+        .hc .hc-logo-completo .hc-l-full { display:none; }
+        .hc .hc-logo-completo .hc-l-ico { display:block; height:36px; }
+    }
+
+    /* Cabeçalho com cor (laranja da marca ou escuro): logótipo e textos a branco */
+    .hc-tema-laranja { --hc-fundo:#F57C00; --hc-linha:#e06f00; --hc-btn:rgba(255,255,255,.18); --hc-btn-hover:rgba(255,255,255,.28); }
+    .hc-tema-escuro { --hc-fundo:#16161d; --hc-linha:#16161d; --hc-btn:rgba(255,255,255,.1); --hc-btn-hover:rgba(255,255,255,.18); }
+    .hc.hc-tema { background:var(--hc-fundo); border-bottom-color:var(--hc-linha); }
+    .hc.hc-tema .hc-logo img { mix-blend-mode:normal; filter:brightness(0) invert(1); }
+    .hc.hc-tema .hc-search input { border-color:transparent; }
+    .hc.hc-tema .hc-search input:focus { box-shadow:0 0 0 3px rgba(255,255,255,.35); border-color:transparent; }
+    .hc.hc-tema .hc-nav > a, .hc.hc-tema .hc-drop-btn, .hc.hc-tema .hc-icon { color:#fff !important; }
+    .hc.hc-tema .hc-nav > a:hover, .hc.hc-tema .hc-drop-btn:hover { color:#fff !important; opacity:.8; }
+    .hc.hc-tema .hc-sale { color:#fff !important; font-weight:600; }
+    .hc-tema-escuro .hc-sale { color:#ff8a3d !important; }
+    .hc.hc-tema .hc-enter, .hc.hc-tema .hc-burger { background:var(--hc-btn); color:#fff !important; }
+    .hc.hc-tema .hc-enter:hover, .hc.hc-tema .hc-burger:hover { background:var(--hc-btn-hover); }
+    .hc-tema-laranja .hc-badge { background:#fff; color:#F57C00; }
+    .hc.hc-tema .hc-icon i, .hc.hc-tema .hc-icon i::before { color:#fff !important; }
+    .hc.hc-tema .hc-mobile { background:#fff; }
 </style>
 
 <script>
@@ -155,6 +276,67 @@
                 if (!drop.contains(e.target)) { drop.classList.remove('is-open'); btn.setAttribute('aria-expanded', 'false'); }
             });
         }
+        // Janela de categorias
+        var ct = document.getElementById('catalogo');
+        if (ct) {
+            var ctIn = document.getElementById('ctProcura');
+            var grupos = ct.querySelectorAll('[data-ct-grupo]');
+            var vazio = document.getElementById('ctVazio');
+            var semAcento = function (t) { return (t || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase(); };
+            ct.querySelectorAll('[data-ct-item] b, [data-ct-item] a > span').forEach(function (el) { el.setAttribute('data-orig', el.textContent); });
+            var marcar = function (el, termo) {
+                var orig = el.getAttribute('data-orig');
+                if (!termo) { el.textContent = orig; return; }
+                var i = semAcento(orig).indexOf(termo);
+                if (i < 0) { el.textContent = orig; return; }
+                el.innerHTML = '';
+                el.appendChild(document.createTextNode(orig.slice(0, i)));
+                var m = document.createElement('mark'); m.textContent = orig.slice(i, i + termo.length); el.appendChild(m);
+                el.appendChild(document.createTextNode(orig.slice(i + termo.length)));
+            };
+            var filtrar = function () {
+                var t = semAcento(ctIn.value.trim());
+                var algum = false;
+                grupos.forEach(function (g) {
+                    var raiz = g.querySelector('.ct-raiz');
+                    var raizBate = !t || semAcento(raiz.getAttribute('data-txt')).indexOf(t) >= 0;
+                    var subsVisiveis = 0;
+                    g.querySelectorAll('li[data-ct-item]').forEach(function (li) {
+                        var ok = !t || raizBate || semAcento(li.getAttribute('data-txt')).indexOf(t) >= 0;
+                        li.hidden = !ok; if (ok) subsVisiveis++;
+                        marcar(li.querySelector('a > span'), t);
+                    });
+                    marcar(raiz.querySelector('b'), t);
+                    var mostra = raizBate || subsVisiveis > 0;
+                    g.hidden = !mostra; if (mostra) algum = true;
+                });
+                vazio.hidden = algum;
+                if (!algum) {
+                    document.getElementById('ctVazioTermo').textContent = ctIn.value.trim();
+                    document.getElementById('ctVazioLink').href = '/pesquisa?q=' + encodeURIComponent(ctIn.value.trim());
+                }
+            };
+            var abrirCt = function () {
+                ct.hidden = false;
+                document.documentElement.style.overflow = 'hidden';
+                ctIn.value = ''; filtrar();
+                setTimeout(function () { ctIn.focus(); }, 50);
+            };
+            var fecharCt = function () { ct.hidden = true; document.documentElement.style.overflow = ''; };
+            document.querySelectorAll('[data-abrir-categorias]').forEach(function (b) { b.addEventListener('click', abrirCt); });
+            ct.querySelectorAll('[data-fechar-categorias]').forEach(function (b) { b.addEventListener('click', fecharCt); });
+            ctIn.addEventListener('input', filtrar);
+            ctIn.addEventListener('keydown', function (e) {
+                // Enter abre a primeira categoria encontrada
+                if (e.key === 'Enter') {
+                    var primeiro = Array.prototype.find.call(ct.querySelectorAll('.ct-raiz, li[data-ct-item] a'), function (a) { return a.offsetParent !== null && (!ctIn.value.trim() || a.querySelector('mark')); });
+                    if (primeiro) location.href = primeiro.getAttribute('href');
+                    else if (ctIn.value.trim()) location.href = '/pesquisa?q=' + encodeURIComponent(ctIn.value.trim());
+                }
+            });
+            document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && !ct.hidden) fecharCt(); });
+        }
+
         var burger = document.querySelector('.hc-burger');
         var painel = document.querySelector('.hc-mobile');
         if (burger && painel) {

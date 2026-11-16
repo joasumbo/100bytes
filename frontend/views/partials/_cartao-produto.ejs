@@ -1,0 +1,36 @@
+<%#
+  Cartão de produto (listagens, pesquisa e página inicial). Estilos em /css/listagem.css.
+  Recebe: product, i (posição, para a animação em cascata)
+%>
+<% var cpUrl = '/' + (product.categorySlug || 'produto') + '/' + product.urlKey; var cpI = typeof i === 'number' ? i : 0; %>
+<li class="pc" style="--i:<%= Math.min(cpI, 12) %>">
+    <a href="<%= cpUrl %>" class="pc-foto">
+        <% if (product.image) { %>
+        <img class="pc-img" src="<%= product.image %>" alt="<%= product.name %>" loading="<%= cpI < 8 ? 'eager' : 'lazy' %>">
+        <% if (product.image2) { %><img class="pc-img2" src="<%= product.image2 %>" alt="" loading="lazy"><% } %>
+        <% } %>
+        <span class="pc-selos">
+            <% if (product.discountPct) { %><span class="pc-selo pc-desc">-<%= product.discountPct %>%</span><% } %>
+            <% if (product.isNew) { %><span class="pc-selo">Novo</span><% } else if (product.lowStock) { %><span class="pc-selo pc-pouco">Últimas unidades</span><% } %>
+        </span>
+    </a>
+    <button type="button" class="pc-fav js-favorite-toggle" aria-label="Guardar nos favoritos"
+        data-product-id="<%= product.id %>" data-product-name="<%= product.name %>" data-product-image="<%= product.image || '' %>"
+        data-product-price="<%= product.salePrice || product.basePrice || '' %>" data-product-url="<%= cpUrl %>"><i class="far fa-heart"></i></button>
+    <div class="pc-info">
+        <span class="pc-meta"><%= product.brand ? product.brand.name : (product.category || '') %></span>
+        <a href="<%= cpUrl %>" class="pc-nome"><%= product.name %></a>
+        <div class="pc-baixo">
+            <span class="pc-preco">
+                <% if (product.salePrice) { %><b><%= product.salePrice %></b><s><%= product.basePrice %></s><% } else { %><b><%= product.basePrice %></b><% } %>
+            </span>
+            <button type="button" class="pc-carrinho js-add-to-cart" data-cart-style="card" aria-label="Adicionar ao carrinho"
+                data-id="<%= product.id %>" data-name="<%= product.name %>"
+                data-price="<%= product.salePriceValue != null ? product.salePriceValue : product.basePriceValue %>"
+                data-price-formatted="<%= product.salePrice || product.basePrice %>"
+                data-image="<%= product.image || '' %>" data-url="<%= cpUrl %>">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><path d="M3 6h18"/><path d="M12 10v6M9 13h6"/></svg>
+            </button>
+        </div>
+    </div>
+</li>

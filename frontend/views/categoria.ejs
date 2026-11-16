@@ -19,8 +19,6 @@ const __heading = __pageTitle || (__category ? __category.name : 'Produtos');
     <link rel="shortcut icon" href="https://cdn.100bytes.co.ao/logo/100byte_fav.png">
     <link rel="icon" type="image/png" href="https://cdn.100bytes.co.ao/logo/100byte_fav.png">
 
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-
     <link rel="stylesheet" href="/assets/vendor/font-awesome/css/fontawesome-all.min.css">
     <link rel="stylesheet" href="/assets/css/font-electro.css">
     <link rel="stylesheet" href="/assets/vendor/animate.css/animate.min.css">
@@ -31,6 +29,8 @@ const __heading = __pageTitle || (__category ? __category.name : 'Produtos');
     <link rel="stylesheet" href="/assets/vendor/bootstrap-select/dist/css/bootstrap-select.min.css">
     <link rel="stylesheet" href="/assets/css/theme.css">
 
+    <link rel="stylesheet" href="/css/loja.css">
+    <link rel="stylesheet" href="/css/listagem.css">
     <style>
         :root {
             --brand-primary: #F57C00;
@@ -163,182 +163,257 @@ const __heading = __pageTitle || (__category ? __category.name : 'Produtos');
     <link rel="preload" href="/fonts/dm-sans-latin.woff2" as="font" type="font/woff2" crossorigin>
         <link rel="stylesheet" href="/css/fonte.css">
 </head>
-<body>
+<body class="lj">
 
-<%- include('partials/_header') %>
+<%- include('partials/_header-compacto') %>
 
-<main id="content" role="main" class="pt-3">
+<%
+/* ── Dados da listagem (categoria, pesquisa, novidades, mais vendidos) ── */
+var lsQ = (typeof searchQuery !== 'undefined' && searchQuery !== null) ? String(searchQuery) : null;
+var lsPesquisa = lsQ !== null;
+var lsUniverso = (typeof universo !== 'undefined' && universo && universo.length) ? universo : __products;
+var lsF = __currentFilters;
+var lsTotal = __pagination && __pagination.total ? __pagination.total : __products.length;
+
+// endereço com filtros alterados (mantém os restantes)
+function lsUrl(mudar) {
+    var p = {};
+    if (lsPesquisa && lsQ) p.q = lsQ;
+    ['categoria', 'sort', 'minPrice', 'maxPrice', 'brandId', 'marca'].forEach(function (k) { if (lsF[k]) p[k] = lsF[k]; });
+    Object.keys(mudar || {}).forEach(function (k) { if (mudar[k] === null || mudar[k] === '') delete p[k]; else p[k] = mudar[k]; });
+    var qs = Object.keys(p).map(function (k) { return encodeURIComponent(k) + '=' + encodeURIComponent(p[k]); }).join('&');
+    return qs ? '?' + qs : '?';
+}
+function lsKz(v) { return Number(v).toLocaleString('pt-PT', { maximumFractionDigits: 0 }) + ' Kz'; }
+
+// marcas presentes (com contagem)
+var lsMarcasMap = {};
+// (os resultados da pesquisa trazem só o nome da marca: o id vem da lista de marcas)
+lsUniverso.forEach(function (p) {
+    if (!p.brand || !p.brand.name) return;
+    // na pesquisa a marca filtra-se pelo nome; na categoria pelo id
+    var id = lsPesquisa ? p.brand.name : p.brand.id;
+    if (!id) return;
+    lsMarcasMap[id] = lsMarcasMap[id] || { id: id, name: p.brand.name, n: 0 };
+    lsMarcasMap[id].n++;
+});
+var lsMarcas = Object.keys(lsMarcasMap).map(function (k) { return lsMarcasMap[k]; }).sort(function (a, b) { return b.n - a.n || a.name.localeCompare(b.name); });
+var lsParamMarca = lsPesquisa ? 'marca' : 'brandId';
+var lsMarcaSel = lsF[lsParamMarca] || null;
+var lsMarcaAtiva = lsMarcaSel ? (lsMarcasMap[lsMarcaSel] || (__brands.find(function (b) { return b.id === lsMarcaSel; }) || { name: lsMarcaSel })) : null;
+function lsMarcaUrl(v) { var o = { page: null }; o[lsParamMarca] = v; return lsUrl(o); }
+
+// faixas de preço (só as que têm produtos)
+var lsPreco = function (p) { return p.salePriceValue != null ? p.salePriceValue : p.basePriceValue; };
+var lsFaixas = [
+    { label: 'Até 25 000 Kz', min: '', max: 25000 },
+    { label: '25 000 a 100 000 Kz', min: 25000, max: 100000 },
+    { label: '100 000 a 300 000 Kz', min: 100000, max: 300000 },
+    { label: 'Mais de 300 000 Kz', min: 300000, max: '' },
+].map(function (f) {
+    f.n = lsUniverso.filter(function (p) { var v = lsPreco(p); return (f.min === '' || v >= f.min) && (f.max === '' || v <= f.max); }).length;
+    f.on = String(lsF.minPrice || '') === String(f.min) && String(lsF.maxPrice || '') === String(f.max);
+    return f;
+}).filter(function (f) { return f.n > 0; });
+
+// categorias dos resultados (pesquisa) ou subcategorias (categoria)
+var lsCats = [];
+if (lsPesquisa && lsQ) {
+    var m = {};
+    lsUniverso.forEach(function (p) { if (p.categorySlug) { m[p.categorySlug] = m[p.categorySlug] || { slug: p.categorySlug, name: p.category, n: 0 }; m[p.categorySlug].n++; } });
+    lsCats = Object.keys(m).map(function (k) { return m[k]; }).sort(function (a, b) { return b.n - a.n; }).slice(0, 10);
+} else if (__category && __category.children && __category.children.length) {
+    lsCats = __category.children.map(function (c) { return { slug: c.slug, name: c.name, n: (c._count && c._count.products) || 0, link: '/' + c.slug }; }).filter(function (c) { return c.n > 0; });
+}
+
+var lsOrdens = [
+    { v: '', label: 'Relevância' },
+    { v: 'newest', label: 'Mais recentes' },
+    { v: 'price_asc', label: 'Preço mais baixo' },
+    { v: 'price_desc', label: 'Preço mais alto' },
+];
+var lsAtivos = [];
+if (lsF.categoria) lsAtivos.push({ label: (lsCats.find(function (c) { return c.slug === lsF.categoria; }) || { name: lsF.categoria }).name, url: lsUrl({ categoria: null, page: null }) });
+if (lsMarcaAtiva) lsAtivos.push({ label: lsMarcaAtiva.name, url: lsMarcaUrl(null) });
+if (lsF.minPrice || lsF.maxPrice) lsAtivos.push({ label: (lsF.minPrice ? lsKz(lsF.minPrice) : '0 Kz') + ' – ' + (lsF.maxPrice ? lsKz(lsF.maxPrice) : 'mais'), url: lsUrl({ minPrice: null, maxPrice: null }) });
+var lsCatalogoTop = (typeof catalogo !== 'undefined' && catalogo ? catalogo : []).slice(0, 6);
+%>
+<main id="content" role="main" class="ls-main">
     <div class="container">
-        <nav aria-label="breadcrumb" class="mb-3">
-            <ol class="breadcrumb breadcrumb-no-gutter font-size-12">
-                <li class="breadcrumb-item"><a href="/">Inicio</a></li>
-                <li class="breadcrumb-item active" aria-current="page"><%= __heading %></li>
-            </ol>
-        </nav>
 
-        <div class="mb-4">
-            <h1 class="font-size-25 mb-1"><%= __heading %></h1>
-            <p class="text-gray-6 font-size-13 mb-0"><%= __pagination && __pagination.total ? __pagination.total : 0 %> produto(s) encontrado(s)</p>
+        <% if (lsPesquisa) { %>
+        <!-- Pesquisa: barra grande -->
+        <section class="ls-pesq">
+            <form class="ls-pesq-form" action="/pesquisa" method="GET" role="search">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+                <input type="search" name="q" value="<%= lsQ %>" placeholder="O que procura? Ex: rato sem fios, switch 24 portas, HP" aria-label="Pesquisar produtos" autocomplete="off" <%= lsQ ? '' : 'autofocus' %>>
+                <button type="submit" class="ls-pesq-btn">Pesquisar</button>
+            </form>
+            <% if (lsQ) { %>
+            <p class="ls-pesq-res"><b class="ls-num" data-num="<%= lsTotal %>"><%= lsTotal %></b> <%= lsTotal === 1 ? 'resultado' : 'resultados' %> para <span class="ls-termo">"<%= lsQ %>"</span></p>
+            <% } %>
+        </section>
+        <% } else { %>
+        <div class="lj-topo ls-topo">
+            <nav class="lj-trilho" aria-label="Caminho">
+                <a href="/">Início</a><span class="sep">/</span>
+                <% if (__category && __category.parent) { %><a href="/<%= __category.parent.slug %>"><%= __category.parent.name %></a><span class="sep">/</span><% } %>
+                <span><%= __heading %></span>
+            </nav>
+            <h1 class="lj-titulo"><%= __heading %></h1>
+            <p class="lj-sub"><%= lsTotal %> <%= lsTotal === 1 ? 'produto' : 'produtos' %></p>
         </div>
+        <% } %>
 
-        <div class="row mb-8">
-            <aside class="col-lg-3 mb-6 mb-lg-0">
-                <div class="border border-color-1 rounded mb-4">
-                    <div class="p-3 bg-gray-1 border-bottom"><strong class="font-size-15">Categorias</strong></div>
-                    <ul class="list-unstyled mb-0 p-3">
-                        <% __categories.forEach(function(cat) { %>
-                        <li class="mb-2">
-                            <a href="/<%= cat.slug %>" class="text-gray-90"><%= cat.name %></a>
-                        </li>
-                        <% }) %>
-                    </ul>
+        <% if (lsCats.length) { %>
+        <div class="ls-chips" aria-label="<%= lsPesquisa ? 'Filtrar por categoria' : 'Subcategorias' %>">
+            <% if (lsPesquisa) { %>
+            <a href="<%= lsUrl({ categoria: null, page: null }) %>" class="ls-chip<%= !lsF.categoria ? ' on' : '' %>">Todas</a>
+            <% } %>
+            <% lsCats.forEach(function (c) { %>
+            <a href="<%= c.link || lsUrl({ categoria: c.slug, page: null }) %>" class="ls-chip<%= lsF.categoria === c.slug ? ' on' : '' %>"><%= c.name %> <em><%= c.n %></em></a>
+            <% }) %>
+        </div>
+        <% } %>
+
+        <% if (!lsPesquisa || lsQ) { %>
+        <div class="ls-corpo">
+            <!-- Filtros -->
+            <aside class="ls-filtros" id="lsFiltros" aria-label="Filtros">
+                <div class="ls-filtros-topo">
+                    <strong>Filtros</strong>
+                    <button type="button" class="ls-fechar" data-ls-fechar aria-label="Fechar filtros"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
                 </div>
 
-                <form method="GET" class="border border-color-1 rounded p-3">
-                    <div class="mb-4">
-                        <label class="font-size-14 font-weight-bold mb-2 d-block">Ordenar</label>
-                        <select name="sort" class="form-control form-control-sm">
-                            <option value="" <%= !__currentFilters.sort ? 'selected' : '' %>>Relevancia</option>
-                            <option value="newest" <%= __currentFilters.sort === 'newest' ? 'selected' : '' %>>Mais recentes</option>
-                            <option value="price_asc" <%= __currentFilters.sort === 'price_asc' ? 'selected' : '' %>>Preco: menor para maior</option>
-                            <option value="price_desc" <%= __currentFilters.sort === 'price_desc' ? 'selected' : '' %>>Preco: maior para menor</option>
-                        </select>
-                    </div>
-
-                    <div class="mb-4">
-                        <label class="font-size-14 font-weight-bold mb-2 d-block">Preco</label>
-                        <div class="row">
-                            <div class="col-6 pr-1">
-                                <input type="number" min="0" name="minPrice" class="form-control form-control-sm" placeholder="Min" value="<%= __currentFilters.minPrice || '' %>">
-                            </div>
-                            <div class="col-6 pl-1">
-                                <input type="number" min="0" name="maxPrice" class="form-control form-control-sm" placeholder="Max" value="<%= __currentFilters.maxPrice || '' %>">
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="mb-4">
-                        <label class="font-size-14 font-weight-bold mb-2 d-block">Marca</label>
-                        <select name="brandId" class="form-control form-control-sm">
-                            <option value="">Todas as marcas</option>
-                            <% __brands.forEach(function(brand) { %>
-                            <option value="<%= brand.id %>" <%= __currentFilters.brandId === brand.id ? 'selected' : '' %>><%= brand.name %></option>
-                            <% }) %>
-                        </select>
-                    </div>
-
-                    <button type="submit" class="btn btn-primary btn-sm btn-block">Aplicar filtros</button>
-                </form>
-
-                <% if (__topProducts.length) { %>
-                <div class="border border-color-1 rounded mt-4">
-                    <div class="p-3 bg-gray-1 border-bottom"><strong class="font-size-15">Mais vistos</strong></div>
-                    <div class="p-3">
-                        <% __topProducts.forEach(function(p) { %>
-                        <div class="media mb-3">
-                            <a href="/<%= p.categorySlug %>/<%= p.urlKey %>" class="d-block mr-3">
-                                <img src="<%= p.image || 'https://cdn.100bytes.co.ao/logo/logo-1752749442.jpg' %>" alt="<%= p.name %>" style="width:58px;height:58px;object-fit:cover;border:1px solid #eee;border-radius:4px;">
-                            </a>
-                            <div class="media-body">
-                                <a href="/<%= p.categorySlug %>/<%= p.urlKey %>" class="text-gray-90 font-size-13 d-block"><%= p.name %></a>
-                                <span class="font-size-14 font-weight-bold text-gray-90"><%= p.salePrice || p.basePrice %></span>
-                            </div>
-                        </div>
+                <% if (lsMarcas.length) { %>
+                <div class="ls-bloco">
+                    <p class="ls-bloco-tit">Marca</p>
+                    <ul class="ls-opcoes<%= lsMarcas.length > 6 ? ' ls-longa' : '' %>">
+                        <% lsMarcas.forEach(function (b, i) { var on = lsMarcaSel === b.id; %>
+                        <li<%- i >= 6 ? ' class="ls-extra"' : '' %>><a href="<%= lsMarcaUrl(on ? null : b.id) %>" class="ls-opcao<%= on ? ' on' : '' %>" role="checkbox" aria-checked="<%= on %>"><span class="ls-caixa"></span><span class="ls-opcao-txt"><%= b.name %></span><em><%= b.n %></em></a></li>
                         <% }) %>
-                    </div>
+                    </ul>
+                    <% if (lsMarcas.length > 6) { %><button type="button" class="ls-mais" data-ls-mais>Ver mais <%= lsMarcas.length - 6 %></button><% } %>
                 </div>
                 <% } %>
-            </aside>
 
-            <section class="col-lg-9">
-                <div class="row mb-3 d-flex align-items-center">
-                    <div class="col-md-6 mb-2 mb-md-0 text-gray-6 font-size-13">
-                        Pagina <%= (__pagination && __pagination.page) ? __pagination.page : 1 %> de <%= (__pagination && __pagination.pages) ? __pagination.pages : 1 %>
-                    </div>
+                <div class="ls-bloco">
+                    <p class="ls-bloco-tit">Preço</p>
+                    <ul class="ls-opcoes">
+                        <% lsFaixas.forEach(function (f) { %>
+                        <li><a href="<%= lsUrl(f.on ? { minPrice: null, maxPrice: null, page: null } : { minPrice: f.min, maxPrice: f.max, page: null }) %>" class="ls-opcao ls-radio<%= f.on ? ' on' : '' %>" role="radio" aria-checked="<%= f.on %>"><span class="ls-caixa"></span><span class="ls-opcao-txt"><%= f.label %></span><em><%= f.n %></em></a></li>
+                        <% }) %>
+                    </ul>
+                    <form method="GET" class="ls-intervalo">
+                        <% if (lsPesquisa && lsQ) { %><input type="hidden" name="q" value="<%= lsQ %>"><% } %>
+                        <% if (lsF.categoria) { %><input type="hidden" name="categoria" value="<%= lsF.categoria %>"><% } %>
+                        <% if (lsF.sort) { %><input type="hidden" name="sort" value="<%= lsF.sort %>"><% } %>
+                        <% if (lsF.brandId) { %><input type="hidden" name="brandId" value="<%= lsF.brandId %>"><% } %>
+                        <% if (lsF.marca) { %><input type="hidden" name="marca" value="<%= lsF.marca %>"><% } %>
+                        <input type="number" min="0" name="minPrice" class="lj-input" placeholder="Mín." value="<%= lsF.minPrice || '' %>" aria-label="Preço mínimo">
+                        <span>–</span>
+                        <input type="number" min="0" name="maxPrice" class="lj-input" placeholder="Máx." value="<%= lsF.maxPrice || '' %>" aria-label="Preço máximo">
+                        <button type="submit" class="ls-ir" aria-label="Aplicar preço"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>
+                    </form>
                 </div>
 
-                <ul class="row list-unstyled products-group no-gutters">
-                    <% if (__products.length) { %>
-                    <% __products.forEach(function(product) { %>
-                    <li class="col-6 col-md-4 col-xl-3 product-item">
-                        <div class="product-item__outer h-100">
-                            <div class="product-item__inner px-xl-4 p-3">
-                                <div class="product-item__body pb-xl-2">
-                                        <% if (product.category) { %>
-                                        <div class="mb-2"><a href="/<%= product.categorySlug || 'produto' %>" class="font-size-12 text-gray-5"><%= product.category %></a></div>
-                                        <% } %>
-                                        <h5 class="mb-1 product-item__title">
-                                            <a href="/<%= product.categorySlug || 'produto' %>/<%= product.urlKey %>" class="text-blue font-weight-bold"><%= product.name %></a>
-                                        </h5>
-                                        <div class="mb-2 position-relative">
-                                            <a href="/<%= product.categorySlug || 'produto' %>/<%= product.urlKey %>" class="product-img-wrap">
-                                                <% if (product.image) { %>
-                                                <img class="product-img-primary" src="<%= product.image %>" alt="<%= product.name %>">
-                                                <img class="product-img-hover" src="<%= product.image2 || product.image %>" alt="<%= product.name %>">
-                                                <% } else { %>
-                                                <img class="product-img-primary" src="https://cdn.100bytes.co.ao/logo/logo-1752749442.jpg" alt="<%= product.name %>">
-                                                <% } %>
-                                            </a>
-                                            <% if (product.discountPct) { %><span style="position:absolute;top:8px;left:8px;background:#ffc107;color:#212529;font-size:11px;font-weight:700;padding:3px 8px;border-radius:20px;z-index:2;line-height:1.5;pointer-events:none">-<%= product.discountPct %>%</span><% } %>
-                                            <% if (product.isNew) { %><span style="position:absolute;top:8px;right:8px;background:#28a745;color:#fff;font-size:10px;font-weight:700;padding:3px 7px;border-radius:20px;z-index:2;line-height:1.5;pointer-events:none">NOVO</span><% } else if (product.lowStock) { %><span style="position:absolute;top:8px;right:8px;background:#fd7e14;color:#fff;font-size:10px;font-weight:600;padding:3px 7px;border-radius:20px;z-index:2;line-height:1.5;pointer-events:none">Aproveite agora</span><% } %>
-                                        </div>
-                                        <div class="flex-center-between mb-1">
-                                            <div class="prodcut-price">
-                                                <% if (product.salePrice) { %>
-                                                <div class="d-flex align-items-center flex-wrap position-relative">
-                                                    <ins class="font-size-20 text-red text-decoration-none mr-2"><%= product.salePrice %></ins>
-                                                    <del class="font-size-12 tex-gray-6 position-absolute bottom-100"><%= product.basePrice %></del>
-                                                </div>
-                                                <% } else { %>
-                                                <div class="text-gray-100"><%= product.basePrice %></div>
-                                                <% } %>
-                                            </div>
-                                            <div class="prodcut-add-cart">
-                                                <button type="button" class="btn-add-cart btn-primary transition-3d-hover js-add-to-cart" data-cart-style="card"
-                                                    data-id="<%= product.id %>"
-                                                    data-name="<%= product.name %>"
-                                                    data-price="<%= product.salePriceValue != null ? product.salePriceValue : product.basePriceValue %>"
-                                                    data-price-formatted="<%= product.salePrice || product.basePrice %>"
-                                                    data-image="<%= product.image || '' %>"
-                                                    data-url="/<%= product.categorySlug || 'produto' %>/<%= product.urlKey %>"><i class="ec ec-add-to-cart"></i></button>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="product-item__footer">
-                                    <div class="border-top pt-2 flex-center-between flex-wrap">
-                                        <a href="#" class="text-gray-6 font-size-13 js-favorite-toggle"
-                                            data-product-id="<%= product.id %>"
-                                            data-product-name="<%= product.name %>"
-                                            data-product-image="<%= product.image || '' %>"
-                                            data-product-price="<%= product.salePrice || product.basePrice || '' %>"
-                                            data-product-url="/<%= product.categorySlug || 'produto' %>/<%= product.urlKey %>">
-                                            <i class="far fa-heart mr-1 font-size-15"></i> <span data-fav-label>Adicionar à lista de desejos</span></a>
-                                    </div>
-                                </div>
-                            </div>
-                    </li>
+                <% if (!lsPesquisa && __topProducts.length) { %>
+                <div class="ls-bloco">
+                    <p class="ls-bloco-tit">Acabados de chegar</p>
+                    <% __topProducts.slice(0, 4).forEach(function (p) { %>
+                    <a href="/<%= p.categorySlug %>/<%= p.urlKey %>" class="ls-mini">
+                        <span class="ls-mini-foto"><% if (p.image) { %><img src="<%= p.image %>" alt="" loading="lazy"><% } %></span>
+                        <span class="ls-mini-txt"><span><%= p.name %></span><b><%= p.salePrice || p.basePrice %></b></span>
+                    </a>
                     <% }) %>
-                    <% } else { %>
-                    <li class="col-12">
-                        <div class="alert alert-light border">Nenhum produto encontrado com os filtros selecionados.</div>
-                    </li>
-                    <% } %>
+                </div>
+                <% } %>
+
+                <div class="ls-filtros-pe">
+                    <a href="<%= lsUrl({ brandId: null, marca: null, minPrice: null, maxPrice: null, categoria: null, page: null }) %>" class="lj-btn lj-btn-linha">Limpar</a>
+                    <button type="button" class="lj-btn lj-btn-escuro" data-ls-fechar>Ver <%= lsTotal %> produtos</button>
+                </div>
+            </aside>
+            <div class="ls-veu" data-ls-fechar></div>
+
+            <!-- Resultados -->
+            <section class="ls-res">
+                <div class="ls-barra">
+                    <button type="button" class="ls-btn-filtros" data-ls-abrir>
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 6h16M7 12h10M10 18h4"/></svg>
+                        Filtros<% if (lsAtivos.length) { %> <em><%= lsAtivos.length %></em><% } %>
+                    </button>
+                    <div class="ls-ordem" role="tablist" aria-label="Ordenar">
+                        <% lsOrdens.forEach(function (o) { var on = (lsF.sort || '') === o.v; %>
+                        <a href="<%= lsUrl({ sort: o.v || null, page: null }) %>" class="ls-ordem-op<%= on ? ' on' : '' %>" role="tab" aria-selected="<%= on %>"><%= o.label %></a>
+                        <% }) %>
+                    </div>
+                    <select class="ls-ordem-sel lj-input" aria-label="Ordenar" onchange="location.href=this.value">
+                        <% lsOrdens.forEach(function (o) { %><option value="<%= lsUrl({ sort: o.v || null, page: null }) %>" <%= (lsF.sort || '') === o.v ? 'selected' : '' %>><%= o.label %></option><% }) %>
+                    </select>
+                </div>
+
+                <% if (lsAtivos.length) { %>
+                <div class="ls-ativos">
+                    <% lsAtivos.forEach(function (a) { %>
+                    <a href="<%= a.url %>" class="ls-ativo"><%= a.label %><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg></a>
+                    <% }) %>
+                    <a href="<%= lsUrl({ brandId: null, marca: null, minPrice: null, maxPrice: null, categoria: null, page: null }) %>" class="ls-limpar">Limpar tudo</a>
+                </div>
+                <% } %>
+
+                <% if (__products.length) { %>
+                <ul class="ls-grelha">
+                    <% __products.forEach(function (product, i) { %>
+                    <%- include('partials/_cartao-produto', { product: product, i: i }) %>
+                    <% }) %>
                 </ul>
+                <% } else { %>
+                <div class="ls-vazio">
+                    <div class="ls-vazio-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/><path d="M8.5 11h5"/></svg></div>
+                    <strong><%= lsPesquisa ? 'Não encontrámos "' + lsQ + '"' : 'Sem produtos com estes filtros' %></strong>
+                    <span><%= lsPesquisa ? 'Verifique a ortografia ou use palavras mais gerais (ex: "rato" em vez do modelo exato).' : 'Experimente retirar algum filtro.' %></span>
+                    <% if (lsAtivos.length) { %><a href="<%= lsUrl({ brandId: null, marca: null, minPrice: null, maxPrice: null, categoria: null, page: null }) %>" class="lj-btn lj-btn-escuro" style="margin-top:14px;">Limpar filtros</a><% } %>
+                    <% if (lsCatalogoTop.length) { %>
+                    <p class="ls-vazio-sub">Ou explore uma categoria</p>
+                    <div class="ls-chips ls-chips-centro">
+                        <% lsCatalogoTop.forEach(function (c) { %><a href="/<%= c.slug %>" class="ls-chip"><%= c.name %> <em><%= c.count %></em></a><% }) %>
+                    </div>
+                    <% } %>
+                </div>
+                <% } %>
 
                 <% if (__pagination && __pagination.pages > 1) { %>
-                <nav aria-label="Paginacao" class="d-flex justify-content-center mt-2">
-                    <ul class="pagination">
-                        <% for (let i = 1; i <= __pagination.pages; i++) { %>
-                        <li class="page-item <%= __pagination.page === i ? 'active' : '' %>">
-                            <a class="page-link" href="?page=<%= i %><%= __currentFilters.sort ? '&sort=' + encodeURIComponent(__currentFilters.sort) : '' %><%= __currentFilters.minPrice ? '&minPrice=' + encodeURIComponent(__currentFilters.minPrice) : '' %><%= __currentFilters.maxPrice ? '&maxPrice=' + encodeURIComponent(__currentFilters.maxPrice) : '' %><%= __currentFilters.brandId ? '&brandId=' + encodeURIComponent(__currentFilters.brandId) : '' %>"><%= i %></a>
-                        </li>
-                        <% } %>
-                    </ul>
+                <nav class="ls-paginas" aria-label="Páginas">
+                    <% if (__pagination.page > 1) { %><a href="<%= lsUrl({ page: __pagination.page - 1 }) %>" class="ls-pag" aria-label="Página anterior">‹</a><% } %>
+                    <% for (let i = 1; i <= __pagination.pages; i++) { %>
+                    <a href="<%= lsUrl({ page: i }) %>" class="ls-pag<%= __pagination.page === i ? ' on' : '' %>"<%- __pagination.page === i ? ' aria-current="page"' : '' %>><%= i %></a>
+                    <% } %>
+                    <% if (__pagination.page < __pagination.pages) { %><a href="<%= lsUrl({ page: __pagination.page + 1 }) %>" class="ls-pag" aria-label="Página seguinte">›</a><% } %>
                 </nav>
                 <% } %>
             </section>
         </div>
+        <% } else { %>
+        <!-- Pesquisa vazia: sugestões -->
+        <section class="ls-sugestoes">
+            <p class="ls-sug-tit">Categorias populares</p>
+            <div class="ls-sug-grelha">
+                <% lsCatalogoTop.forEach(function (c, i) { %>
+                <a href="/<%= c.slug %>" class="ls-sug" style="--i:<%= i %>">
+                    <span class="ls-sug-img"><% if (c.image) { %><img src="<%= c.image %>" alt="" loading="lazy"><% } %></span>
+                    <span><b><%= c.name %></b><small><%= c.count %> <%= c.count === 1 ? 'produto' : 'produtos' %></small></span>
+                </a>
+                <% }) %>
+            </div>
+            <p class="ls-sug-tit">Experimente procurar</p>
+            <div class="ls-chips">
+                <% ['rato sem fios', 'teclado', 'switch', 'access point', 'monitor', 'câmara', 'cabo de rede', 'mochila'].forEach(function (t) { %>
+                <a href="/pesquisa?q=<%= encodeURIComponent(t) %>" class="ls-chip"><%= t %></a>
+                <% }) %>
+            </div>
+        </section>
+        <% } %>
     </div>
 </main>
 
@@ -388,5 +463,37 @@ $(document).ready(function () {
     <% if (typeof searchQuery !== 'undefined' && searchQuery) { %><script>window.bbPesquisa = <%- JSON.stringify({ q: searchQuery, total: pagination.total, page: pagination.page }) %>;</script><% } %>
     <script src="/js/comportamento.js" defer></script>
     <script src="/js/pesquisa.js" defer></script>
+<script>
+(function () {
+    var filtros = document.getElementById('lsFiltros');
+    var veu = document.querySelector('.ls-veu');
+    function abrir() { if (!filtros) return; filtros.classList.add('aberto'); veu && veu.classList.add('aberto'); document.documentElement.style.overflow = 'hidden'; }
+    function fechar() { if (!filtros) return; filtros.classList.remove('aberto'); veu && veu.classList.remove('aberto'); document.documentElement.style.overflow = ''; }
+    document.querySelectorAll('[data-ls-abrir]').forEach(function (b) { b.addEventListener('click', abrir); });
+    document.querySelectorAll('[data-ls-fechar]').forEach(function (b) { b.addEventListener('click', fechar); });
+    document.addEventListener('keydown', function (e) { if (e.key === 'Escape') fechar(); });
+    document.querySelectorAll('[data-ls-mais]').forEach(function (b) {
+        b.addEventListener('click', function () {
+            var lista = b.previousElementSibling;
+            var aberta = lista.classList.toggle('aberta');
+            b.textContent = aberta ? 'Ver menos' : 'Ver mais ' + lista.querySelectorAll('.ls-extra').length;
+        });
+    });
+    // número de resultados a contar até ao total
+    var num = document.querySelector('.ls-num');
+    if (num && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        var alvo = parseInt(num.getAttribute('data-num'), 10) || 0, t0 = null;
+        if (alvo > 1) {
+            var passo = function (t) { t0 = t0 || t; var k = Math.min(1, (t - t0) / 600); num.textContent = Math.round(alvo * (1 - Math.pow(1 - k, 3))); if (k < 1) requestAnimationFrame(passo); };
+            requestAnimationFrame(passo);
+        }
+    }
+    // pesquisa: atalho "/" para ir à barra
+    var pesq = document.querySelector('.ls-pesq-form input');
+    if (pesq) document.addEventListener('keydown', function (e) {
+        if (e.key === '/' && document.activeElement !== pesq && !/input|textarea|select/i.test(document.activeElement.tagName)) { e.preventDefault(); pesq.focus(); pesq.select(); }
+    });
+})();
+</script>
 </body>
 </html>

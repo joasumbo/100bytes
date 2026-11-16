@@ -3,9 +3,16 @@ const express = require("express");
 const path = require("path");
 const cookieParser = require("cookie-parser");
 const jwt = require("jsonwebtoken");
-const { createProxyMiddleware } = require("http-proxy-middleware");
-const { getRootCategories, getAllCategories, findCategoryBySlug, getCategoryBySlug, getTopCategories } = require("./api/categories");
-const { getSemelhantes, searchProducts, getComplementos, getFeatured, getOnSale, getNewest, getProductById, getRelated, getByCategory, getProductsPaged, getBestSellers, NOVIDADE_MS } = require("./api/products");
+const { createProxyMiddleware, fixRequestBody } = require("http-proxy-middleware");
+
+// O express.json() já leu o corpo dos pedidos JSON: o proxy tem de o voltar a escrever.
+// Só para JSON/formulário simples; envios de ficheiros (multipart) passam intactos.
+function reenviarCorpo(proxyReq, req) {
+  const tipo = String(req.headers["content-type"] || "");
+  if (tipo.includes("application/json") || tipo.includes("application/x-www-form-urlencoded")) fixRequestBody(proxyReq, req);
+}
+const { getCategoriasDestaque, getRootCategories, getAllCategories, findCategoryBySlug, getCategoryBySlug, getTopCategories } = require("./api/categories");
+const { getDestaques, getSemelhantes, searchProducts, getComplementos, getFeatured, getOnSale, getNewest, getProductById, getRelated, getByCategory, getProductsPaged, getBestSellers, NOVIDADE_MS } = require("./api/products");
 const { getBrands } = require("./api/brands");
 const { paginas } = require("./data/paginas");
 const { reportError } = require("./api/reporter");
@@ -24,6 +31,13 @@ app.set("views", path.join(__dirname, "views"));
 // Middleware
 app.use(express.json());
 app.use(express.static(PUBLIC_DIR, { index: false }));
+
+// Cor do cabeçalho: escuro por omissão; ?tema=laranja | branco só para comparar.
+app.use((req, res, next) => {
+  const t = req.query.tema;
+  res.locals.headerTema = t === "laranja" ? t : t === "branco" ? "" : "escuro";
+  next();
+});
 app.use(cookieParser());
 
 // ── MODO MANUTENÇÃO ("site em construção") ──
@@ -82,8 +96,33 @@ app.use((req, res, next) => {
   }
 
   res.locals.currentCustomer = currentCustomer;
+  // Árvore de categorias para a janela "Categorias" do cabeçalho (todas as páginas)
+  res.locals.catalogo = cache.catalogo || [];
   next();
 });
+
+/**
+ * Categorias com produtos, em árvore (raiz → subcategorias), ordenadas pelo número de produtos.
+ * As categorias sem produtos (antigas, criadas à mão) ficam de fora.
+ */
+function montarCatalogo(todas) {
+  const CDN = process.env.CDN_URL || "https://cdn.100bytes.co.ao";
+  const n = (c) => (c._count && c._count.products) || 0;
+  const img = (c) => (c.imageKey ? CDN + "/" + c.imageKey : null);
+  const filhos = (id) => todas.filter((c) => c.parentId === id);
+  const total = (c) => n(c) + filhos(c.id).reduce((s, f) => s + total(f), 0);
+  return todas
+    .filter((c) => !c.parentId)
+    .map((r) => {
+      const subs = filhos(r.id)
+        .map((c) => ({ name: c.name, slug: c.slug, count: total(c), image: img(c) }))
+        .filter((c) => c.count > 0)
+        .sort((a, b) => b.count - a.count);
+      return { name: r.name, slug: r.slug, count: total(r), image: img(r) || (subs.find((c) => c.image) || {}).image || null, children: subs };
+    })
+    .filter((r) => r.count > 0)
+    .sort((a, b) => b.count - a.count);
+}
 
 // Cache de dados — refresca a cada 5 minutos
 const DEFAULT_FREE_SHIPPING = 200000; // Kz — acordado com o cliente em 12/07/2026
@@ -103,7 +142,7 @@ async function refreshCache() {
       getFeatured(),
       getOnSale(),
       getNewest(),
-      getTopCategories(5),
+      getTopCategories(6),
       getBrands(),
       fetch(`${BACKEND_URL}/api/content/home-sliders`).then((r) => r.json()).catch(() => null),
       fetch(`${BACKEND_URL}/api/content/shipping`).then((r) => r.json()).catch(() => null),
@@ -126,7 +165,7 @@ async function refreshCache() {
       .filter((s) => s.active)
       .sort((a, b) => a.order - b.order);
 
-    cache = { categories, allCategories, featured, onSale, newest, tabsData: { topCats, byCategory }, brands, sliders, freeShippingThreshold, testimonials, fetchedAt: Date.now() };
+    cache = { catalogo: montarCatalogo(allCategories), categories, allCategories, featured, onSale, newest, tabsData: { topCats, byCategory }, brands, sliders, freeShippingThreshold, testimonials, fetchedAt: Date.now() };
     console.log(`[cache] ${categories.length} cat-raiz, ${allCategories.length} cat-total, ${featured.length} destaque, ${onSale.length} oferta, ${sliders.length} slides`);
   } catch (e) {
     console.error("[cache] Erro ao carregar:", e.message);
@@ -322,11 +361,29 @@ app.use(
         if (req.headers.cookie) {
           proxyReq.setHeader("cookie", req.headers.cookie);
         }
+        // o express.json() já leu o corpo: voltar a escrevê-lo (PATCH/POST de perfil)
+        reenviarCorpo(proxyReq, req);
       },
       proxyRes: (proxyRes) => {
         // Em localhost (HTTP), remove Secure para o browser aceitar customer_token.
         rewriteAuthCookieForLocal(proxyRes);
       },
+    },
+  })
+);
+
+// Entrar com Google → Backend (X-Forwarded-Host/Proto para o redirect_uri; cookie no domínio da loja)
+app.use(
+  createProxyMiddleware({
+    target: BACKEND_URL,
+    changeOrigin: true,
+    xfwd: true,
+    pathFilter: (path) => path === "/api/auth/google" || path.startsWith("/api/auth/google/") || path.startsWith("/api/auth/google?"),
+    on: {
+      proxyReq: (proxyReq, req) => {
+        if (req.headers.cookie) proxyReq.setHeader("cookie", req.headers.cookie);
+      },
+      proxyRes: (proxyRes) => rewriteAuthCookieForLocal(proxyRes),
     },
   })
 );
@@ -357,6 +414,7 @@ app.use(
         if (req.headers.cookie) {
           proxyReq.setHeader("cookie", req.headers.cookie);
         }
+        reenviarCorpo(proxyReq, req);
       },
     },
   })
@@ -390,6 +448,11 @@ app.get(["/", "/index.html"], async (req, res, next) => {
       tabsData: cache.tabsData,
       brands: cache.brands,
       sliders: cache.sliders,
+      destaques: await getDestaques(),
+      // Proposta de skin (laterais clicáveis) com o artigo que chegou mais recentemente ao Winmax
+      // Ligada por omissão; ?skin=0 desliga (para comparar)
+      skin: req.query.skin === "0" ? null : (await getDestaques()).novidade,
+      categoriasDestaque: await getCategoriasDestaque(20),
       testimonials: cache.testimonials,
     });
   } catch (e) {
@@ -401,7 +464,7 @@ app.get(["/", "/index.html"], async (req, res, next) => {
 
 // Perfil do cliente
 app.get("/perfil", (req, res) => {
-  if (!res.locals.currentCustomer) return res.redirect("/?openLogin=1");
+  if (!res.locals.currentCustomer) return res.redirect("/?openLogin=1&next=" + encodeURIComponent(req.originalUrl));
   res.render("perfil", { categories: cache.categories });
 });
 
@@ -438,7 +501,9 @@ app.get("/pesquisa", async (req, res, next) => {
   const { sortBy, sortOrder } = mapSort(sort);
   try {
     // Com texto: pesquisa inteligente (erros, sinónimos, relevância). Sem texto: listagem normal.
-    const marca = brandId ? (cache.brands || []).find((b) => b.id === brandId) : null;
+    // marca por nome (pesquisa) ou por id (lista de marcas)
+    const marcaNome = String(req.query.marca || "").trim();
+    const marca = marcaNome ? { name: marcaNome } : brandId ? (cache.brands || []).find((b) => b.id === brandId) : null;
     const paged = q
       ? await searchProducts({
           q,
@@ -462,8 +527,12 @@ app.get("/pesquisa", async (req, res, next) => {
           maxPrice,
           brandId,
         });
+    const universo = q
+      ? await searchProducts({ q, page: 1, perPage: 100 }).then((r) => r.products).catch(() => paged.products)
+      : paged.products;
     res.render("categoria", {
       category: null,
+      universo,
       pageTitle: q ? `Resultados para "${q}"` : "Pesquisa",
       searchQuery: q,
       categories: cache.categories,
@@ -471,7 +540,7 @@ app.get("/pesquisa", async (req, res, next) => {
       topProducts: [],
       brands: cache.brands,
       pagination: { page: paged.page, pages: paged.pages, total: paged.total, perPage: paged.perPage },
-      currentFilters: { sort, minPrice, maxPrice, brandId },
+      currentFilters: { sort, minPrice, maxPrice, brandId, categoria, marca: marcaNome },
     });
   } catch (e) {
     next(e);
@@ -608,9 +677,11 @@ app.get("/:catSlug/:slugId([a-z0-9][a-z0-9-]*--[a-zA-Z0-9]+)", async (req, res, 
     const parts = req.params.slugId.split("--");
     const id = parts[parts.length - 1];
     const product = await getProductById(id);
-    if (!product) return res.status(404).sendFile(path.join(PUBLIC_DIR, "404.html"), (err) => {
-      if (err) res.status(404).send("404 - Produto não encontrado");
-    });
+    // Produto que já não existe (ex.: apagado): levar à pesquisa com as palavras do nome
+    if (!product) {
+      const termos = parts.slice(0, -1).join("-").split("-").filter((w) => w.length > 1).slice(0, 4).join(" ");
+      return res.redirect(302, termos ? "/pesquisa?q=" + encodeURIComponent(termos) : "/");
+    }
     const [semelhantes, complementos] = await Promise.all([getSemelhantes(product.id), getComplementos(product.id)]);
     // Semelhantes da camada Python; sem cálculo ainda, usa a mesma categoria
     const related = semelhantes.similar.length ? semelhantes.similar : await getRelated(product.categoryId, product.id, 10);
@@ -659,6 +730,9 @@ app.get("/:slug([a-z0-9][a-z0-9-]*)", async (req, res, next) => {
     const categoryIds = [category.id, ...((category.children || []).map((child) => child.id))];
     let paged;
     let topProducts;
+    // Para as facetas (marcas, preços): todos os produtos da categoria, sem filtros
+    const universoP = Promise.all(categoryIds.map((categoryId) => getProductsPaged({ page: 1, perPage: 200, categoryId }).catch(() => ({ products: [] }))))
+      .then((grupos) => { const m = new Map(); grupos.forEach((g) => (g.products || []).forEach((p) => m.set(p.id, p))); return Array.from(m.values()); });
 
     if (categoryIds.length === 1) {
       const result = await Promise.all([
@@ -734,6 +808,7 @@ app.get("/:slug([a-z0-9][a-z0-9-]*)", async (req, res, next) => {
 
     res.render("categoria", {
       category,
+      universo: await universoP,
       categories: cache.categories,
       products: paged.products,
       topProducts: topProducts.products,

@@ -37,6 +37,7 @@ function mapProduct(p) {
     name: p.name,
     category: p.category ? p.category.name : null,
     categorySlug: p.category ? p.category.slug : null,
+    brand: p.brand ? { id: p.brand.id, name: p.brand.name } : null,
     image: imageUrl(p.imageKeys, 0),
     image2: imageUrl(p.imageKeys, 1),
     basePriceValue: baseNum,
@@ -82,7 +83,14 @@ async function getRelated(categoryId, excludeId, limit = 5) {
 }
 
 async function getProductById(id) {
-  const data = await apiFetch(`/products/${encodeURIComponent(id)}`);
+  let data;
+  try {
+    data = await apiFetch(`/products/${encodeURIComponent(id)}`);
+  } catch (e) {
+    // Produto apagado ou inexistente: não é avaria, é "não encontrado"
+    if (/\[API\] 404 /.test(e.message)) return null;
+    throw e;
+  }
   const p = data.product;
   if (!p) return null;
   return {
@@ -151,6 +159,22 @@ async function getComplementos(id) {
   }
 }
 
+/** Destaques do topo da página inicial (novidade e mais procurado), em cache 60 s. */
+let destaquesCache = { em: 0, dados: { novidade: null, procurado: null } };
+async function getDestaques() {
+  if (Date.now() - destaquesCache.em < 60000) return destaquesCache.dados;
+  try {
+    const d = await apiFetch('/products/destaques');
+    destaquesCache = {
+      em: Date.now(),
+      dados: { novidade: d.novidade ? mapProduct(d.novidade) : null, procurado: d.procurado ? mapProduct(d.procurado) : null },
+    };
+  } catch (e) {
+    /* mantém o anterior */
+  }
+  return destaquesCache.dados;
+}
+
 /**
  * Semelhantes e substitutos calculados pela camada Python (recs/).
  * Falha em silêncio: devolve listas vazias e a página usa o plano B.
@@ -187,4 +211,4 @@ async function searchProducts({ q, page = 1, perPage = 24, categorySlug, brand, 
   };
 }
 
-module.exports = { getSemelhantes, searchProducts, getComplementos, getFeatured, getOnSale, getNewest, getProductById, getRelated, getByCategory, getProductsPaged, getBestSellers, NOVIDADE_MS };
+module.exports = { getDestaques, getSemelhantes, searchProducts, getComplementos, getFeatured, getOnSale, getNewest, getProductById, getRelated, getByCategory, getProductsPaged, getBestSellers, NOVIDADE_MS };

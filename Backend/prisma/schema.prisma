@@ -289,6 +289,14 @@ model Customer {
   phone        String?
   email        String     @unique
   passwordHash String
+  // false quando a conta foi criada com Google e o cliente ainda não escolheu palavra-passe
+  passwordSet  Boolean    @default(true)
+  googleId     String?    @unique
+  avatarKey    String?
+  // morada de entrega preferida (pré-preenche o checkout)
+  province     String?
+  city         String?
+  address      String?
   active       Boolean    @default(true)
   createdAt    DateTime   @default(now())
   updatedAt    DateTime   @updatedAt

@@ -1,0 +1,81 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 420">
+  <defs>
+    <linearGradient id="folha" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#2f8f5b"/>
+      <stop offset="1" stop-color="#16603b"/>
+    </linearGradient>
+    <linearGradient id="folhaSombra" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#000" stop-opacity="0"/>
+      <stop offset="1" stop-color="#000" stop-opacity=".18"/>
+    </linearGradient>
+    <radialGradient id="brilho" cx=".5" cy=".5" r=".5">
+      <stop offset="0" stop-color="#fff6c8" stop-opacity=".9"/>
+      <stop offset="1" stop-color="#fff6c8" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="bolaLaranja" cx=".35" cy=".35" r=".7">
+      <stop offset="0" stop-color="#ffc27a"/><stop offset=".45" stop-color="#F57C00"/><stop offset="1" stop-color="#b85300"/>
+    </radialGradient>
+    <radialGradient id="bolaVermelha" cx=".35" cy=".35" r=".7">
+      <stop offset="0" stop-color="#ff9a9a"/><stop offset=".45" stop-color="#e02b2b"/><stop offset="1" stop-color="#8f1414"/>
+    </radialGradient>
+    <radialGradient id="bolaBranca" cx=".35" cy=".35" r=".7">
+      <stop offset="0" stop-color="#fff"/><stop offset=".6" stop-color="#f1f1f4"/><stop offset="1" stop-color="#b9b9c4"/>
+    </radialGradient>
+    <radialGradient id="bolaDourada" cx=".35" cy=".35" r=".7">
+      <stop offset="0" stop-color="#fff2b0"/><stop offset=".45" stop-color="#f5c13d"/><stop offset="1" stop-color="#a87a0c"/>
+    </radialGradient>
+  </defs>
+
+  <!-- tronco -->
+  <rect x="134" y="318" width="32" height="40" rx="4" fill="#6b3d1f"/>
+
+  <!-- camadas da árvore -->
+  <path d="M150 34 L232 142 Q238 152 226 152 L74 152 Q62 152 68 142 Z" fill="url(#folha)"/>
+  <path d="M150 92 L252 224 Q259 236 245 236 L55 236 Q41 236 48 224 Z" fill="url(#folha)"/>
+  <path d="M150 160 L272 312 Q280 326 264 326 L36 326 Q20 326 28 312 Z" fill="url(#folha)"/>
+  <path d="M150 34 L232 142 Q238 152 226 152 L150 152 Z M150 92 L252 224 Q259 236 245 236 L150 236 Z M150 160 L272 312 Q280 326 264 326 L150 326 Z" fill="url(#folhaSombra)"/>
+
+  <!-- fita de luzes -->
+  <path d="M96 130 Q150 150 206 118" fill="none" stroke="#fff3c4" stroke-width="2.5" stroke-dasharray="1 9" stroke-linecap="round"/>
+  <path d="M76 210 Q150 238 230 196" fill="none" stroke="#fff3c4" stroke-width="2.5" stroke-dasharray="1 9" stroke-linecap="round"/>
+  <path d="M54 300 Q150 332 250 284" fill="none" stroke="#fff3c4" stroke-width="2.5" stroke-dasharray="1 9" stroke-linecap="round"/>
+
+  <!-- bolas -->
+  <circle cx="122" cy="122" r="9" fill="url(#bolaLaranja)"/>
+  <circle cx="178" cy="112" r="7" fill="url(#bolaBranca)"/>
+  <circle cx="150" cy="78" r="6" fill="url(#bolaVermelha)"/>
+  <circle cx="98" cy="206" r="10" fill="url(#bolaVermelha)"/>
+  <circle cx="150" cy="190" r="8" fill="url(#bolaDourada)"/>
+  <circle cx="204" cy="214" r="10" fill="url(#bolaLaranja)"/>
+  <circle cx="132" cy="226" r="6" fill="url(#bolaBranca)"/>
+  <circle cx="74" cy="296" r="11" fill="url(#bolaLaranja)"/>
+  <circle cx="122" cy="282" r="7" fill="url(#bolaBranca)"/>
+  <circle cx="170" cy="304" r="10" fill="url(#bolaVermelha)"/>
+  <circle cx="226" cy="290" r="8" fill="url(#bolaDourada)"/>
+  <circle cx="196" cy="262" r="6" fill="url(#bolaBranca)"/>
+
+  <!-- estrela -->
+  <circle cx="150" cy="30" r="34" fill="url(#brilho)"/>
+  <path d="M150 8 L156.5 23 L172.5 24.4 L160.3 35 L164 50.6 L150 42.4 L136 50.6 L139.7 35 L127.5 24.4 L143.5 23 Z" fill="#f5c13d" stroke="#d9a21f" stroke-width="1.5" stroke-linejoin="round"/>
+
+  <!-- presentes -->
+  <g>
+    <rect x="44" y="342" width="72" height="58" rx="6" fill="#16161d"/>
+    <rect x="74" y="342" width="12" height="58" fill="#F57C00"/>
+    <rect x="44" y="362" width="72" height="10" fill="#F57C00"/>
+    <path d="M80 342 C66 326 54 334 64 342 Z M80 342 C94 326 106 334 96 342 Z" fill="#F57C00"/>
+  </g>
+  <g>
+    <rect x="124" y="358" width="54" height="44" rx="5" fill="#fff"/>
+    <rect x="146" y="358" width="10" height="44" fill="#e02b2b"/>
+    <rect x="124" y="372" width="54" height="8" fill="#e02b2b"/>
+    <path d="M151 358 C140 345 130 352 138 358 Z M151 358 C162 345 172 352 164 358 Z" fill="#e02b2b"/>
+  </g>
+  <g>
+    <rect x="186" y="336" width="72" height="66" rx="6" fill="#F57C00"/>
+    <rect x="216" y="336" width="12" height="66" fill="#fff"/>
+    <rect x="186" y="360" width="72" height="10" fill="#fff"/>
+    <path d="M222 336 C208 320 196 328 206 336 Z M222 336 C236 320 248 328 238 336 Z" fill="#fff"/>
+  </g>
+  <rect x="30" y="400" width="240" height="20" fill="none"/>
+</svg>

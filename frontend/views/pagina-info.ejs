@@ -11,8 +11,6 @@
 
         <link rel="shortcut icon" href="https://cdn.100bytes.co.ao/logo/100byte_fav.png">
         <link rel="icon" type="image/png" href="https://cdn.100bytes.co.ao/logo/100byte_fav.png">
-        <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-
         <link rel="stylesheet" href="/assets/vendor/font-awesome/css/fontawesome-all.min.css">
         <link rel="stylesheet" href="/assets/css/font-electro.css">
         <link rel="stylesheet" href="/assets/vendor/animate.css/animate.min.css">
@@ -74,40 +72,47 @@
             .contact-form .form-control { border-radius: 4px; border: 1px solid #e3e5ea; font-size: 14px; }
             .contact-form .form-control:focus { border-color: var(--brand); box-shadow: 0 0 0 .15rem rgba(245,124,0,.12); }
             .contact-form textarea.form-control { min-height: 130px; }
+
+            /* Alinhado com o estilo comum (loja.css) */
+            .info-body { color: #3f3f46; font-size: 15px; line-height: 1.75; }
+            .info-body h2 { font-size: 19px; font-weight: 600; color: #1a1a2e; letter-spacing: -.01em; }
+            .info-body h3 { font-size: 16px; font-weight: 600; color: #1a1a2e; }
+            .info-body strong { color: #1a1a2e; }
+            .info-body a, .info-meta a { color: #E06F00; }
+            .info-note { background: #f6f6f8; border: 0; border-radius: 12px; padding: 16px 20px; }
+            .info-card { background: #f6f6f8; border: 0; border-radius: 12px; padding: 22px 24px; }
+            .info-meta i { color: #1a1a2e; }
+            .info-step { background: #f6f6f8; border: 0; border-radius: 12px; }
+            .info-step__year { color: #E06F00; }
+            .faq-item { border-bottom-color: #ececf0; }
+            .faq-q { color: #1a1a2e; font-weight: 500; }
+            .contact-form label { font-weight: 500; color: #1a1a2e; }
+            .contact-form .form-control { height: 46px; border-radius: 10px; border-color: #dcdce2; font-size: 15px; }
+            .contact-form textarea.form-control { height: auto; }
+            .contact-form .btn { height: 48px; border-radius: 999px; padding: 0 24px; font-weight: 600; }
+            .info-pagina { max-width: 860px; margin: 0 auto; }
         </style>
+        <link rel="stylesheet" href="/css/loja.css">
         <link rel="preload" href="/fonts/dm-sans-latin.woff2" as="font" type="font/woff2" crossorigin>
         <link rel="stylesheet" href="/css/fonte.css">
 </head>
 
-    <body>
-        <%- include('partials/_header') %>
+    <body class="lj">
+        <%- include('partials/_header-compacto') %>
 
         <main id="content" role="main">
-            <!-- breadcrumb -->
-            <div class="bg-gray-13 bg-md-transparent">
+            <div class="lj-main">
                 <div class="container">
-                    <div class="my-md-3">
-                        <nav aria-label="breadcrumb">
-                            <ol class="breadcrumb mb-3 flex-nowrap flex-xl-wrap overflow-auto overflow-xl-visble">
-                                <li class="breadcrumb-item flex-shrink-0 flex-xl-shrink-1"><a href="/">Início</a></li>
-                                <li class="breadcrumb-item flex-shrink-0 flex-xl-shrink-1 active" aria-current="page"><%= titulo %></li>
-                            </ol>
-                        </nav>
-                    </div>
-                </div>
-            </div>
-            <!-- End breadcrumb -->
-
-            <div class="container mb-6">
-                <div class="row">
-                    <div class="col-lg-9 mx-auto">
-                        <h1 class="font-size-30 font-weight-bold text-gray-90 mb-1"><%= titulo %></h1>
-                        <% if (typeof subtitulo !== 'undefined' && subtitulo) { %>
-                        <p class="font-size-15 text-gray-50 mb-4"><%= subtitulo %></p>
-                        <% } %>
-                        <hr class="mt-2 mb-4">
-                        <div class="info-body">
-                            <%- conteudo %>
+                    <div class="info-pagina">
+                        <div class="lj-topo">
+                            <nav class="lj-trilho" aria-label="Caminho"><a href="/">Início</a><span class="sep">/</span><span><%= titulo %></span></nav>
+                            <h1 class="lj-titulo"><%= titulo %></h1>
+                            <% if (typeof subtitulo !== 'undefined' && subtitulo) { %><p class="lj-sub"><%= subtitulo %></p><% } %>
+                        </div>
+                        <div class="lj-card" style="padding:32px;">
+                            <div class="info-body">
+                                <%- conteudo %>
+                            </div>
                         </div>
                     </div>
                 </div>

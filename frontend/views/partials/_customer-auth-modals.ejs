@@ -1,85 +1,152 @@
-        <!-- Customer Auth Modals -->
-        
-        <!-- Login Modal -->
-        <div id="customerLoginModal" class="customer-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 9999; align-items: center; justify-content: center; padding: 20px 0; overflow-y: auto;">
-            <div style="background: white; border-radius: 20px; padding: 20px; max-width: 500px; width: 90%; position: relative; box-shadow: 0 4px 20px rgba(0,0,0,0.1); margin: auto;">
-                <button type="button" data-modal-close style="position: absolute; top: 15px; right: 20px; background: none; border: none; font-size: 28px; cursor: pointer; color: #999;">×</button>
-                
-                <h2 style="text-align: center; margin-bottom: 8px; font-size: 22px; font-weight: bold;">Bem-vindo!</h2>
-                <p style="text-align: center; color: #888; margin-bottom: 20px; font-size: 13px;">Aceda à sua conta.</p>
-                
-                <form id="customerLoginForm" style="display: flex; flex-direction: column; gap: 12px;">
-                    <div style="position: relative;">
-                        <i class="ec ec-user" style="position: absolute; left: 15px; top: 12px; color: #888; font-size: 18px;"></i>
-                        <input type="email" id="loginEmail" placeholder="Email" required style="width: 100%; padding: 12px 12px 12px 45px; border: 2px solid #ddd; border-radius: 8px; font-size: 14px; box-sizing: border-box;">
+        <!-- Janelas de conta do cliente (entrar / criar conta) -->
+        <script>window.BB_GOOGLE_AUTH_URL = "/api/auth/google";</script>
+        <style>
+            .customer-modal { position:fixed; inset:0; z-index:9999; display:none; align-items:center; justify-content:center; padding:24px 16px; overflow-y:auto; background:rgba(22,22,29,.55); backdrop-filter:blur(3px); -webkit-backdrop-filter:blur(3px); }
+            .am-caixa { position:relative; width:100%; max-width:440px; margin:auto; background:#fff; border-radius:20px; padding:24px 28px 22px; box-shadow:0 24px 60px rgba(0,0,0,.25); color:#1a1a2e; animation:amEntra .22s ease-out; }
+            @keyframes amEntra { from { opacity:0; transform:translateY(10px) scale(.98); } to { opacity:1; transform:none; } }
+            .am-fechar { position:absolute; top:14px; right:14px; width:36px; height:36px; border-radius:50%; border:0; background:#f4f4f7; color:#52525b; display:flex; align-items:center; justify-content:center; cursor:pointer; transition:background .15s; }
+            .am-fechar:hover { background:#e9e9ee; color:#1a1a2e; }
+            .am-fechar svg { width:16px; height:16px; }
+
+            .am-abas { display:grid; grid-template-columns:1fr 1fr; gap:4px; padding:4px; background:#f4f4f7; border-radius:999px; margin:0 44px 18px 0; max-width:300px; }
+            .am-aba { height:36px; border:0; border-radius:999px; background:none; font-size:14px; font-weight:500; color:#6b7280; cursor:pointer; font-family:inherit; transition:background .15s, color .15s; }
+            .am-aba.on { background:#fff; color:#1a1a2e; font-weight:600; box-shadow:0 1px 3px rgba(0,0,0,.08); }
+            .am-aba:not(.on):hover { color:#1a1a2e; }
+
+            /* Criar conta: janela mais larga e campos em duas colunas, para caber no ecrã sem deslizar */
+            #customerRegisterModal .am-caixa { max-width:560px; }
+            .am-grelha { display:grid; grid-template-columns:1fr 1fr; gap:14px; }
+            .am-tit { font-size:22px; font-weight:600; letter-spacing:-.02em; margin:0 0 4px; }
+            .am-sub { font-size:14px; color:#6b7280; margin:0 0 18px; line-height:1.5; }
+
+            .am-google { width:100%; height:48px; display:flex; align-items:center; justify-content:center; gap:10px; border:1px solid #dcdce2; border-radius:999px; background:#fff; color:#1a1a2e; font-size:15px; font-weight:500; cursor:pointer; font-family:inherit; transition:background .15s, border-color .15s; }
+            .am-google:hover { background:#f9f9fb; border-color:#c4c4cc; }
+            .am-google svg { width:20px; height:20px; }
+            .am-info { display:none; margin-top:10px; font-size:13px; color:#52525b; background:#f4f4f7; border-radius:10px; padding:10px 12px; line-height:1.45; }
+
+            .am-ou { display:flex; align-items:center; gap:12px; margin:16px 0; font-size:13px; color:#a1a1aa; }
+            .am-ou::before, .am-ou::after { content:""; flex:1; height:1px; background:#ececf0; }
+
+            .am-form { display:flex; flex-direction:column; gap:14px; }
+            .am-campo label { display:flex; justify-content:space-between; align-items:baseline; font-size:13px; font-weight:500; margin-bottom:6px; color:#1a1a2e; }
+            .am-campo label .opc { color:#a1a1aa; font-weight:400; }
+            .am-campo label a { font-size:13px; font-weight:500; color:#E06F00; text-decoration:none; }
+            .am-campo label a:hover { text-decoration:underline; }
+            .am-entrada { position:relative; }
+            .am-input { width:100%; height:46px; border:1px solid #dcdce2; border-radius:12px; padding:0 14px; font-size:15px; color:#1a1a2e; background:#fff; outline:none; box-sizing:border-box; font-family:inherit; transition:border-color .15s, box-shadow .15s; }
+            .am-input::placeholder { color:#a1a1aa; }
+            .am-input:hover { border-color:#c4c4cc; }
+            .am-input:focus { border-color:#F57C00; box-shadow:0 0 0 3px rgba(245,124,0,.14); }
+            .am-input:-webkit-autofill { -webkit-box-shadow:0 0 0 40px #fff inset; }
+            .am-entrada .am-input { padding-right:48px; }
+            .am-olho { position:absolute; right:6px; top:50%; transform:translateY(-50%); width:36px; height:36px; border:0; border-radius:8px; background:none; color:#71717a; cursor:pointer; display:flex; align-items:center; justify-content:center; font-size:16px; }
+            .am-olho:hover { background:#f4f4f7; color:#1a1a2e; }
+
+            .am-erro { display:none; font-size:13px; color:#b91c1c; background:#fdecec; border-radius:10px; padding:10px 12px; line-height:1.45; }
+            .am-btn { width:100%; height:50px; border:0; border-radius:999px; background:#F57C00; color:#fff; font-size:16px; font-weight:600; cursor:pointer; font-family:inherit; margin-top:4px; transition:background .15s; display:flex; align-items:center; justify-content:center; gap:8px; }
+            .am-btn:hover { background:#E06F00; }
+            .am-btn:disabled { background:#d4d4d8; cursor:wait; }
+            .am-legal { font-size:12px; color:#a1a1aa; text-align:center; margin:14px 0 0; line-height:1.5; }
+            .am-legal a { color:#6b7280; text-decoration:underline; }
+            .am-pe { text-align:center; font-size:14px; color:#6b7280; margin:18px 0 0; }
+            .am-pe button { border:0; background:none; padding:0; color:#E06F00; font-weight:600; cursor:pointer; font-family:inherit; font-size:14px; }
+            .am-pe button:hover { text-decoration:underline; }
+
+            @media (max-width:560px) { .am-grelha { grid-template-columns:1fr; } }
+            @media (max-width:480px) {
+                .customer-modal { align-items:flex-end; padding:0; }
+                .am-caixa { max-width:none; border-radius:20px 20px 0 0; padding:26px 20px 22px; animation-name:amSobe; }
+                @keyframes amSobe { from { transform:translateY(30px); opacity:0; } to { transform:none; opacity:1; } }
+            }
+            @media (prefers-reduced-motion: reduce) { .am-caixa { animation:none; } }
+        </style>
+
+        <%
+        var amGoogle = '<svg viewBox="0 0 48 48" aria-hidden="true"><path fill="#FFC107" d="M43.6 20.5H42V20H24v8h11.3C33.7 32.7 29.2 36 24 36c-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.8 1.2 7.9 3.1l5.7-5.7C34 6.1 29.3 4 24 4 12.9 4 4 12.9 4 24s8.9 20 20 20 20-8.9 20-20c0-1.3-.1-2.4-.4-3.5z"/><path fill="#FF3D00" d="m6.3 14.7 6.6 4.8C14.7 15.1 19 12 24 12c3.1 0 5.8 1.2 7.9 3.1l5.7-5.7C34 6.1 29.3 4 24 4 16.3 4 9.7 8.3 6.3 14.7z"/><path fill="#4CAF50" d="M24 44c5.2 0 9.9-2 13.4-5.2l-6.2-5.2C29.2 35.1 26.7 36 24 36c-5.2 0-9.6-3.3-11.3-7.9l-6.5 5C9.5 39.6 16.2 44 24 44z"/><path fill="#1976D2" d="M43.6 20.5H42V20H24v8h11.3c-.8 2.2-2.2 4.2-4.1 5.6l6.2 5.2C37 39.2 44 34 44 24c0-1.3-.1-2.4-.4-3.5z"/></svg>';
+        var amFechar = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg>';
+        %>
+
+        <!-- Entrar -->
+        <div id="customerLoginModal" class="customer-modal" role="dialog" aria-modal="true" aria-labelledby="amTitEntrar">
+            <div class="am-caixa">
+                <button type="button" class="am-fechar" data-modal-close aria-label="Fechar"><%- amFechar %></button>
+                <div class="am-abas" role="tablist">
+                    <button type="button" class="am-aba on" role="tab" aria-selected="true">Entrar</button>
+                    <button type="button" class="am-aba" role="tab" aria-selected="false" data-am-ir="registo">Criar conta</button>
+                </div>
+
+                <h2 class="am-tit" id="amTitEntrar">Bem-vindo de volta</h2>
+                <p class="am-sub">Entre para acompanhar as suas encomendas e ver os favoritos.</p>
+
+                <button type="button" class="am-google" data-google-auth><%- amGoogle %>Continuar com Google</button>
+                <div class="am-info" data-google-info></div>
+
+                <div class="am-ou">ou com email</div>
+
+                <form id="customerLoginForm" class="am-form" novalidate>
+                    <div class="am-campo">
+                        <label for="loginEmail">Email</label>
+                        <input type="email" id="loginEmail" class="am-input" placeholder="nome@exemplo.com" autocomplete="email" inputmode="email" required>
                     </div>
-                    
-                    <div style="position: relative;">
-                        <i class="ec ec-lock" style="position: absolute; left: 15px; top: 12px; color: #888; font-size: 18px;"></i>
-                        <input type="password" id="loginPassword" placeholder="Senha" required style="width: 100%; padding: 12px 45px 12px 45px; border: 2px solid #ddd; border-radius: 8px; font-size: 14px; box-sizing: border-box;">
-                        <button type="button" class="toggle-password" style="position: absolute; right: 12px; top: 12px; background: none; border: none; color: #888; cursor: pointer; font-size: 18px; padding: 0;" data-target="loginPassword">
-                            <i class="far fa-eye"></i>
-                        </button>
+                    <div class="am-campo">
+                        <label for="loginPassword">Palavra-passe <a href="/apoio-ao-cliente">Esqueceu-se?</a></label>
+                        <div class="am-entrada">
+                            <input type="password" id="loginPassword" class="am-input" placeholder="A sua palavra-passe" autocomplete="current-password" required>
+                            <button type="button" class="am-olho toggle-password" data-target="loginPassword" aria-label="Mostrar palavra-passe"><i class="far fa-eye"></i></button>
+                        </div>
                     </div>
-                    
-                    <a href="#" style="text-align: right; font-size: 13px; color: #F57C00; text-decoration: none; margin-top: -8px;">Recuperar password?</a>
-                    
-                    <div id="loginError" style="display:none; background:#fff0f0; border:1px solid #f5c6cb; color:#c0392b; border-radius:8px; padding:10px 14px; font-size:13px; margin-top:5px;"></div>
-                    
-                    <button type="submit" style="background: #F57C00; color: white; padding: 12px; border: none; border-radius: 25px; font-size: 16px; font-weight: bold; cursor: pointer; margin-top: 10px;">Entrar</button>
-                    
-                    <p style="text-align: center; font-size: 13px; color: #666; margin: 15px 0 10px;">Não tem conta? <a href="javascript:customerAuth.closeModals(); customerAuth.showRegisterModal();" style="color: #F57C00; text-decoration: none; font-weight: bold;">Registe-se</a></p>
+                    <div id="loginError" class="am-erro" role="alert"></div>
+                    <button type="submit" class="am-btn">Entrar</button>
                 </form>
+
+                <p class="am-pe">Ainda não tem conta? <button type="button" data-am-ir="registo">Criar conta</button></p>
             </div>
         </div>
-        
-        <!-- Register Modal -->
-        <div id="customerRegisterModal" class="customer-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 9999; align-items: center; justify-content: center; padding: 20px 0; overflow-y: auto;">
-            <div style="background: white; border-radius: 20px; padding: 20px; max-width: 500px; width: 90%; position: relative; box-shadow: 0 4px 20px rgba(0,0,0,0.1); margin: auto;">
-                <button type="button" data-modal-close style="position: absolute; top: 15px; right: 20px; background: none; border: none; font-size: 28px; cursor: pointer; color: #999;">×</button>
-                
-                <h2 style="text-align: center; margin-bottom: 8px; font-size: 22px; font-weight: bold;">Bem-vindo à 100bytes.</h2>
-                <p style="text-align: center; color: #888; margin-bottom: 20px; font-size: 13px;">Preencha o formulário para começar.</p>
-                
-                <form id="customerRegisterForm" style="display: flex; flex-direction: column; gap: 12px;">
-                    <div style="position: relative;">
-                        <i class="ec ec-user" style="position: absolute; left: 15px; top: 12px; color: #888; font-size: 18px;"></i>
-                        <input type="text" id="registerName" placeholder="Nome" required style="width: 100%; padding: 12px 12px 12px 45px; border: 2px solid #ddd; border-radius: 8px; font-size: 14px; box-sizing: border-box;">
+
+        <!-- Criar conta -->
+        <div id="customerRegisterModal" class="customer-modal" role="dialog" aria-modal="true" aria-labelledby="amTitRegisto">
+            <div class="am-caixa">
+                <button type="button" class="am-fechar" data-modal-close aria-label="Fechar"><%- amFechar %></button>
+                <div class="am-abas" role="tablist">
+                    <button type="button" class="am-aba" role="tab" aria-selected="false" data-am-ir="entrar">Entrar</button>
+                    <button type="button" class="am-aba on" role="tab" aria-selected="true">Criar conta</button>
+                </div>
+
+                <h2 class="am-tit" id="amTitRegisto">Criar conta</h2>
+                <p class="am-sub">Compre mais depressa, acompanhe encomendas e guarde favoritos.</p>
+
+                <button type="button" class="am-google" data-google-auth><%- amGoogle %>Continuar com Google</button>
+                <div class="am-info" data-google-info></div>
+
+                <div class="am-ou">ou com email</div>
+
+                <form id="customerRegisterForm" class="am-form" novalidate>
+                    <div class="am-grelha">
+                    <div class="am-campo">
+                        <label for="registerName">Nome</label>
+                        <input type="text" id="registerName" class="am-input" placeholder="Nome e apelido" autocomplete="name" required>
                     </div>
-                    
-                    <div style="position: relative;">
-                        <i class="ec ec-phone" style="position: absolute; left: 15px; top: 12px; color: #888; font-size: 18px;"></i>
-                        <input type="tel" id="registerPhone" placeholder="Número de telefone" style="width: 100%; padding: 12px 12px 12px 45px; border: 2px solid #ddd; border-radius: 8px; font-size: 14px; box-sizing: border-box;">
+                    <div class="am-campo">
+                        <label for="registerPhone">Telefone <span class="opc">opcional</span></label>
+                        <input type="tel" id="registerPhone" class="am-input" placeholder="+244 9xx xxx xxx" autocomplete="tel" inputmode="tel">
                     </div>
-                    
-                    <div style="position: relative;">
-                        <i class="ec ec-user" style="position: absolute; left: 15px; top: 12px; color: #888; font-size: 18px;"></i>
-                        <input type="email" id="registerEmail" placeholder="Email" required style="width: 100%; padding: 12px 12px 12px 45px; border: 2px solid #ddd; border-radius: 8px; font-size: 14px; box-sizing: border-box;">
+                    <div class="am-campo">
+                        <label for="registerEmail">Email</label>
+                        <input type="email" id="registerEmail" class="am-input" placeholder="nome@exemplo.com" autocomplete="email" inputmode="email" required>
                     </div>
-                    
-                    <div style="position: relative;">
-                        <i class="ec ec-lock" style="position: absolute; left: 15px; top: 12px; color: #888; font-size: 18px;"></i>
-                        <input type="password" id="registerPassword" placeholder="Criar senha" required style="width: 100%; padding: 12px 45px 12px 45px; border: 2px solid #ddd; border-radius: 8px; font-size: 14px; box-sizing: border-box;">
-                        <button type="button" class="toggle-password" style="position: absolute; right: 12px; top: 12px; background: none; border: none; color: #888; cursor: pointer; font-size: 18px; padding: 0;" data-target="registerPassword">
-                            <i class="far fa-eye"></i>
-                        </button>
+                    <div class="am-campo">
+                        <label for="registerPassword">Palavra-passe</label>
+                        <div class="am-entrada">
+                            <input type="password" id="registerPassword" class="am-input" placeholder="Escolha uma palavra-passe" autocomplete="new-password" required>
+                            <button type="button" class="am-olho toggle-password" data-target="registerPassword" aria-label="Mostrar palavra-passe"><i class="far fa-eye"></i></button>
+                        </div>
                     </div>
-                    
-                    <div style="position: relative;">
-                        <i class="ec ec-lock" style="position: absolute; left: 15px; top: 12px; color: #888; font-size: 18px;"></i>
-                        <input type="password" id="registerConfirmPassword" placeholder="Confirmar senha" required style="width: 100%; padding: 12px 45px 12px 45px; border: 2px solid #ddd; border-radius: 8px; font-size: 14px; box-sizing: border-box;">
-                        <button type="button" class="toggle-password" style="position: absolute; right: 12px; top: 12px; background: none; border: none; color: #888; cursor: pointer; font-size: 18px; padding: 0;" data-target="registerConfirmPassword">
-                            <i class="far fa-eye"></i>
-                        </button>
                     </div>
-                    
-                    <div id="registerError" style="display:none; background:#fff0f0; border:1px solid #f5c6cb; color:#c0392b; border-radius:8px; padding:10px 14px; font-size:13px; margin-top:5px;"></div>
-                    
-                    <button type="submit" style="background: #F57C00; color: white; padding: 12px; border: none; border-radius: 25px; font-size: 16px; font-weight: bold; cursor: pointer; margin-top: 10px;">Criar Conta</button>
-                    
-                    <p style="text-align: center; font-size: 13px; color: #666; margin: 15px 0 10px;">Já tem conta? <a href="javascript:customerAuth.closeModals(); customerAuth.showLoginModal();" style="color: #F57C00; text-decoration: none; font-weight: bold;">Entrar</a></p>
+                    <div id="registerError" class="am-erro" role="alert"></div>
+                    <button type="submit" class="am-btn">Criar conta</button>
                 </form>
+
+                <p class="am-legal">Ao criar conta aceita os <a href="/termos-e-condicoes">Termos</a> e a <a href="/politica-de-privacidade">Política de privacidade</a>.</p>
             </div>
         </div>
-        
-        <!-- End Customer Auth Modals -->
+        <!-- Fim das janelas de conta -->

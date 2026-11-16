@@ -186,42 +186,254 @@
         </style>
         <link rel="preload" href="/fonts/dm-sans-latin.woff2" as="font" type="font/woff2" crossorigin>
         <link rel="stylesheet" href="/css/fonte.css">
+        <link rel="stylesheet" href="/css/loja.css">
+        <link rel="stylesheet" href="/css/listagem.css">
+        <style>
+            /* Topo da página inicial */
+            .hh { max-width:1430px; margin:20px auto 36px; padding:0 15px; display:grid; grid-template-columns:minmax(0, 3fr) minmax(0, 1fr); gap:16px; }
+            .hh-solo { grid-template-columns:1fr; }
+            .hh-slider { position:relative; border-radius:18px; overflow:hidden; background:#f4f4f7; aspect-ratio:1893 / 650; }
+            .hh-track { display:flex; height:100%; overflow-x:auto; scroll-snap-type:x mandatory; scroll-behavior:smooth; scrollbar-width:none; }
+            .hh-track::-webkit-scrollbar { display:none; }
+            .hh-slide { flex:0 0 100%; height:100%; scroll-snap-align:start; }
+            .hh-slide img, .hh-link { display:block; width:100%; height:100%; }
+            .hh-slide img { object-fit:cover; }
+            .hh-seta { position:absolute; top:50%; transform:translateY(-50%); width:44px; height:44px; border-radius:50%; border:0; background:rgba(255,255,255,.92); color:#1a1a2e; font-size:20px; display:flex; align-items:center; justify-content:center; cursor:pointer; opacity:0; transition:opacity .2s, background .15s; box-shadow:0 2px 10px rgba(0,0,0,.12); }
+            .hh-ant { left:14px; } .hh-seg { right:14px; }
+            .hh-slider:hover .hh-seta, .hh-seta:focus-visible { opacity:1; }
+            .hh-seta:hover { background:#fff; }
+            .hh-dots { position:absolute; left:50%; bottom:14px; transform:translateX(-50%); display:flex; gap:6px; padding:6px 8px; border-radius:999px; background:rgba(0,0,0,.25); backdrop-filter:blur(4px); }
+            .hh-dot { width:8px; height:8px; border:0; padding:0; border-radius:999px; background:rgba(255,255,255,.55); cursor:pointer; overflow:hidden; transition:width .3s; }
+            .hh-dot.on { width:34px; background:rgba(255,255,255,.4); }
+            .hh-dot span { display:block; height:100%; width:0; background:#fff; border-radius:999px; }
+            .hh-dot.on span { animation:hhProgresso var(--hh-tempo, 6s) linear forwards; }
+            .hh-slider.pausa .hh-dot.on span { animation-play-state:paused; }
+            @keyframes hhProgresso { from { width:0; } to { width:100%; } }
+            /* A altura da linha vem só do banner: os cartões (height:0 + min-height:100%) não a aumentam, apenas a ocupam */
+            .hh-cards { display:grid; grid-template-rows:1fr 1fr; gap:16px; height:0; min-height:100%; }
+            .hh-card { container-type:size; }
+            /* a foto ocupa só a altura do cartão (sem cortes) */
+            .hh-card > .hh-card-img { height:100%; min-height:0; }
+            .hh-card > .hh-card-img img { max-height:100%; max-width:100%; width:auto; height:auto; }
+            /* Cartões baixos (ecrãs mais estreitos ou com skin): mais compactos */
+            @container (max-height: 175px) {
+                .hh-card .hh-card-txt { justify-content:center; }
+                .hh-card .hh-card-nome { margin-top:4px; font-size:13px; }
+                .hh-card .hh-card-preco { margin-top:6px; padding-top:0; font-size:16px; }
+                .hh-card .hh-card-cta { display:none; }
+            }
+            @container (max-height: 125px) {
+                .hh-card .hh-card-nome { -webkit-line-clamp:1; }
+            }
+            .hh-card { position:relative; display:flex; align-items:stretch; gap:10px; padding:16px; border-radius:18px; background:#f4f4f7; color:#1a1a2e !important; text-decoration:none !important; overflow:hidden; min-height:0; transition:background .2s; }
+            .hh-card:hover { background:#eeeef2; }
+            .hh-card-txt { display:flex; flex-direction:column; min-width:0; flex:1 1 55%; z-index:1; }
+            .hh-tag { font-size:12px; font-weight:600; color:#E06F00; }
+            .hh-card-nome { font-size:14px; font-weight:500; line-height:1.3; margin-top:8px; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; }
+            .hh-card-preco { font-size:17px; font-weight:600; margin-top:auto; padding-top:6px; }
+            .hh-card-cta { font-size:12px; font-weight:600; color:#E06F00; margin-top:4px; display:inline-flex; align-items:center; gap:6px; }
+            .hh-card-cta i { font-size:10px; transition:transform .2s; }
+            .hh-card:hover .hh-card-cta { color:#F57C00; }
+            /* Um toque da cor da marca: brilho suave atrás do produto */
+            .hh-card { background:radial-gradient(circle at 80% 50%, rgba(245,124,0,.13) 0, rgba(245,124,0,0) 130px), #f4f4f7; }
+            .hh-card:hover { background:radial-gradient(circle at 80% 50%, rgba(245,124,0,.19) 0, rgba(245,124,0,0) 150px), #f0f0f4; }
+            @media (max-width: 991.98px) { .hh-card, .hh-card:hover { background:radial-gradient(circle at 50% 30%, rgba(245,124,0,.13) 0, rgba(245,124,0,0) 90px), #f4f4f7; } }
+            .hh-card:hover .hh-card-cta i { transform:translateX(3px); }
+            .hh-card-img { flex:0 0 42%; display:flex; align-items:center; justify-content:center; min-width:0; }
+            .hh-card-img img { max-width:100%; max-height:100%; object-fit:contain; mix-blend-mode:multiply; transition:transform .3s; }
+            .hh-card:hover .hh-card-img img { transform:scale(1.05); }
+            @media (max-width: 991.98px) {
+                .hh { grid-template-columns:1fr; gap:12px; margin-top:12px; padding:0 12px; }
+                .hh-slider { border-radius:14px; }
+                .hh-cards { grid-template-rows:none; grid-template-columns:1fr 1fr; gap:12px; height:auto; min-height:0; }
+                .hh-card { container-type:normal; }
+                .hh-card > .hh-card-img { height:96px; }
+                .hh-card { flex-direction:column-reverse; padding:12px; border-radius:14px; }
+                .hh-card-img { flex:0 0 auto; height:96px; }
+                .hh-card-nome { font-size:13px; }
+                .hh-card-preco { font-size:15px; }
+                .hh-dots { bottom:8px; }
+                .hh-seta { display:none; }
+            }
+            /* Skin publicitário: duas laterais clicáveis, só em ecrãs largos */
+            .sk { display:none; }
+            @media (min-width: 1360px) {
+                /* Largura de cada lateral: pelo menos 150px; em ecrãs grandes ocupa a margem que sobra */
+                body:has(.sk) { --sk-w: max(150px, calc((100vw - 1460px) / 2)); --sk-in: min(var(--sk-w), 280px); }
+                /* O conteúdo encolhe para dar lugar às laterais */
+                body:has(.sk) .hh, body:has(.sk) .cx, body:has(.sk) .container { max-width:calc(100vw - 2 * var(--sk-w) - 24px); }
+                .sk { display:block; }
+                .sk-lado { position:fixed; top:64px; bottom:0; width:var(--sk-w); z-index:5; display:flex; flex-direction:column; align-items:center; text-align:center; padding:32px 16px; color:#fff !important; text-decoration:none !important; overflow:hidden; transition:opacity .3s, filter .2s;
+                    background:radial-gradient(120% 60% at 50% 0%, #ff9a2e 0%, rgba(255,154,46,0) 60%), linear-gradient(180deg, #F57C00 0%, #d96a00 100%); }
+                /* Em ecrãs muito largos o laranja enche a margem, mas o conteúdo fica numa coluna de 280px junto ao site */
+                .sk-esq { left:0; padding-left:calc(var(--sk-w) - var(--sk-in) + 16px); }
+                .sk-dir { right:0; padding-right:calc(var(--sk-w) - var(--sk-in) + 16px); }
+                .sk-lado:hover { filter:brightness(1.05); }
+                .sk-tag { font-size:12px; font-weight:600; letter-spacing:.08em; text-transform:uppercase; opacity:.85; }
+                .sk-nome { font-size:clamp(17px, 1.25vw, 24px); font-weight:700; line-height:1.15; margin-top:12px; letter-spacing:-.01em; }
+                .sk-foto { width:100%; max-width:210px; aspect-ratio:1; border-radius:50%; background:#fff; display:flex; align-items:center; justify-content:center; margin:32px 0 22px; box-shadow:0 20px 40px rgba(120,50,0,.25); }
+                .sk-foto img { width:72%; height:72%; object-fit:contain; transition:transform .4s; }
+                .sk-lado:hover .sk-foto img { transform:scale(1.06) rotate(-3deg); }
+                .sk-marca { font-size:13px; font-weight:500; opacity:.9; }
+                .sk-preco { font-size:clamp(20px, 1.55vw, 30px); font-weight:700; line-height:1.1; margin-top:14px; letter-spacing:-.02em; }
+                .sk-antes { font-size:14px; text-decoration:line-through; opacity:.7; margin-top:4px; }
+                .sk-sub { font-size:13px; opacity:.9; margin-top:14px; max-width:200px; line-height:1.4; }
+                .sk-btn { margin-top:26px; display:inline-flex; align-items:center; gap:8px; height:40px; padding:0 16px; white-space:nowrap; font-size:13px !important; max-width:100%; border-radius:999px; background:#16161d; color:#fff; font-size:14px; font-weight:600; }
+                .sk-btn i { font-size:11px; transition:transform .2s; }
+                .sk-lado:hover .sk-btn i { transform:translateX(3px); }
+                /* Pessoa encostada ao fundo da lateral, por baixo dos textos */
+                .sk-lado > span { position:relative; z-index:1; }
+                .sk-pessoa { position:absolute; bottom:0; transform:translateX(-50%); max-width:340px; height:auto; z-index:0; pointer-events:none; transition:transform .5s; filter:drop-shadow(0 -6px 24px rgba(120,50,0,.25)); }
+                .sk-esq .sk-pessoa { left:calc(var(--sk-w) - var(--sk-in) / 2); width:calc(var(--sk-in) * 1.02); max-width:300px; }
+                .sk-dir .sk-pessoa { left:calc(var(--sk-in) / 2); width:calc(var(--sk-in) * 1.12); }
+                .sk-dir .sk-arvore { width:calc(var(--sk-in) * .92); max-width:260px; bottom:96px; filter:drop-shadow(0 10px 18px rgba(120,50,0,.3)); }
+                .sk-lado:hover .sk-pessoa { transform:translateX(-50%) translateY(-6px); }
+            }
+            @media (min-width: 1360px) and (max-height: 760px) {
+                .sk-pessoa { display:none; }
+            }
+
+            /* Oferta especial (ao lado dos separadores de produtos) */
+            .of-card { display:flex; flex-direction:column; width:300px; position:sticky; top:88px; border-radius:20px; overflow:hidden; text-decoration:none !important; color:#1a1a2e !important;
+                background:radial-gradient(circle at 50% 32%, rgba(245,124,0,.16) 0, rgba(245,124,0,0) 170px), #f4f4f7; transition:transform .25s, box-shadow .25s; }
+            .of-card:hover { transform:translateY(-3px); box-shadow:0 14px 34px rgba(26,26,46,.10); }
+            .of-topo { display:flex; justify-content:space-between; align-items:center; padding:18px 20px 0; }
+            .of-tag { display:inline-flex; align-items:center; gap:6px; font-size:12px; font-weight:600; color:#E06F00; }
+            .of-tag::before { content:""; width:6px; height:6px; border-radius:50%; background:#F57C00; box-shadow:0 0 0 4px rgba(245,124,0,.18); }
+            .of-desc { height:28px; padding:0 10px; border-radius:999px; background:#16161d; color:#fff; font-size:13px; font-weight:700; display:inline-flex; align-items:center; }
+            .of-foto { height:230px; display:flex; align-items:center; justify-content:center; padding:18px 24px; }
+            .of-foto img { max-width:100%; max-height:100%; object-fit:contain; mix-blend-mode:multiply; transition:transform .4s; }
+            .of-card:hover .of-foto img { transform:scale(1.05); }
+            .of-info { display:flex; flex-direction:column; gap:6px; margin:0 10px 10px; padding:16px; border-radius:14px; background:#fff; flex:1; }
+            .of-cat { font-size:12px; color:#6b7280; }
+            .of-nome { font-size:15px; font-weight:600; line-height:1.35; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; }
+            .of-precos { display:flex; align-items:baseline; gap:8px; flex-wrap:wrap; margin-top:2px; }
+            .of-precos b { font-size:22px; font-weight:700; letter-spacing:-.01em; }
+            .of-precos s { font-size:13px; color:#a1a1aa; }
+            .of-stock { margin-bottom:12px; display:flex; align-items:center; gap:6px; font-size:12px; color:#15803d; }
+            .of-stock::before { content:""; width:6px; height:6px; border-radius:50%; background:#16a34a; }
+            .of-btn { display:flex; align-items:center; justify-content:center; gap:8px; height:44px; margin-top:auto; border-radius:999px; background:#16161d; color:#fff; font-size:14px; font-weight:600; transition:background .2s; }
+            .of-btn i { font-size:11px; transition:transform .2s; }
+            .of-card:hover .of-btn { background:#F57C00; }
+            .of-card:hover .of-btn i { transform:translateX(3px); }
+            @media (max-width: 767.98px) { .of-card { width:100%; } }
+
+            /* Explorar por categoria */
+            .cx { max-width:1430px; margin:0 auto 36px; padding:0 15px; }
+            .cx-topo { display:flex; align-items:baseline; justify-content:space-between; margin-bottom:16px; }
+            .cx-titulo { font-size:20px; font-weight:600; color:#1a1a2e; margin:0; letter-spacing:-.01em; }
+            .cx-grelha { list-style:none; margin:0; padding:0; display:grid; grid-template-columns:repeat(10, minmax(0,1fr)); gap:22px 12px; }
+            .cx-item { display:flex; flex-direction:column; align-items:center; gap:10px; text-decoration:none !important; color:#1a1a2e !important; }
+            .cx-circulo { width:100%; max-width:112px; aspect-ratio:1; border-radius:50%; background:#f4f4f7; display:flex; align-items:center; justify-content:center; overflow:hidden; transition:background .2s; }
+            .cx-circulo img { width:64%; height:64%; object-fit:contain; mix-blend-mode:multiply; transition:transform .3s; }
+            .cx-item:hover .cx-circulo { background:#ececf1; }
+            .cx-item:hover .cx-circulo img { transform:scale(1.07); }
+            .cx-nome { font-size:13px; font-weight:500; line-height:1.3; text-align:center; max-width:120px; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; }
+            .cx-item:hover .cx-nome { color:#F57C00; }
+            .cx-item:focus-visible { outline:none; }
+            .cx-item:focus-visible .cx-circulo { box-shadow:0 0 0 2px #fff, 0 0 0 4px #F57C00; }
+            @media (max-width: 1199.98px) { .cx-grelha { grid-template-columns:repeat(8, minmax(0,1fr)); } }
+            @media (max-width: 991.98px) {
+                .cx { padding:0 12px; margin-bottom:28px; }
+                .cx-titulo { font-size:17px; }
+                /* Telemóvel: duas linhas que deslizam na horizontal */
+                .cx-grelha { grid-template-columns:none; grid-template-rows:repeat(2, auto); grid-auto-flow:column; grid-auto-columns:76px; gap:16px 12px; overflow-x:auto; scroll-snap-type:x proximity; scrollbar-width:none; margin:0 -12px; padding:0 12px 4px; }
+                .cx-grelha::-webkit-scrollbar { display:none; }
+                .cx-grelha li { scroll-snap-align:start; }
+                .cx-circulo { width:76px; }
+                .cx-nome { font-size:12px; }
+            }
+        </style>
 </head>
 
     <body>
 
-        <%- include('partials/_header') %>
+        <%- include('partials/_header-compacto') %>
+        <% if (typeof skin !== "undefined" && skin) { var skUrl = "/" + (skin.categorySlug || "produto") + "/" + skin.urlKey; %>
+        <div class="sk" id="skin" aria-label="Publicidade">
+            <a class="sk-lado sk-esq" href="<%= skUrl %>" data-skin="esq">
+                <span class="sk-tag">Novo stock</span>
+                <span class="sk-nome"><%= skin.name %></span>
+                <span class="sk-foto"><% if (skin.image) { %><img src="<%= skin.image %>" alt=""><% } %></span>
+                <span class="sk-marca">Acabou de chegar à 100 bytes</span>
+                <img class="sk-pessoa" src="/img/skin/pessoa-esq.webp" alt="" loading="lazy">
+            </a>
+            <a class="sk-lado sk-dir" href="<%= skUrl %>" data-skin="dir">
+                <span class="sk-tag">Disponível já</span>
+                <span class="sk-preco"><%= skin.salePrice || skin.basePrice %></span>
+                <% if (skin.salePrice) { %><span class="sk-antes"><%= skin.basePrice %></span><% } %>
+                <span class="sk-sub">Entrega em Luanda e envio para todo o país</span>
+                <span class="sk-btn">Ver produto <i class="fas fa-arrow-right"></i></span>
+                <img class="sk-pessoa sk-arvore" src="/img/skin/arvore-natal.svg" alt="" loading="lazy">
+            </a>
+        </div>
+        <% } %>
 
         <!-- ========== MAIN CONTENT ========== -->
         <main id="content" role="main">
-            <!-- Slider Section -->
-            <div class="mb-5">
-                <div class="overflow-hidden">
-                    <div class="js-slick-carousel u-slick"
-                        data-autoplay="true"
-                        data-autoplay-speed="5000"
-                        data-pagi-classes="text-center position-absolute right-0 bottom-0 left-0 u-slick__pagination u-slick__pagination--long mb-3 mb-md-4">
-                        <% if (sliders && sliders.length > 0) { %>
-                            <% sliders.forEach(function(slide) { %>
-                                <div class="js-slide">
-                                    <% if (slide.link) { %>
-                                        <a href="<%- slide.link %>">
-                                            <img class="img-fluid w-100" src="<%- slide.image %>" alt="Slide">
-                                        </a>
-                                    <% } else { %>
-                                        <img class="img-fluid w-100" src="<%- slide.image %>" alt="Slide">
-                                    <% } %>
-                                </div>
-                            <% }) %>
-                        <% } else { %>
-                            <div class="js-slide">
-                                <img class="img-fluid w-100" src="https://cdn.100bytes.co.ao/hero/hero1.png" alt="Hero">
-                            </div>
-                        <% } %>
+            <!-- Topo: slider + destaques -->
+            <%
+                var slides = (sliders && sliders.length) ? sliders : [{ image: 'https://cdn.100bytes.co.ao/hero/hero1.png', link: '' }];
+                var cartoes = [];
+                if (typeof destaques !== 'undefined' && destaques) {
+                    if (destaques.novidade) cartoes.push({ etiqueta: 'Chegou agora', p: destaques.novidade });
+                    if (destaques.procurado) cartoes.push({ etiqueta: 'Mais procurado', p: destaques.procurado });
+                }
+            %>
+            <section class="hh <%= cartoes.length ? '' : 'hh-solo' %>" aria-label="Destaques">
+                <div class="hh-slider" id="hhSlider" aria-roledescription="carrossel">
+                    <div class="hh-track" id="hhTrack">
+                        <% slides.forEach(function (slide, i) { var link = slide.ctaLink || slide.link; %>
+                        <div class="hh-slide" role="group" aria-label="<%= i + 1 %> de <%= slides.length %>" data-i="<%= i %>">
+                            <% if (link) { %><a href="<%= link %>" class="hh-link" data-slide="<%= i + 1 %>"><% } %>
+                            <img src="<%= slide.image %>" alt="<%= slide.title || ('Destaque ' + (i + 1)) %>" width="1893" height="650"
+                                <%- i === 0 ? 'fetchpriority="high"' : 'loading="lazy"' %> decoding="async">
+                            <% if (link) { %></a><% } %>
+                        </div>
+                        <% }) %>
                     </div>
+                    <% if (slides.length > 1) { %>
+                    <button type="button" class="hh-seta hh-ant" id="hhAnt" aria-label="Destaque anterior"><i class="fas fa-angle-left"></i></button>
+                    <button type="button" class="hh-seta hh-seg" id="hhSeg" aria-label="Destaque seguinte"><i class="fas fa-angle-right"></i></button>
+                    <div class="hh-dots" id="hhDots">
+                        <% slides.forEach(function (s, i) { %><button type="button" class="hh-dot<%= i === 0 ? ' on' : '' %>" aria-label="Ir para o destaque <%= i + 1 %>"><span></span></button><% }) %>
+                    </div>
+                    <% } %>
                 </div>
-            </div>
-            <!-- End Slider Section -->
+
+                <% if (cartoes.length) { %>
+                <div class="hh-cards">
+                    <% cartoes.forEach(function (c) { var p = c.p; %>
+                    <a class="hh-card" href="/<%= p.categorySlug || 'produto' %>/<%= p.urlKey %>">
+                        <div class="hh-card-txt">
+                            <span class="hh-tag"><%= c.etiqueta %></span>
+                            <span class="hh-card-nome"><%= p.name %></span>
+                            <span class="hh-card-preco"><%= p.salePrice || p.basePrice %></span>
+                            <span class="hh-card-cta">Ver produto <i class="fas fa-arrow-right"></i></span>
+                        </div>
+                        <div class="hh-card-img"><% if (p.image) { %><img src="<%= p.image %>" alt="<%= p.name %>" decoding="async"><% } %></div>
+                    </a>
+                    <% }) %>
+                </div>
+                <% } %>
+            </section>
+            <% if (typeof categoriasDestaque !== "undefined" && categoriasDestaque.length) { %>
+            <section class="cx" aria-labelledby="cxTitulo">
+                <div class="cx-topo">
+                    <h2 id="cxTitulo" class="cx-titulo">Explorar por categoria</h2>
+                </div>
+                <ul class="cx-grelha">
+                    <% categoriasDestaque.forEach(function (c) { %>
+                    <li>
+                        <a class="cx-item" href="/<%= c.slug %>" data-cat="<%= c.slug %>">
+                            <span class="cx-circulo"><% if (c.image) { %><img src="<%= c.image %>" alt="" loading="lazy" decoding="async" width="96" height="96"><% } %></span>
+                            <span class="cx-nome"><%= c.name %></span>
+                        </a>
+                    </li>
+                    <% }) %>
+                </ul>
+            </section>
+            <% } %>
             <div class="container">
                 <!-- Vantagens Section - Horizontal Layout -->
                 <div class="mb-5 pb-4 border-top border-bottom py-4">
@@ -281,42 +493,23 @@
                         <!-- Deal -->
                         <% if (featured && featured.length > 0) { var fp = featured[0]; %>
                         <div class="col-md-auto mb-6 mb-md-0">
-                            <a href="/<%= fp.categorySlug %>/<%= fp.urlKey %>" class="d-block text-decoration-none" style="width:300px">
-                                <div style="border:2px solid #f39f1e;border-radius:20px;background:#fff;overflow:hidden;box-shadow:0 4px 20px rgba(243,159,30,0.13);transition:box-shadow .2s" onmouseover="this.style.boxShadow='0 8px 32px rgba(243,159,30,0.25)'" onmouseout="this.style.boxShadow='0 4px 20px rgba(243,159,30,0.13)'">
-                                    <!-- Header -->
-                                    <div style="background:linear-gradient(135deg,#f39f1e 0%,#e07b00 100%);padding:14px 18px;display:flex;justify-content:space-between;align-items:center">
-                                        <div>
-                                            <div style="color:#fff;font-size:11px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;opacity:.85">Destaque</div>
-                                            <div style="color:#fff;font-size:20px;font-weight:700;line-height:1.2;margin-top:2px">Oferta especial</div>
-                                        </div>
-                                        <% if (fp.discountPct) { %>
-                                        <div style="background:#fff;color:#e07b00;font-size:22px;font-weight:800;width:62px;height:62px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;box-shadow:0 2px 8px rgba(0,0,0,.15)">-<%= fp.discountPct %>%</div>
-                                        <% } %>
-                                    </div>
-                                    <!-- Image -->
-                                    <div style="background:#f8f8f8;display:flex;align-items:center;justify-content:center;height:220px;padding:16px">
-                                        <% if (fp.image) { %>
-                                        <img src="<%= fp.image %>" alt="<%= fp.name %>" style="max-height:188px;max-width:100%;object-fit:contain">
-                                        <% } else { %>
-                                        <div style="color:#ccc;font-size:13px">Sem imagem</div>
-                                        <% } %>
-                                    </div>
-                                    <!-- Info -->
-                                    <div style="padding:16px 18px 20px">
-                                        <% if (fp.category) { %>
-                                        <div style="font-size:11px;color:#999;text-transform:uppercase;letter-spacing:.8px;margin-bottom:4px"><%= fp.category %></div>
-                                        <% } %>
-                                        <div style="font-size:15px;font-weight:700;color:#1a1a2e;line-height:1.35;margin-bottom:12px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden"><%= fp.name %></div>
-                                        <div style="display:flex;align-items:baseline;gap:10px;flex-wrap:wrap">
-                                            <% if (fp.salePrice) { %>
-                                            <span style="font-size:24px;font-weight:800;color:#e05c00;line-height:1"><%= fp.salePrice %></span>
-                                            <span style="font-size:13px;color:#aaa;text-decoration:line-through"><%= fp.basePrice %></span>
-                                            <% } else { %>
-                                            <span style="font-size:24px;font-weight:800;color:#1a1a2e;line-height:1"><%= fp.basePrice %></span>
-                                            <% } %>
-                                        </div>
-                                        <div style="margin-top:14px;background:linear-gradient(135deg,#f39f1e,#e07b00);color:#fff;border-radius:10px;padding:10px;text-align:center;font-size:14px;font-weight:700;letter-spacing:.3px">Ver produto →</div>
-                                    </div>
+                            <a href="/<%= fp.categorySlug %>/<%= fp.urlKey %>" class="of-card">
+                                <div class="of-topo">
+                                    <span class="of-tag"><%= fp.discountPct ? 'Promoção' : 'Escolha da semana' %></span>
+                                    <% if (fp.discountPct) { %><span class="of-desc">-<%= fp.discountPct %>%</span><% } %>
+                                </div>
+                                <div class="of-foto">
+                                    <% if (fp.image) { %><img src="<%= fp.image %>" alt="<%= fp.name %>" loading="lazy"><% } %>
+                                </div>
+                                <div class="of-info">
+                                    <% if (fp.category) { %><span class="of-cat"><%= fp.category %></span><% } %>
+                                    <span class="of-nome"><%= fp.name %></span>
+                                    <span class="of-precos">
+                                        <b><%= fp.salePrice || fp.basePrice %></b>
+                                        <% if (fp.salePrice) { %><s><%= fp.basePrice %></s><% } %>
+                                    </span>
+                                    <span class="of-stock">Em stock · entrega em todo o país</span>
+                                    <span class="of-btn">Ver produto <i class="fas fa-arrow-right"></i></span>
                                 </div>
                             </a>
                         </div>
@@ -324,63 +517,10 @@
                         <!-- End Deal -->
                         <!-- Tab Prodcut -->
                         <div class="col">
-                            <ul class="row list-unstyled products-group no-gutters">
-                                <% newest.forEach(function(p) { %>
-                                <li class="col-6 col-md-4 col-wd-3 product-item">
-                                    <div class="product-item__outer h-100">
-                                        <div class="product-item__inner px-xl-4 p-3">
-                                            <div class="product-item__body pb-xl-2">
-                                                <% if (p.category) { %><div class="mb-2"><a href="/<%= p.categorySlug %>" class="font-size-12 text-gray-5"><%= p.category %></a></div><% } %>
-                                                <h5 class="mb-1 product-item__title"><a href="/<%= p.categorySlug %>/<%= p.urlKey %>" class="text-blue font-weight-bold"><%= p.name %></a></h5>
-                                                <div class="mb-2 position-relative">
-                                                    <a href="/<%= p.categorySlug %>/<%= p.urlKey %>" class="product-img-wrap">
-                                                        <% if (p.image) { %>
-                                                        <img class="product-img-primary" src="<%= p.image %>" alt="<%= p.name %>">
-                                                        <img class="product-img-hover" src="<%= p.image2 || p.image %>" alt="<%= p.name %>">
-                                                        <% } else { %>
-                                                        <div class="bg-gray-300 d-flex align-items-center justify-content-center w-100 h-100 text-muted" style="font-size:13px">Sem imagem</div>
-                                                        <% } %>
-                                                    </a>
-                                                    <% if (p.discountPct) { %><span style="position:absolute;top:8px;left:8px;background:#ffc107;color:#212529;font-size:11px;font-weight:700;padding:3px 8px;border-radius:20px;z-index:2;line-height:1.5;pointer-events:none">-<%= p.discountPct %>%</span><% } %>
-                                                    <% if (p.isNew) { %><span style="position:absolute;top:8px;right:8px;background:#28a745;color:#fff;font-size:10px;font-weight:700;padding:3px 7px;border-radius:20px;z-index:2;line-height:1.5;pointer-events:none">NOVO</span><% } else if (p.lowStock) { %><span style="position:absolute;top:8px;right:8px;background:#fd7e14;color:#fff;font-size:10px;font-weight:600;padding:3px 7px;border-radius:20px;z-index:2;line-height:1.5;pointer-events:none">Aproveite agora</span><% } %>
-                                                </div>
-                                                <div class="flex-center-between mb-1">
-                                                    <div class="prodcut-price">
-                                                        <% if (p.salePrice) { %>
-                                                        <div class="d-flex align-items-center flex-wrap position-relative">
-                                                            <ins class="font-size-20 text-red text-decoration-none mr-2"><%= p.salePrice %></ins>
-                                                            <del class="font-size-12 tex-gray-6 position-absolute bottom-100"><%= p.basePrice %></del>
-                                                        </div>
-                                                        <% } else { %>
-                                                        <div class="text-gray-100"><%= p.basePrice %></div>
-                                                        <% } %>
-                                                    </div>
-                                                    <div class="prodcut-add-cart">
-                                                        <button type="button" class="btn-add-cart btn-primary transition-3d-hover js-add-to-cart" data-cart-style="card"
-                                                            data-id="<%= p.id %>"
-                                                            data-name="<%= p.name %>"
-                                                            data-price="<%= p.salePriceValue != null ? p.salePriceValue : p.basePriceValue %>"
-                                                            data-price-formatted="<%= p.salePrice || p.basePrice %>"
-                                                            data-image="<%= p.image || '' %>"
-                                                            data-url="/<%= p.categorySlug %>/<%= p.urlKey %>"><i class="ec ec-add-to-cart"></i></button>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="product-item__footer">
-                                                <div class="border-top pt-2 flex-center-between flex-wrap">
-                                                    <a href="#" class="text-gray-6 font-size-13 js-favorite-toggle"
-                                                        data-product-id="<%= p.id %>"
-                                                        data-product-name="<%= p.name %>"
-                                                        data-product-image="<%= p.image || '' %>"
-                                                        data-product-price="<%= p.salePrice || p.basePrice || '' %>"
-                                                        data-product-url="/<%= p.categorySlug || 'produto' %>/<%= p.urlKey %>">
-                                                        <i class="far fa-heart mr-1 font-size-15"></i> <span data-fav-label>Adicionar à lista de desejos</span></a>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </li>
-                                <% }); %>
+                            <ul class="ls-grelha ls-grelha-home">
+                                <% newest.forEach(function(p, i) { %>
+                                <%- include('partials/_cartao-produto', { product: p, i: i }) %>
+                                <% }) %>
                             </ul>
                         </div>
                     </div>
@@ -418,116 +558,19 @@
                     <div class="tab-content">
                         <!-- Tab: Últimas entradas -->
                         <div class="tab-pane fade pt-2 show active" id="tab-all" role="tabpanel" aria-labelledby="tab-all-tab">
-                            <ul class="row list-unstyled products-group no-gutters">
-                                <% (tabsData.byCategory.all || []).forEach(function(p) { %>
-                                <li class="col-6 col-md-3 product-item">
-                                    <div class="product-item__outer h-100">
-                                        <div class="product-item__inner px-xl-4 p-3">
-                                            <div class="product-item__body pb-xl-2">
-                                                <% if (p.category) { %><div class="mb-2"><a href="/<%= p.categorySlug %>" class="font-size-12 text-gray-5"><%= p.category %></a></div><% } %>
-                                                <h5 class="mb-1 product-item__title"><a href="/<%= p.categorySlug %>/<%= p.urlKey %>" class="text-blue font-weight-bold"><%= p.name %></a></h5>
-                                                <div class="mb-2 position-relative">
-                                                    <a href="/<%= p.categorySlug %>/<%= p.urlKey %>" class="product-img-wrap">
-                                                        <% if (p.image) { %>
-                                                        <img class="product-img-primary" src="<%= p.image %>" alt="<%= p.name %>">
-                                                        <img class="product-img-hover" src="<%= p.image2 || p.image %>" alt="<%= p.name %>">
-                                                        <% } else { %>
-                                                        <div class="bg-gray-300 d-flex align-items-center justify-content-center w-100 h-100 text-muted" style="font-size:13px">Sem imagem</div>
-                                                        <% } %>
-                                                    </a>
-                                                    <% if (p.discountPct) { %><span style="position:absolute;top:8px;left:8px;background:#ffc107;color:#212529;font-size:11px;font-weight:700;padding:3px 8px;border-radius:20px;z-index:2;line-height:1.5;pointer-events:none">-<%= p.discountPct %>%</span><% } %>
-                                                    <% if (p.isNew) { %><span style="position:absolute;top:8px;right:8px;background:#28a745;color:#fff;font-size:10px;font-weight:700;padding:3px 7px;border-radius:20px;z-index:2;line-height:1.5;pointer-events:none">NOVO</span><% } else if (p.lowStock) { %><span style="position:absolute;top:8px;right:8px;background:#fd7e14;color:#fff;font-size:10px;font-weight:600;padding:3px 7px;border-radius:20px;z-index:2;line-height:1.5;pointer-events:none">Aproveite agora</span><% } %>
-                                                </div>
-                                                <div class="flex-center-between mb-1">
-                                                    <div class="prodcut-price">
-                                                        <% if (p.salePrice) { %>
-                                                        <div class="d-flex align-items-center flex-wrap position-relative">
-                                                            <ins class="font-size-20 text-red text-decoration-none mr-2"><%= p.salePrice %></ins>
-                                                            <del class="font-size-12 tex-gray-6 position-absolute bottom-100"><%= p.basePrice %></del>
-                                                        </div>
-                                                        <% } else { %>
-                                                        <div class="text-gray-100"><%= p.basePrice %></div>
-                                                        <% } %>
-                                                    </div>
-                                                    <div class="prodcut-add-cart">
-                                                        <button type="button" class="btn-add-cart btn-primary transition-3d-hover js-add-to-cart" data-cart-style="card"
-                                                            data-id="<%= p.id %>"
-                                                            data-name="<%= p.name %>"
-                                                            data-price="<%= p.salePriceValue != null ? p.salePriceValue : p.basePriceValue %>"
-                                                            data-price-formatted="<%= p.salePrice || p.basePrice %>"
-                                                            data-image="<%= p.image || '' %>"
-                                                            data-url="/<%= p.categorySlug %>/<%= p.urlKey %>"><i class="ec ec-add-to-cart"></i></button>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="product-item__footer">
-                                                <div class="border-top pt-2 flex-center-between flex-wrap">
-                                                    <a href="/<%= p.categorySlug %>/<%= p.urlKey %>" class="text-gray-6 font-size-13"><i class="ec ec-favorites mr-1 font-size-15"></i> Ver produto</a>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </li>
-                                <% }); %>
+                            <ul class="ls-grelha ls-grelha-home">
+                                <% (tabsData.byCategory.all || []).forEach(function(p, i) { %>
+                                <%- include('partials/_cartao-produto', { product: p, i: i }) %>
+                                <% }) %>
                             </ul>
                         </div>
                         <!-- Tabs: por categoria -->
                         <% tabsData.topCats.forEach(function(cat) { %>
                         <div class="tab-pane fade pt-2" id="tab-cat-<%= cat.id %>" role="tabpanel" aria-labelledby="tab-cat-<%= cat.id %>-tab">
-                            <ul class="row list-unstyled products-group no-gutters">
-                                <% (tabsData.byCategory[cat.id] || []).forEach(function(p) { %>
-                                <li class="col-6 col-md-3 product-item">
-                                    <div class="product-item__outer h-100">
-                                        <div class="product-item__inner px-xl-4 p-3">
-                                            <div class="product-item__body pb-xl-2">
-                                                <% if (p.category) { %><div class="mb-2"><a href="/<%= p.categorySlug %>" class="font-size-12 text-gray-5"><%= p.category %></a></div><% } %>
-                                                <h5 class="mb-1 product-item__title"><a href="/<%= p.categorySlug %>/<%= p.urlKey %>" class="text-blue font-weight-bold"><%= p.name %></a></h5>
-                                                <div class="mb-2 position-relative">
-                                                    <a href="/<%= p.categorySlug %>/<%= p.urlKey %>" class="product-img-wrap">
-                                                        <% if (p.image) { %>
-                                                        <img class="product-img-primary" src="<%= p.image %>" alt="<%= p.name %>">
-                                                        <img class="product-img-hover" src="<%= p.image2 || p.image %>" alt="<%= p.name %>">
-                                                        <% } else { %>
-                                                        <div class="bg-gray-300 d-flex align-items-center justify-content-center w-100 h-100 text-muted" style="font-size:13px">Sem imagem</div>
-                                                        <% } %>
-                                                    </a>
-                                                    <% if (p.discountPct) { %><span style="position:absolute;top:8px;left:8px;background:#ffc107;color:#212529;font-size:11px;font-weight:700;padding:3px 8px;border-radius:20px;z-index:2;line-height:1.5;pointer-events:none">-<%= p.discountPct %>%</span><% } %>
-                                                    <% if (p.isNew) { %><span style="position:absolute;top:8px;right:8px;background:#28a745;color:#fff;font-size:10px;font-weight:700;padding:3px 7px;border-radius:20px;z-index:2;line-height:1.5;pointer-events:none">NOVO</span><% } else if (p.lowStock) { %><span style="position:absolute;top:8px;right:8px;background:#fd7e14;color:#fff;font-size:10px;font-weight:600;padding:3px 7px;border-radius:20px;z-index:2;line-height:1.5;pointer-events:none">Aproveite agora</span><% } %>
-                                                </div>
-                                                <div class="flex-center-between mb-1">
-                                                    <div class="prodcut-price">
-                                                        <% if (p.salePrice) { %>
-                                                        <div class="d-flex align-items-center flex-wrap position-relative">
-                                                            <ins class="font-size-20 text-red text-decoration-none mr-2"><%= p.salePrice %></ins>
-                                                            <del class="font-size-12 tex-gray-6 position-absolute bottom-100"><%= p.basePrice %></del>
-                                                        </div>
-                                                        <% } else { %>
-                                                        <div class="text-gray-100"><%= p.basePrice %></div>
-                                                        <% } %>
-                                                    </div>
-                                                    <div class="prodcut-add-cart">
-                                                        <button type="button" class="btn-add-cart btn-primary transition-3d-hover js-add-to-cart" data-cart-style="card"
-                                                            data-id="<%= p.id %>"
-                                                            data-name="<%= p.name %>"
-                                                            data-price="<%= p.salePriceValue != null ? p.salePriceValue : p.basePriceValue %>"
-                                                            data-price-formatted="<%= p.salePrice || p.basePrice %>"
-                                                            data-image="<%= p.image || '' %>"
-                                                            data-url="/<%= p.categorySlug %>/<%= p.urlKey %>"><i class="ec ec-add-to-cart"></i></button>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="product-item__footer">
-                                                <div class="border-top pt-2 flex-center-between flex-wrap">
-                                                    <a href="/<%= p.categorySlug %>/<%= p.urlKey %>" class="text-gray-6 font-size-13"><i class="ec ec-favorites mr-1 font-size-15"></i> Ver produto</a>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </li>
-                                <% }); %>
-                                <% if ((tabsData.byCategory[cat.id] || []).length === 0) { %>
-                                <li class="col-12 py-5 text-center text-gray-6 font-size-14">Sem produtos nesta categoria.</li>
-                                <% } %>
+                            <ul class="ls-grelha ls-grelha-home">
+                                <% (tabsData.byCategory[cat.id] || []).forEach(function(p, i) { %>
+                                <%- include('partials/_cartao-produto', { product: p, i: i }) %>
+                                <% }) %>
                             </ul>
                         </div>
                         <% }); %>
@@ -763,6 +806,28 @@
         <!-- ========== END MAIN CONTENT ========== -->
 
         <%- include('partials/_footer') %>
+        <script>
+            (function () {
+                var sk = document.getElementById("skin");
+                if (!sk) return;
+                // As laterais terminam onde começa o rodapé (sobem com a página em vez de desaparecer)
+                var rodape = document.querySelector("footer");
+                var lados = sk.querySelectorAll(".sk-lado");
+                var pendente = false;
+                function ajustar() {
+                    pendente = false;
+                    var fundo = rodape ? Math.max(0, window.innerHeight - rodape.getBoundingClientRect().top) : 0;
+                    lados.forEach(function (l) { l.style.transform = fundo ? "translateY(-" + fundo + "px)" : ""; });
+                }
+                function pedir() { if (!pendente) { pendente = true; requestAnimationFrame(ajustar); } }
+                window.addEventListener("scroll", pedir, { passive: true });
+                window.addEventListener("resize", pedir);
+                ajustar();
+                sk.querySelectorAll("a").forEach(function (a) {
+                    a.addEventListener("click", function () { if (window.bbTrack) window.bbTrack("skin_click", { productId: "<%= skin ? skin.id : '' %>", meta: { lado: a.dataset.skin } }); });
+                });
+            })();
+        </script>
 
         <!-- ========== SECONDARY CONTENTS ========== -->
         <!-- Account Sidebar Navigation -->
@@ -1028,17 +1093,6 @@
         <!-- End Account Sidebar Navigation -->
         <!-- ========== END SECONDARY CONTENTS ========== -->
 
-        <!-- Go to Top -->
-        <a class="js-go-to u-go-to" href="#"
-            data-position='{"bottom": 15, "right": 15 }'
-            data-type="fixed"
-            data-offset-top="400"
-            data-compensation="#header"
-            data-show-effect="slideInUp"
-            data-hide-effect="slideOutDown">
-            <span class="fas fa-arrow-up u-go-to__inner"></span>
-        </a>
-        <!-- End Go to Top -->
 
         <!-- cart drawer is in _footer.ejs via _cart-drawer.ejs partial -->
 
@@ -1226,6 +1280,75 @@
         <script src="/js/precos.js" defer></script>
     <script src="/js/comportamento.js" defer></script>
     <script src="/js/pesquisa.js" defer></script>
+
+    <script>
+        // Topo da página inicial: carrossel leve (deslizar, setas, pastilhas com progresso,
+        // pausa ao passar o rato ou quando o separador não está visível).
+        (function hhIniciar() {
+            var slider = document.getElementById('hhSlider');
+            var track = document.getElementById('hhTrack');
+            if (!slider || !track) return;
+            var slides = track.children;
+            var dots = Array.prototype.slice.call(document.querySelectorAll('#hhDots .hh-dot'));
+            var TEMPO = 6000;
+            slider.style.setProperty('--hh-tempo', TEMPO / 1000 + 's');
+            var atual = 0, temporizador = null, pausado = false;
+
+            function marcar(i) {
+                dots.forEach(function (d, k) {
+                    d.classList.toggle('on', k === i);
+                    var s = d.firstElementChild;
+                    if (s) { s.style.animation = 'none'; void s.offsetWidth; s.style.animation = ''; }
+                });
+            }
+            function ir(i) {
+                if (!slides.length) return;
+                atual = (i + slides.length) % slides.length;
+                track.scrollTo({ left: track.clientWidth * atual, behavior: 'smooth' });
+                marcar(atual);
+                agendar();
+            }
+            function agendar() {
+                clearTimeout(temporizador);
+                if (slides.length > 1 && !pausado) temporizador = setTimeout(function () { ir(atual + 1); }, TEMPO);
+            }
+            function pausar(sim) {
+                pausado = sim;
+                slider.classList.toggle('pausa', sim);
+                if (sim) clearTimeout(temporizador); else agendar();
+            }
+
+            var ant = document.getElementById('hhAnt'), seg = document.getElementById('hhSeg');
+            if (ant) ant.addEventListener('click', function () { ir(atual - 1); });
+            if (seg) seg.addEventListener('click', function () { ir(atual + 1); });
+            dots.forEach(function (d, k) { d.addEventListener('click', function () { ir(k); }); });
+
+            // Deslizar com o dedo / roda: acompanhar o slide visível
+            var fimScroll = null;
+            track.addEventListener('scroll', function () {
+                clearTimeout(fimScroll);
+                fimScroll = setTimeout(function () {
+                    var i = Math.round(track.scrollLeft / Math.max(1, track.clientWidth));
+                    if (i !== atual) { atual = i; marcar(i); agendar(); }
+                }, 120);
+            }, { passive: true });
+
+            slider.addEventListener('mouseenter', function () { pausar(true); });
+            slider.addEventListener('mouseleave', function () { pausar(false); });
+            slider.addEventListener('focusin', function () { pausar(true); });
+            slider.addEventListener('focusout', function () { pausar(false); });
+            document.addEventListener('visibilitychange', function () { pausar(document.hidden); });
+            window.addEventListener('resize', function () { track.scrollTo({ left: track.clientWidth * atual }); });
+
+            // Medir: clique em cada destaque
+            slider.addEventListener('click', function (e) {
+                var a = e.target.closest('.hh-link');
+                if (a && window.bbTrack) window.bbTrack('search_click', { meta: { source: 'hero', slide: Number(a.dataset.slide) } });
+            });
+
+            agendar();
+        })();
+    </script>
 </body>
 </html>
 

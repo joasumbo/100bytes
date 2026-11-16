@@ -1,0 +1,74 @@
+<%#
+  Detalhe de uma encomenda (estado, produtos, entrega e ajuda), partilhado pela
+  página de confirmação (/encomenda/:code) e pelo rastreio (/rastreio/:code).
+  Recebe: order
+%>
+<%
+var ejFmt = function (v) { return Number(v || 0).toLocaleString('pt-PT', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' Kz'; };
+var ejPassos = [
+    { keys: ['pending'],                 label: 'Recebida' },
+    { keys: ['confirmed'],               label: 'Confirmada' },
+    { keys: ['preparing', 'processing'], label: 'Em preparação' },
+    { keys: ['shipped'],                 label: 'A caminho' },
+    { keys: ['delivered'],               label: 'Entregue' },
+];
+var ejAtual = -1;
+ejPassos.forEach(function (p, i) { if (p.keys.indexOf(order.status) >= 0) ejAtual = i; });
+var ejItens = (order.items || []).reduce(function (s, i) { return s + (Number(i.qty) || 0); }, 0);
+%>
+
+<% if (order.status !== 'cancelled') { %>
+<section class="lj-card" style="margin-bottom:24px;padding:20px 12px 18px;">
+    <ol class="lj-passos" aria-label="Estado da encomenda">
+        <% ejPassos.forEach(function (p, i) { %>
+        <li class="<%= i < ejAtual ? 'feito' : i === ejAtual ? 'atual' : '' %>"<%- i === ejAtual ? ' aria-current="step"' : '' %>><%= p.label %></li>
+        <% }) %>
+    </ol>
+</section>
+<% } %>
+
+<div class="lj-duas">
+    <section class="lj-card">
+        <h2 class="lj-sec">Produtos<small><%= ejItens %> <%= ejItens === 1 ? 'artigo' : 'artigos' %></small></h2>
+        <% (order.items || []).forEach(function (item) { var q = Number(item.qty) || 1; %>
+        <div class="lj-item">
+            <div class="lj-item-foto">
+                <% if (item.image) { %><img src="<%= item.image %>" alt="" onerror="this.remove()"><% } %>
+                <span class="lj-item-qtd"><%= q %></span>
+            </div>
+            <div class="lj-item-txt">
+                <div class="lj-item-nome"><%= item.name %></div>
+                <% if (q > 1) { %><div class="lj-item-uni"><%= q %> × <%= ejFmt(item.price) %></div><% } %>
+            </div>
+            <div class="lj-item-preco"><%= ejFmt(Number(item.price) * q) %></div>
+        </div>
+        <% }) %>
+        <div class="lj-totais">
+            <div class="lj-linha"><span>Subtotal</span><b><%= ejFmt(order.total) %></b></div>
+            <div class="lj-linha"><span>Entrega</span><b>Confirmada consigo</b></div>
+            <div class="lj-linha total"><span>Total</span><b><%= ejFmt(order.total) %></b></div>
+        </div>
+    </section>
+
+    <aside class="lj-fixo">
+        <section class="lj-card">
+            <h2 class="lj-sec">Entrega</h2>
+            <dl class="lj-dados">
+                <dt>Nome</dt><dd><%= order.customer.name %></dd>
+                <dt>Telefone</dt><dd><%= order.customer.phone %></dd>
+                <% if (order.customer.email) { %><dt>Email</dt><dd><%= order.customer.email %></dd><% } %>
+                <dt>Morada</dt><dd><%= order.delivery.address %></dd>
+                <dt>Município</dt><dd><%= order.delivery.city %></dd>
+                <dt>Província</dt><dd><%= order.delivery.province %></dd>
+                <% if (order.delivery.notes) { %><dt>Notas</dt><dd><%= order.delivery.notes %></dd><% } %>
+            </dl>
+        </section>
+        <section class="lj-card">
+            <div class="lj-nota">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.8 19.8 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.12 4.18 2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+                <span><strong>Dúvidas sobre a encomenda?</strong>Ligue para <a href="tel:+244928499325" style="color:inherit;text-decoration:underline;">928 499 325</a> ou fale connosco no <a href="https://wa.me/244928499325?text=<%= encodeURIComponent('Olá! Tenho uma dúvida sobre a encomenda ' + order.code) %>" target="_blank" rel="noopener" style="color:inherit;text-decoration:underline;">WhatsApp</a>, com o código <%= order.code %>.</span>
+            </div>
+        </section>
+        <%- typeof ejAcoes !== 'undefined' ? ejAcoes : '' %>
+    </aside>
+</div>

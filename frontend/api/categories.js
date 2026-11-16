@@ -52,7 +52,12 @@ function findCategoryBySlug(slug, allCats) {
 /**
  * Top N categorias (qualquer nível) ordenadas por número de produtos (descendente).
  */
-async function getTopCategories(limit = 5) {
+async function getTopCategories(limit = 6) {
+  // As categorias com mais unidades em stock (vindas do Winmax); recurso: as com mais produtos
+  try {
+    const d = await apiFetch("/categories/destaque?ordem=stock&limit=" + limit);
+    if (d && d.categories && d.categories.length) return d.categories.map((c) => ({ id: c.id, name: c.name, slug: c.slug, count: c.count }));
+  } catch (e) { /* plano B abaixo */ }
   const data = await apiFetch("/categories");
   return (data.categories || [])
     .filter((c) => c.active && (c._count?.products || 0) > 0)
@@ -61,5 +66,23 @@ async function getTopCategories(limit = 5) {
     .map((c) => ({ id: c.id, name: c.name, slug: c.slug, count: c._count?.products || 0 }));
 }
 
-module.exports = { getRootCategories, getAllCategories, getCategoryBySlug, findCategoryBySlug, getTopCategories };
+/**
+ * Categorias da secção "Explorar por categoria" da página inicial: as que têm
+ * mais produtos visíveis, com imagem (gerada no Backend). Cache 5 min.
+ */
+let destaqueCache = { em: 0, lista: [] };
+async function getCategoriasDestaque(limit = 20) {
+  if (Date.now() - destaqueCache.em < 300000 && destaqueCache.lista.length) return destaqueCache.lista;
+  try {
+    const data = await apiFetch("/categories/destaque?limit=" + limit);
+    const lista = (data.categories || []).map((c) => ({ name: c.name, slug: c.slug, image: c.image, count: c.count }));
+    // Só guarda em cache quando todas já têm imagem (as que faltam são geradas em segundo plano)
+    destaqueCache = { em: lista.every((c) => c.image) ? Date.now() : 0, lista };
+  } catch (e) {
+    /* mantém a anterior */
+  }
+  return destaqueCache.lista;
+}
+
+module.exports = { getCategoriasDestaque, getRootCategories, getAllCategories, getCategoryBySlug, findCategoryBySlug, getTopCategories };
 

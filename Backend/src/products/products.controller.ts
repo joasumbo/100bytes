@@ -22,6 +22,12 @@ export class ProductsController {
   }
 
   // Rota estática antes de :id, senão "bestsellers" seria interpretado como id.
+  /** Público: destaques do topo da página inicial (novidade e mais procurado) */
+  @Get('destaques')
+  destaques() {
+    return this.complementos.destaques();
+  }
+
   @Get('bestsellers')
   bestSellers(@Query('limit') limit?: string) {
     return this.products.bestSellers(parseInt(limit ?? '24'));

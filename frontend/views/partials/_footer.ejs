@@ -1,174 +1,185 @@
 <!-- ========== FOOTER ========== -->
 <style>
-    /* Fonte global do site: Poppins. Aplicada na base + elementos-chave para
-       herdar em todo o texto; os ícones (FontAwesome / electro) mantêm a sua
-       própria font porque definem font-family nas suas classes. */
-    html, body, button, input, select, textarea, optgroup,
-    h1, h2, h3, h4, h5, h6, .btn, .form-control, .nav-link, .dropdown-item, .badge {
-        font-family: 'Poppins', Helvetica, Arial, sans-serif !important;
+    /* Rodapé escuro, a condizer com o cabeçalho */
+    .ft { background:#16161d; color:#a1a1aa; font-size:14px; position:relative; z-index:6; }
+    .ft a { color:inherit; text-decoration:none; transition:color .15s; }
+    .ft a:hover { color:#fff; text-decoration:none; }
+
+    /* Topo: marca + newsletter */
+    .ft-topo { display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); gap:48px; align-items:center; padding:48px 0 40px; border-bottom:1px solid rgba(255,255,255,.08); }
+    .ft-logo img { height:64px; width:auto; display:block; filter:brightness(0) invert(1); }
+    .ft-sobre { margin:16px 0 0; max-width:440px; line-height:1.65; }
+    .ft-news-tit { color:#fff; font-size:17px; font-weight:600; margin:0 0 4px; }
+    .ft-news-sub { margin:0 0 14px; }
+    .ft-news-form { display:flex; gap:8px; max-width:520px; }
+    .ft-news-form input { flex:1; min-width:0; height:46px; border-radius:999px; border:1px solid rgba(255,255,255,.14); background:rgba(255,255,255,.06); color:#fff; padding:0 20px; font-size:14px; outline:none; transition:border-color .15s, background .15s; }
+    .ft-news-form input::placeholder { color:#71717a; }
+    .ft-news-form input:focus { border-color:#F57C00; background:rgba(255,255,255,.09); }
+    .ft-news-form button { height:46px; padding:0 22px; border:0; border-radius:999px; background:#F57C00; color:#fff; font-size:14px; font-weight:600; cursor:pointer; white-space:nowrap; transition:background .15s; }
+    .ft-news-form button:hover { background:#e06f00; }
+    .ft-news-ok { display:none; color:#fff; margin-top:10px; font-size:13px; }
+
+    /* Colunas de links */
+    .ft-cols { display:grid; grid-template-columns:repeat(4, minmax(0,1fr)) minmax(0,1.6fr); gap:32px; padding:40px 0; border-bottom:1px solid rgba(255,255,255,.08); }
+    .ft-tit { color:#fff; font-size:14px; font-weight:600; margin:0 0 16px; }
+    .ft-lista { list-style:none; margin:0; padding:0; }
+    .ft-lista li + li { margin-top:10px; }
+
+    /* Lojas */
+    .ft-lojas { display:grid; grid-template-columns:1fr 1fr; gap:20px 24px; }
+    .ft-loja-nome { color:#fff; font-weight:500; margin-bottom:4px; }
+    .ft-loja p { margin:0; line-height:1.55; }
+    .ft-loja a { color:#fff; }
+    .ft-loja a:hover { color:#F57C00; }
+    .ft-contacto { grid-column:1 / -1; display:flex; flex-wrap:wrap; gap:8px 20px; padding-top:4px; }
+    .ft-contacto a { display:inline-flex; align-items:center; gap:8px; color:#fff; }
+    .ft-contacto a:hover { color:#F57C00; }
+    .ft-contacto svg { width:16px; height:16px; color:#71717a; }
+
+    /* Base: redes, pagamentos, direitos */
+    .ft-base { display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:16px 24px; padding:22px 0 26px; font-size:13px; }
+    .ft-redes { display:flex; gap:8px; }
+    .ft-redes a { width:38px; height:38px; border-radius:50%; border:1px solid rgba(255,255,255,.14); display:inline-flex; align-items:center; justify-content:center; color:#d4d4d8; transition:background .15s, border-color .15s, color .15s; }
+    .ft-redes a:hover { background:#F57C00; border-color:#F57C00; color:#fff; }
+    .ft-redes svg { width:17px; height:17px; }
+    .ft-pag { display:flex; align-items:center; gap:10px; }
+    .ft-pag-item { height:30px; padding:0 12px; border-radius:6px; background:#fff; display:inline-flex; align-items:center; gap:6px; color:#16161d; font-size:12px; font-weight:600; }
+    .ft-pag-item img { height:18px; width:auto; }
+    .ft-legal { display:flex; flex-wrap:wrap; align-items:center; gap:6px 18px; color:#71717a; }
+
+    @media (max-width: 991.98px) {
+        .ft-topo { grid-template-columns:1fr; gap:28px; padding:36px 0 32px; }
+        .ft-cols { grid-template-columns:1fr 1fr; gap:28px 20px; }
+        .ft-cols > .ft-col-lojas { grid-column:1 / -1; }
     }
-
-    .site-footer { background: #fff; }
-    .site-footer a { transition: color .15s, padding-left .15s; }
-
-    /* Newsletter */
-    .footer-news { background: #F57C00; padding: 30px 0; }
-    .footer-news__title { font-size: 18px; font-weight: 700; margin-bottom: 4px; color: #fff; }
-    .footer-news__sub { font-size: 13px; color: #fff; opacity: .9; }
-    .footer-news__form { display: flex; flex: 1; min-width: 260px; max-width: 480px; border-radius: 8px; overflow: hidden; }
-    .footer-news__form input { flex: 1; border: 0; outline: 0; padding: 0 16px; height: 48px; font-size: 13px; }
-    .footer-news__form button { background: #1a1a2e; color: #fff; border: 0; padding: 0 24px; font-weight: 700; font-size: 12px; letter-spacing: .6px; height: 48px; cursor: pointer; transition: background .2s; }
-    .footer-news__form button:hover { background: #000; }
-
-    /* Main */
-    .footer-main { padding: 48px 0 24px; border-top: 1px solid #eee; }
-    .footer-col__title { font-weight: 700; font-size: 12px; letter-spacing: .8px; text-transform: uppercase; color: #1a1a2e; margin: 0 0 14px; padding-bottom: 10px; position: relative; }
-    .footer-col__title::after { content: ""; position: absolute; left: 0; bottom: 0; width: 32px; height: 2px; background: #F57C00; }
-    .footer-links { list-style: none; padding: 0; margin: 0; }
-    .footer-links li { margin-bottom: 9px; }
-    .footer-links a { font-size: 13px; color: #5a5a6a; text-decoration: none; }
-    .footer-links a:hover { color: #F57C00; padding-left: 4px; }
-
-    .footer-about__text { font-size: 13px; color: #666; line-height: 1.75; margin-bottom: 10px; }
-    .footer-about__tag { font-size: 13px; font-style: italic; color: #1a1a2e; font-weight: 600; margin-bottom: 18px; }
-
-    /* Social icons */
-    .footer-social { display: flex; gap: 10px; }
-    .footer-social a {
-        width: 40px; height: 40px; border-radius: 10px;
-        display: flex; align-items: center; justify-content: center;
-        color: #fff; font-size: 17px; text-decoration: none;
-        transition: transform .18s, box-shadow .18s, opacity .18s;
+    @media (max-width: 575.98px) {
+        .ft-lojas { grid-template-columns:1fr; }
+        .ft-news-form { flex-direction:column; }
+        .ft-base { flex-direction:column; align-items:flex-start; }
     }
-    .footer-social a:hover { transform: translateY(-3px); box-shadow: 0 6px 14px rgba(0,0,0,.18); opacity: .95; }
-    .footer-social .s-ig { background: linear-gradient(45deg, #f09433, #e6683c 30%, #dc2743 55%, #cc2366 75%, #bc1888); }
-    .footer-social .s-fb { background: #1877f2; }
-    .footer-social .s-wa { background: #25d366; }
-
-    /* Contact blocks */
-    .footer-contact__group { margin-bottom: 18px; }
-    .footer-contact__label { font-weight: 700; font-size: 12px; color: #1a1a2e; margin-bottom: 8px; text-transform: uppercase; letter-spacing: .3px; }
-    .footer-contact__row { display: flex; align-items: flex-start; gap: 9px; margin-bottom: 6px; font-size: 13px; color: #5a5a6a; line-height: 1.5; }
-    .footer-contact__row i { color: #F57C00; font-size: 13px; margin-top: 3px; flex-shrink: 0; width: 14px; text-align: center; }
-    .footer-contact__row a { color: #F57C00; text-decoration: none; }
-    .footer-contact__row a:hover { text-decoration: underline; }
-
-    /* Bottom */
-    .footer-bottom { background: #1a1a2e; padding: 16px 0; }
-    .footer-bottom__inner { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px; }
-    .footer-bottom span { font-size: 12px; color: #aab; }
-    .footer-bottom .footer-bottom__pay { font-size: 12px; color: #889; letter-spacing: .3px; }
 </style>
 
-<footer class="site-footer">
+<footer class="ft site-footer">
+    <div class="container">
 
-    <!-- Newsletter Bar -->
-    <div class="footer-news">
-        <div class="container">
-            <div class="d-flex align-items-center flex-wrap" style="gap:20px;">
-                <div style="flex:1;min-width:260px;">
-                    <div class="footer-news__title">Subscreve a nossa newsletter</div>
-                    <div class="footer-news__sub">Recebe novidades, promoções e lançamentos em primeira mão.</div>
-                </div>
-                <form class="footer-news__form" onsubmit="return false;">
-                    <input type="email" placeholder="O seu endereço de email">
-                    <button type="submit">SUBSCREVER</button>
+        <div class="ft-topo">
+            <div>
+                <a href="/" class="ft-logo" aria-label="100 bytes — página inicial"><img src="/img/logo-completo.png" alt="100 bytes" width="71" height="52" loading="lazy"></a>
+                <p class="ft-sobre">Equipamento informático, redes e segurança para casa e empresa, com assistência técnica própria em Luanda.</p>
+            </div>
+            <div>
+                <p class="ft-news-tit">Novidades e promoções no seu email</p>
+                <p class="ft-news-sub">Os lançamentos e as campanhas da semana, sem spam.</p>
+                <form class="ft-news-form" id="ftNews" novalidate>
+                    <label for="ftNewsEmail" class="sr-only">Email</label>
+                    <input id="ftNewsEmail" type="email" placeholder="O seu endereço de email" autocomplete="email" required>
+                    <button type="submit">Subscrever</button>
                 </form>
+                <p class="ft-news-ok" id="ftNewsOk" role="status">Obrigado. Vai receber as próximas novidades.</p>
             </div>
         </div>
-    </div>
 
-    <!-- Main Footer -->
-    <div class="footer-main">
-        <div class="container">
-            <div class="row">
-
-                <!-- About -->
-                <div class="col-lg-3 col-md-6 mb-5">
-                    <h6 class="footer-col__title">100 Bytes</h6>
-                    <p class="footer-about__text">A 100 Bytes oferece soluções tecnológicas com rigor, qualidade e compromisso — produtos, suporte especializado e dedicação contínua à excelência.</p>
-                    <div class="footer-social">
-                        <a class="s-ig" href="https://www.instagram.com/100.bytes/" target="_blank" rel="noopener noreferrer" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
-                        <a class="s-fb" href="https://www.facebook.com/p/100bytes-100063935954143/" target="_blank" rel="noopener noreferrer" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
-                        <a class="s-wa" href="https://wa.me/244928499325" target="_blank" rel="noopener noreferrer" aria-label="WhatsApp"><i class="fab fa-whatsapp"></i></a>
+        <div class="ft-cols">
+            <div>
+                <p class="ft-tit">Comprar</p>
+                <ul class="ft-lista">
+                    <li><a href="/promocoes">Promoções</a></li>
+                    <li><a href="/novidades">Novidades</a></li>
+                    <li><a href="/mais-vendidos">Mais vendidos</a></li>
+                    <li><a href="/pesquisa">Pesquisar produtos</a></li>
+                </ul>
+            </div>
+            <div>
+                <p class="ft-tit">Ajuda</p>
+                <ul class="ft-lista">
+                    <li><a href="/apoio-ao-cliente">Apoio ao cliente</a></li>
+                    <li><a href="/rastreio">Seguir encomenda</a></li>
+                    <li><a href="/formas-de-pagamento">Formas de pagamento</a></li>
+                    <li><a href="/trocas-e-devolucoes">Trocas e devoluções</a></li>
+                    <li><a href="/faq">Perguntas frequentes</a></li>
+                </ul>
+            </div>
+            <div>
+                <p class="ft-tit">Empresa</p>
+                <ul class="ft-lista">
+                    <li><a href="/sobre-nos">Sobre nós</a></li>
+                    <li><a href="/lojas">Lojas</a></li>
+                    <li><a href="/termos-e-condicoes">Termos e condições</a></li>
+                    <li><a href="/politica-de-privacidade">Privacidade</a></li>
+                    <li><a href="/politica-de-cookies">Cookies</a></li>
+                </ul>
+            </div>
+            <div>
+                <p class="ft-tit">A sua conta</p>
+                <ul class="ft-lista">
+                    <li><a href="#" onclick="if(window.customerAuth)window.customerAuth.showLoginModal();return false;">Entrar</a></li>
+                    <li><a href="#" onclick="if(window.customerAuth)window.customerAuth.showRegisterModal();return false;">Criar conta</a></li>
+                    <li><a href="/perfil#encomendas">As minhas encomendas</a></li>
+                    <li><a href="/perfil#favoritos">Favoritos</a></li>
+                </ul>
+            </div>
+            <div class="ft-col-lojas">
+                <p class="ft-tit">Lojas</p>
+                <div class="ft-lojas">
+                    <div class="ft-loja">
+                        <div class="ft-loja-nome">Liga Africana · Assistência técnica</div>
+                        <p>Rua da Liga Africana, n.º 81, Luanda</p>
+                        <p><a href="tel:+244928499325">+244 928 499 325</a></p>
+                    </div>
+                    <div class="ft-loja">
+                        <div class="ft-loja-nome">Samba</div>
+                        <p>Rua Direita da Samba, 153 (ao lado da Mecauto)</p>
+                        <p><a href="tel:+244928499319">+244 928 499 319</a></p>
+                    </div>
+                    <div class="ft-contacto">
+                        <a href="mailto:geral@100bytes.co.ao"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-10 6L2 7"/></svg>geral@100bytes.co.ao</a>
+                        <a href="tel:+244946920882"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.8 19.8 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.12 4.18 2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z"/></svg>Sede: +244 946 920 882</a>
                     </div>
                 </div>
-
-                <!-- Produtos -->
-                <div class="col-lg-2 col-md-6 mb-5">
-                    <h6 class="footer-col__title">Produtos</h6>
-                    <ul class="footer-links">
-                        <li><a href="/promocoes">Promoções</a></li>
-                        <li><a href="/novidades">Novidades</a></li>
-                        <li><a href="/mais-vendidos">Mais vendidos</a></li>
-                        <li><a href="/apoio-ao-cliente">Apoio ao cliente</a></li>
-                    </ul>
-                </div>
-
-                <!-- Empresa -->
-                <div class="col-lg-2 col-md-6 mb-5">
-                    <h6 class="footer-col__title">Empresa</h6>
-                    <ul class="footer-links">
-                        <li><a href="/sobre-nos">Sobre Nós</a></li>
-                        <li><a href="/lojas">Lojas</a></li>
-                        <li><a href="/termos-e-condicoes">Termos e Condições</a></li>
-                        <li><a href="/politica-de-privacidade">Política de Privacidade</a></li>
-                        <li><a href="/trocas-e-devolucoes">Trocas e Devoluções</a></li>
-                        <li><a href="/formas-de-pagamento">Formas de Pagamento</a></li>
-                        <li><a href="/faq">Perguntas Frequentes</a></li>
-                        <li><a href="/apoio-ao-cliente">Apoio ao Cliente</a></li>
-                    </ul>
-                </div>
-
-                <!-- Conta -->
-                <div class="col-lg-2 col-md-6 mb-5">
-                    <h6 class="footer-col__title">A Sua Conta</h6>
-                    <ul class="footer-links">
-                        <li><a href="#" onclick="if(window.customerAuth)window.customerAuth.showRegisterModal();return false;">Criar Conta</a></li>
-                        <li><a href="#" onclick="if(window.customerAuth)window.customerAuth.showLoginModal();return false;">Entrar</a></li>
-                        <li><a href="/perfil#encomendas">As minhas encomendas</a></li>
-                        <li><a href="/perfil#favoritos">Favoritos</a></li>
-                    </ul>
-                </div>
-
-                <!-- Contactos -->
-                <div class="col-lg-3 col-md-6 mb-5">
-                    <h6 class="footer-col__title">Contacte-Nos</h6>
-
-                    <div class="footer-contact__group">
-                        <div class="footer-contact__label">Sede</div>
-                        <div class="footer-contact__row"><i class="fas fa-map-marker-alt"></i><span>Rua António Américo Lencastre, n.º 11 — Luanda, Angola</span></div>
-                        <div class="footer-contact__row"><i class="fas fa-envelope"></i><a href="mailto:geral@100bytes.co.ao">geral@100bytes.co.ao</a></div>
-                        <div class="footer-contact__row"><i class="fas fa-phone"></i><a href="tel:+244946920882">+244 946 920 882</a></div>
-                    </div>
-
-                    <div class="footer-contact__group" style="margin-bottom:0;">
-                        <div class="footer-contact__label">Loja 1 — Liga Africana / Assistência Técnica</div>
-                        <div class="footer-contact__row"><i class="fas fa-map-marker-alt"></i><span>Rua da Liga Africana, n.º 81 — Luanda, Angola</span></div>
-                        <div class="footer-contact__row"><i class="fas fa-phone"></i><a href="tel:+244928499325">+244 928 499 325</a></div>
-                    </div>
-                </div>
-
             </div>
         </div>
-    </div>
 
-    <!-- Bottom Bar -->
-    <div class="footer-bottom">
-        <div class="container">
-            <div class="footer-bottom__inner">
-                <span>© 2026 100 Bytes — Todos os direitos reservados.</span>
-                <span class="footer-bottom__pay">
-                    <a href="/politica-de-privacidade" style="color:#aab;">Privacidade</a>
-                    · <a href="/politica-de-cookies" style="color:#aab;">Cookies</a>
-                    · <a href="/termos-e-condicoes" style="color:#aab;">Termos</a>
-                    · Luanda, Angola 🇦🇴
-                </span>
+        <div class="ft-base">
+            <div class="ft-redes">
+                <a href="https://www.instagram.com/100.bytes/" target="_blank" rel="noopener noreferrer" aria-label="Instagram">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2.5" y="2.5" width="19" height="19" rx="5.5"/><circle cx="12" cy="12" r="4.2"/><path d="M17.6 6.4h.01"/></svg>
+                </a>
+                <a href="https://www.facebook.com/p/100bytes-100063935954143/" target="_blank" rel="noopener noreferrer" aria-label="Facebook">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg>
+                </a>
+                <a href="https://wa.me/244928499325" target="_blank" rel="noopener noreferrer" aria-label="WhatsApp">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3.5 20.5l1.3-4.1A8.5 8.5 0 1 1 8 19.6z"/><path d="M9.2 8.6c.2-.4.5-.4.8-.4h.4c.2 0 .4.1.5.4l.6 1.5c.1.2 0 .5-.1.6l-.5.6c.6 1.1 1.5 2 2.6 2.6l.6-.5c.2-.2.4-.2.6-.1l1.5.6c.3.1.4.3.4.5v.4c0 .3 0 .6-.4.8-.5.3-1.1.5-1.7.4-2.6-.5-4.7-2.6-5.2-5.2-.1-.6.1-1.2.4-1.7z"/></svg>
+                </a>
+            </div>
+            <div class="ft-pag" aria-label="Pagamentos aceites">
+                <span class="ft-pag-item"><img src="https://cdn.100bytes.co.ao/vantagens/multicaixa___5b49c0b5273522cd4700f5b1dacb9688.svg" alt="" loading="lazy">Multicaixa Express</span>
+                <span class="ft-pag-item">Referência</span>
+            </div>
+            <div class="ft-legal">
+                <span>© <%= new Date().getFullYear() %> 100 Bytes. Todos os direitos reservados.</span>
+                <span>Luanda, Angola</span>
             </div>
         </div>
-    </div>
 
+    </div>
 </footer>
+<script>
+    (function () {
+        var f = document.getElementById("ftNews");
+        if (!f) return;
+        f.addEventListener("submit", function (e) {
+            e.preventDefault();
+            var i = document.getElementById("ftNewsEmail");
+            if (!i.value || !i.checkValidity()) { i.focus(); i.reportValidity && i.reportValidity(); return; }
+            // Guardado no registo de eventos (tipo newsletter) até haver lista própria no admin
+            var ev = { meta: { email: i.value.trim().toLowerCase() } };
+            if (window.bbTrack) window.bbTrack("newsletter", ev);
+            else fetch("/api/events", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ sessionId: "rodape-newsletter", events: [{ type: "newsletter", meta: ev.meta }] }), keepalive: true }).catch(function () {});
+            f.style.display = "none";
+            document.getElementById("ftNewsOk").style.display = "block";
+        });
+    })();
+</script>
 <!-- ========== END FOOTER ========== -->
 
 <%- include('_customer-auth-modals') %>

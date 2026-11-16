@@ -99,20 +99,44 @@
   // Modal Management
   // ──────────────────────────────────────
 
-  function showLoginModal() {
-    const modal = document.getElementById('customerLoginModal');
-    if (modal) modal.style.display = 'flex';
+  // Abre uma das janelas (fecha a outra), bloqueia o scroll da página e põe o cursor no 1.º campo
+  function abrirJanela(id, campo) {
+    document.querySelectorAll('.customer-modal').forEach(m => { if (m.id !== id) m.style.display = 'none'; });
+    const modal = document.getElementById(id);
+    if (!modal) return;
+    modal.style.display = 'flex';
+    document.documentElement.style.overflow = 'hidden';
+    const el = document.getElementById(campo);
+    if (el && window.matchMedia('(min-width: 481px)').matches) setTimeout(() => el.focus(), 60);
   }
 
-  function showRegisterModal() {
-    const modal = document.getElementById('customerRegisterModal');
-    if (modal) modal.style.display = 'flex';
+  // Parâmetros de "abrir login" retirados do endereço, para não reabrir a janela depois de entrar
+  const posLogin = (function () {
+    try {
+      const q = new URLSearchParams(location.search);
+      if (!q.has('openLogin')) return { abrir: false, next: null };
+      const n = q.get('next');
+      q.delete('openLogin'); q.delete('next');
+      history.replaceState(null, '', location.pathname + (q.toString() ? '?' + q : '') + location.hash);
+      return { abrir: true, next: n && n.charAt(0) === '/' && n.charAt(1) !== '/' ? n : null };
+    } catch (e) { return { abrir: false, next: null }; }
+  })();
+
+  function depoisDeEntrar() {
+    if (posLogin.next) window.location.href = posLogin.next;
+    else window.location.reload();
   }
+
+  function showLoginModal() { abrirJanela('customerLoginModal', 'loginEmail'); }
+
+  function showRegisterModal() { abrirJanela('customerRegisterModal', 'registerName'); }
 
   function closeModals() {
     document.querySelectorAll('.customer-modal').forEach(m => m.style.display = 'none');
+    document.documentElement.style.overflow = '';
     clearError('loginError');
     clearError('registerError');
+    document.querySelectorAll('[data-google-info]').forEach(el => { el.style.display = 'none'; });
   }
 
   function showError(id, message) {
@@ -311,6 +335,43 @@
       btn.addEventListener('click', closeModals);
     });
 
+    // Regresso do Google com erro: abre a janela e explica (e limpa o parâmetro do endereço)
+    try {
+      const q = new URLSearchParams(location.search);
+      const g = q.get("login_google");
+      if (g) {
+        q.delete("login_google");
+        history.replaceState(null, "", location.pathname + (q.toString() ? "?" + q : "") + location.hash);
+        showLoginModal();
+        showError("loginError", g === "indisponivel"
+          ? "O acesso com Google não está disponível neste momento. Use o seu email."
+          : "Não foi possível entrar com Google. Tente novamente ou use o seu email.");
+      }
+    } catch (e) { /* ignorar */ }
+
+    // Trocar entre "Entrar" e "Criar conta" sem fechar a janela
+    document.querySelectorAll('[data-am-ir]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        if (btn.getAttribute('data-am-ir') === 'registo') showRegisterModal(); else showLoginModal();
+      });
+    });
+
+    // Entrar com Google: quando estiver configurado, window.BB_GOOGLE_AUTH_URL aponta para o início do fluxo
+    document.querySelectorAll('[data-google-auth]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        if (window.BB_GOOGLE_AUTH_URL) {
+          const volta = encodeURIComponent(posLogin.next || (location.pathname + location.search));
+          location.href = window.BB_GOOGLE_AUTH_URL + (window.BB_GOOGLE_AUTH_URL.indexOf('?') >= 0 ? '&' : '?') + 'next=' + volta;
+          return;
+        }
+        const info = btn.parentElement.querySelector('[data-google-info]');
+        if (info) {
+          info.textContent = 'O acesso com Google fica disponível em breve. Por agora, use o seu email.';
+          info.style.display = 'block';
+        }
+      });
+    });
+
     window.addEventListener('keydown', (e) => {
       if (e.key === 'Escape') closeModals();
     });
@@ -327,17 +388,21 @@
         e.preventDefault();
         const email = document.getElementById('loginEmail').value;
         const password = document.getElementById('loginPassword').value;
-        const btn = loginForm.querySelector('button');
+        const btn = loginForm.querySelector('button[type="submit"]');
         const originalText = btn.textContent;
         clearError('loginError');
+        if (!email.trim() || !password) {
+          showError('loginError', 'Preencha o email e a palavra-passe.');
+          return;
+        }
         try {
           btn.disabled = true;
-          btn.textContent = 'Entrando...';
+          btn.textContent = 'A entrar…';
           await login(email, password);
           closeModals();
-          window.location.reload();
+          depoisDeEntrar();
         } catch (err) {
-          showError('loginError', err.message || 'Email ou senha incorretos.');
+          showError('loginError', err.message || 'Email ou palavra-passe incorretos.');
         } finally {
           btn.disabled = false;
           btn.textContent = originalText;
@@ -353,20 +418,24 @@
         const phone = document.getElementById('registerPhone').value;
         const email = document.getElementById('registerEmail').value;
         const password = document.getElementById('registerPassword').value;
-        const confirmPassword = document.getElementById('registerConfirmPassword').value;
-        const btn = registerForm.querySelector('button');
+        const confirmEl = document.getElementById('registerConfirmPassword');
+        const btn = registerForm.querySelector('button[type="submit"]');
         const originalText = btn.textContent;
         clearError('registerError');
-        if (password !== confirmPassword) {
-          showError('registerError', 'As senhas não coincidem.');
+        if (!name.trim() || !email.trim() || !password) {
+          showError('registerError', 'Preencha o nome, o email e a palavra-passe.');
+          return;
+        }
+        if (confirmEl && confirmEl.value !== password) {
+          showError('registerError', 'As palavras-passe não coincidem.');
           return;
         }
         try {
           btn.disabled = true;
-          btn.textContent = 'Criando conta...';
+          btn.textContent = 'A criar conta…';
           await register(name, phone, email, password);
           closeModals();
-          window.location.reload();
+          depoisDeEntrar();
         } catch (err) {
           showError('registerError', err.message || 'Erro ao criar conta.');
         } finally {
@@ -383,20 +452,21 @@
       });
     });
 
-    // Auto-open login if redirected from protected page
-    if (new URLSearchParams(location.search).get('openLogin') === '1') {
-      showLoginModal();
-    }
-
     getCurrentUser()
       .then((user) => {
         currentUser = user;
+        // Vindo de uma página que pede sessão: abre a janela só se ainda não entrou
+        if (posLogin.abrir) {
+          if (!user) showLoginModal();
+          else if (posLogin.next) window.location.href = posLogin.next;
+        }
         bindRequireLoginLinks();
         return bindFavoriteButtons();
       })
       .then(() => { initFavPopup(); })
       .catch(() => {
         currentUser = null;
+        if (posLogin.abrir) showLoginModal();
         bindRequireLoginLinks();
         bindFavoriteButtons().then(() => initFavPopup());
       });

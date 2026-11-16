@@ -2,7 +2,11 @@ import {
   Controller,
   Post,
   Get,
+  Patch,
   Delete,
+  UploadedFile,
+  UseInterceptors,
+  BadRequestException,
   Body,
   Param,
   Req,
@@ -11,6 +15,8 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { Response, Request } from 'express';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { memoryStorage } from 'multer';
 import { CustomersService } from './customers.service';
 import { CustomerGuard } from './customer.guard';
 import { AuthGuard } from '../auth/auth.guard';
@@ -78,6 +84,37 @@ export class CustomersController {
     } catch {
       return { customer: null };
     }
+  }
+
+  /** Nome, telefone e morada */
+  @Patch('me')
+  @UseGuards(CustomerGuard)
+  async atualizar(@Req() req: Request, @Body() body: { name?: string; phone?: string; province?: string; city?: string; address?: string }) {
+    return { customer: await this.svc.atualizarPerfil(req['customer'].sub, body ?? {}) };
+  }
+
+  /** Mudar a palavra-passe (ou criar, em contas que entraram com Google) */
+  @Post('me/password')
+  @HttpCode(200)
+  @UseGuards(CustomerGuard)
+  async password(@Req() req: Request, @Body() body: { current?: string; password?: string }) {
+    return { customer: await this.svc.mudarPassword(req['customer'].sub, body?.current, String(body?.password ?? '')) };
+  }
+
+  /** Foto de perfil (guardada no R2) */
+  @Post('me/avatar')
+  @HttpCode(200)
+  @UseGuards(CustomerGuard)
+  @UseInterceptors(FileInterceptor('file', { storage: memoryStorage(), limits: { fileSize: 3 * 1024 * 1024 } }))
+  async avatar(@Req() req: Request, @UploadedFile() file?: Express.Multer.File) {
+    if (!file) throw new BadRequestException('Escolha uma imagem.');
+    return { customer: await this.svc.mudarFoto(req['customer'].sub, file.buffer, file.mimetype) };
+  }
+
+  @Delete('me/avatar')
+  @UseGuards(CustomerGuard)
+  async removerAvatar(@Req() req: Request) {
+    return { customer: await this.svc.removerFoto(req['customer'].sub) };
   }
 
   @Get('orders')
